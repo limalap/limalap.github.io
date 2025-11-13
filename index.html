@@ -1,120 +1,242 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Luiz Adriano Pereira de Lima - Currículo</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lima LAP Sistemas de Informação</title>
+
+  <!-- Flowbite CSS (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.0/dist/flowbite.min.css" rel="stylesheet" />
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f4f4;
-      color: #333;
-      line-height: 1.6;
+    /* Básico adicional para placeholders de imagem e ajustes */
+    :root{
+      --brand: #0b5ed7;
+      --bg-light: #ffffff;
+      --bg-dark: #0b1220;
+      --muted: #6b7280;
     }
-    header {
-      background: #0057b7;
-      color: #fff;
-      padding: 2rem 1rem;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-    header p {
-      margin: 0.5rem 0 0;
-      font-size: 1rem;
-    }
-    main {
-      max-width: 800px;
-      margin: 2rem auto;
-      background: #fff;
-      padding: 2rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    section {
-      margin-bottom: 2rem;
-    }
-    section h2 {
-      color: #0057b7;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #0057b7;
-      padding-bottom: 0.25rem;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 0.5rem;
-    }
-    a {
-      color: #0057b7;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #eee;
-      font-size: 0.9rem;
-    }
+
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:var(--bg-light); color:#0f172a; }
+    .container { max-width:1100px; margin:0 auto; padding:2rem; }
+    header.site-header { background: linear-gradient(90deg, rgba(11,94,215,0.95), rgba(3,155,229,0.9)); color:#fff; padding:2rem 1rem; }
+    .hero { display:flex; gap:1.5rem; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    .hero .text { flex:1 1 380px; }
+    .hero h1 { margin:0 0 .5rem 0; font-size:1.75rem; line-height:1.05; }
+    .hero p.lead { margin:0 0 1rem 0; color:rgba(255,255,255,0.95); }
+    .btn-primary { background:var(--bg-light); color:var(--brand); padding:.6rem .9rem; border-radius:.5rem; font-weight:600; display:inline-block; text-decoration:none; }
+    .card { background:#fff; border-radius:.75rem; padding:1.25rem; box-shadow:0 6px 18px rgba(2,6,23,0.06); }
+    section { margin:2rem 0; }
+    .services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; }
+    .img-placeholder { width:100%; height:200px; background:linear-gradient(135deg,#eef2ff,#f8fafc); border-radius:.5rem; display:flex; align-items:center; justify-content:center; color:var(--muted); border:1px dashed #e6edf8; }
+    .meta { color:var(--muted); font-size:.95rem; }
+    footer { background:#0f172a; color:#cbd5e1; padding:1.25rem; text-align:center; font-size:.9rem; }
+
+    /* Dark mode */
+    .dark body { background: #05070a; color: #e6eef8; }
+    .dark .card { background: #071020; box-shadow: 0 6px 18px rgba(2,6,23,0.5); }
+    .dark header.site-header { background: linear-gradient(90deg, rgba(2,6,23,1), rgba(3,7,18,1)); }
+    .dark .img-placeholder { background: linear-gradient(135deg,#07132a,#081022); color:#9aa6b2; border-style: dashed; border-color:#10233a; }
   </style>
 </head>
-<body>
-  <header>
-    <h1>Luiz Adriano Pereira de Lima</h1>
-    <p>Especialista em TI | Desenvolvedor | Automação e Integração</p>
-    <p>Email: <a href="mailto:luiz.adriano.ti@icloud.com">luiz.adriano.ti@icloud.com</a> | GitHub: <a href="https://github.com/limalap" target="_blank">limalap</a></p>
+<body class="transition-colors">
+
+  <!-- Header / Hero -->
+  <header class="site-header">
+    <div class="container hero">
+      <div class="text">
+        <h1>Lima LAP Sistemas de Informação</h1>
+        <p class="lead">Engenharia de software e desenvolvimento de sistemas. Automação de processos e integração de canais de comunicação com CRM e Inteligência Artificial.</p>
+        <p class="meta">CNPJ 36.783.578/0001-09 • Facebook: <a href="https://www.facebook.com/limalapsi" target="_blank" style="color:rgba(255,255,255,0.95); text-decoration:underline">limalapsi</a></p>
+
+        <div style="margin-top:1rem; display:flex; gap:.6rem; flex-wrap:wrap">
+          <a class="btn-primary" href="#contato">Solicitar Orçamento</a>
+          <a class="btn-primary" href="#servicos" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12)">Nossos Serviços</a>
+        </div>
+      </div>
+
+      <!-- Espaço para logo / foto -->
+      <div style="width:220px; max-width:40%; min-width:160px;">
+        <div class="card" style="text-align:center;">
+          <div id="logo-placeholder" class="img-placeholder" aria-hidden="true">
+            LOGO / FOTO
+          </div>
+          <p style="margin:.75rem 0 0 0; font-weight:600">Lima LAP</p>
+          <p class="meta" style="margin:0">Sistemas de Informação</p>
+          <div style="margin-top:.6rem;">
+            <button id="theme-toggle" class="btn-primary" aria-label="Alternar tema">Trocar tema</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section>
-      <h2>Resumo Profissional</h2>
-      <p>Profissional de tecnologia com experiência em desenvolvimento, automação de processos e integração de sistemas. Foco em soluções práticas e eficientes, com experiência em projetos corporativos e pessoais.</p>
+  <main class="container" id="main">
+    <!-- Sobre -->
+    <section id="sobre" class="card" aria-label="Sobre a empresa">
+      <h2>Quem somos</h2>
+      <p>
+        A Lima LAP Sistemas de Informação é uma empresa de engenharia de software especializada em automação de processos e integração de canais de comunicação com sistemas de CRM e Inteligência Artificial.
+        Adotamos soluções de vanguarda para resolver problemas complexos, sempre respeitando as melhores práticas de desenvolvimento para garantir segurança e escalabilidade.
+      </p>
     </section>
 
-    <section>
-      <h2>Experiência</h2>
-      <ul>
-        <li><strong>Empresa X</strong> — Desenvolvedor de Sistemas (2023–2025)</li>
-        <li><strong>Empresa Y</strong> — Analista de TI (2020–2023)</li>
-        <li><strong>Projetos Pessoais</strong> — Automação e integração de sistemas diversos (2018–2020)</li>
-      </ul>
+    <!-- Serviços -->
+    <section id="servicos">
+      <h2>Nossos serviços</h2>
+      <div class="services-grid">
+        <div class="card">
+          <h3>Automação de Processos</h3>
+          <p class="meta">Redução de tarefas manuais, orquestração de fluxos e ganho de produtividade.</p>
+        </div>
+
+        <div class="card">
+          <h3>Integração de Canais</h3>
+          <p class="meta">Integração de canais de voz, chat, WhatsApp e email com CRM e ferramentas internas.</p>
+        </div>
+
+        <div class="card">
+          <h3>CRM e ERP</h3>
+          <p class="meta">Conexão e sincronização com sistemas de gestão e relacionamento para uma operação unificada.</p>
+        </div>
+
+        <div class="card">
+          <h3>BI e Dashboards</h3>
+          <p class="meta">Painéis claros para tomada de decisão, relatórios e indicadores sob medida.</p>
+        </div>
+
+        <div class="card">
+          <h3>IA aplicada</h3>
+          <p class="meta">Modelos e assistentes que automatizam atendimento e análise de dados.</p>
+        </div>
+
+        <div class="card">
+          <h3>Consultoria Técnica</h3>
+          <p class="meta">Análise de arquitetura, revisão de código e apoio à implantação.</p>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>Formação</h2>
-      <ul>
-        <li><strong>Universidade Z</strong> — Bacharel em Ciência da Computação (2015–2019)</li>
-      </ul>
+    <!-- Projetos / Portfólio - até 3 imagens -->
+    <section id="projetos" class="card" aria-label="Projetos">
+      <h2>Projetos e portfólio</h2>
+      <p class="meta">Alguns projetos selecionados. Máximo de 3 imagens exibidas. Substitua as imagens pelas suas versões finais.</p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-top:1rem;">
+        <!-- Placeholder 1 -->
+        <div>
+          <div class="img-placeholder" id="img1">Imagem 1</div>
+          <p style="margin:.5rem 0 0 0; font-weight:600">Projeto A</p>
+          <p class="meta" style="margin:0">Automação de processo X para cliente Y.</p>
+        </div>
+
+        <!-- Placeholder 2 -->
+        <div>
+          <div class="img-placeholder" id="img2">Imagem 2</div>
+          <p style="margin:.5rem 0 0 0; font-weight:600">Projeto B</p>
+          <p class="meta" style="margin:0">Integração de canais e CRM.</p>
+        </div>
+
+        <!-- Placeholder 3 -->
+        <div>
+          <div class="img-placeholder" id="img3">Imagem 3</div>
+          <p style="margin:.5rem 0 0 0; font-weight:600">Projeto C</p>
+          <p class="meta" style="margin:0">Dashboard de BI para decisão executiva.</p>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>Habilidades</h2>
-      <ul>
-        <li>Programação: Python, C#, JavaScript</li>
-        <li>Ferramentas: Git, GitHub, Asterisk, SSH</li>
-        <li>Integração de sistemas e automação de processos</li>
-        <li>Infraestrutura e redes básicas</li>
-      </ul>
-    </section>
-
-    <section>
+    <!-- Contato -->
+    <section id="contato" class="card" aria-label="Contato">
       <h2>Contato</h2>
-      <ul>
-        <li>Email: <a href="mailto:luiz.adriano.ti@icloud.com">luiz.adriano.ti@icloud.com</a></li>
-        <li>GitHub: <a href="https://github.com/limalap" target="_blank">github.com/limalap</a></li>
+      <p class="meta">Entre em contato para solicitar orçamento ou para marcar uma conversa técnica.</p>
+
+      <ul style="list-style:none; padding:0; margin-top:1rem;">
+        <li style="margin-bottom:.5rem"><strong>Email</strong>: <a href="mailto:Luiz.adriano.ti@gmail.com">Luiz.adriano.ti@gmail.com</a></li>
+        <li style="margin-bottom:.5rem"><strong>Telefone</strong>: <a href="tel:+552122037878">+55 21 2203-7878</a></li>
+        <li style="margin-bottom:.5rem"><strong>Telefone</strong>: <a href="tel:+5521985395900">+55 21 98539-5900</a></li>
+        <li style="margin-bottom:.5rem"><strong>Facebook</strong>: <a href="https://www.facebook.com/limalapsi" target="_blank">facebook.com/limalapsi</a></li>
       </ul>
+
+      <form style="margin-top:1rem;" action="#" onsubmit="event.preventDefault(); alert('Formulário de contato simples. Implementar backend ou usar formspree/seu endpoint.');">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.5rem;">
+          <input class="card" placeholder="Seu nome" required />
+          <input class="card" placeholder="Seu email" type="email" required />
+        </div>
+        <textarea class="card" placeholder="Mensagem" rows="4" style="margin-top:.5rem; width:100%"></textarea>
+        <div style="margin-top:.6rem;">
+          <button class="btn-primary" type="submit">Enviar mensagem</button>
+        </div>
+      </form>
     </section>
   </main>
 
   <footer>
-    © 2025 Luiz Adriano Pereira de Lima. Todos os direitos reservados.
+    <div style="max-width:1100px;margin:0 auto;padding:0 1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <div>
+          © 2025 Lima LAP Sistemas de Informação • CNPJ 36.783.578/0001-09
+        </div>
+        <div>
+          Desenvolvido por Luiz Adriano Pereira de Lima • <a href="https://github.com/limalap/limalap.github.io" target="_blank" style="color:#cbd5e1; text-decoration:underline">Repositório</a>
+        </div>
+      </div>
+    </div>
   </footer>
+
+  <!-- Flowbite JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.0/dist/flowbite.min.js"></script>
+
+  <script>
+    // Tema claro / escuro com persistência
+    const themeToggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+    const body = document.body;
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('site-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('site-theme', 'light');
+      }
+    }
+
+    // Detecta preferência do sistema se nada salvo
+    const saved = localStorage.getItem('site-theme');
+    if (saved) {
+      applyTheme(saved);
+    } else {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = localStorage.getItem('site-theme') === 'dark' ? 'dark' : 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // Espaços reservados para imagens: função helper para inserir imagem via JS (quando estiver pronta)
+    // Exemplo de uso:
+    // setImage('#img1', 'assets/img/projeto-a.jpg', 'Projeto A - Automação');
+    function setImage(selector, src, alt = '') {
+      const el = document.querySelector(selector);
+      if (!el) return;
+      el.style.backgroundImage = `url(${src})`;
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+      el.textContent = '';
+      el.setAttribute('role', 'img');
+      if (alt) el.setAttribute('aria-label', alt);
+    }
+
+    // Exemplo: se você enviar imagens ao repositório, descomente e ajuste as linhas abaixo:
+    // setImage('#logo-placeholder', 'assets/logo.png', 'Logo Lima LAP');
+    // setImage('#img1', 'assets/projeto-a.jpg', 'Projeto A');
+    // setImage('#img2', 'assets/projeto-b.jpg', 'Projeto B');
+    // setImage('#img3', 'assets/projeto-c.jpg', 'Projeto C');
+
+  </script>
 </body>
 </html>
