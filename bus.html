@@ -19,6 +19,8 @@
 
         <form id="form">
 
+          <input type="hidden" id="indiceEdicao">
+
           <div class="mb-3">
             <label class="form-label">Nome</label>
             <input id="nome" type="text" class="form-control" placeholder="Digite o nome">
@@ -29,7 +31,7 @@
             <input id="email" type="email" class="form-control" placeholder="Digite o email">
           </div>
 
-          <button type="submit" class="btn btn-primary w-100">Salvar</button>
+          <button type="submit" id="btnSalvar" class="btn btn-primary w-100">Salvar</button>
         </form>
 
       </div>
@@ -47,12 +49,56 @@
       const lista = document.getElementById('lista');
       lista.innerHTML = '';
 
-      banco.forEach(item => {
+      banco.forEach((item, index) => {
         const li = document.createElement('li');
         li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.textContent = item.nome + ", " + item.email;
+
+        const texto = document.createElement('span');
+        texto.textContent = item.nome + ", " + item.email;
+
+        const containerBtns = document.createElement('div');
+        containerBtns.className = "d-flex gap-2";
+
+        const btnEditar = document.createElement('button');
+        btnEditar.className = "btn btn-warning btn-sm";
+        btnEditar.textContent = "Editar";
+        btnEditar.onclick = function() {
+          editar(index);
+        };
+
+        const btnExcluir = document.createElement('button');
+        btnExcluir.className = "btn btn-danger btn-sm";
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.onclick = function() {
+          deletar(index);
+        };
+
+        containerBtns.appendChild(btnEditar);
+        containerBtns.appendChild(btnExcluir);
+
+        li.appendChild(texto);
+        li.appendChild(containerBtns);
+
         lista.appendChild(li);
       });
+    }
+
+    function editar(index) {
+      const banco = JSON.parse(localStorage.getItem('banco')) || [];
+      const item = banco[index];
+
+      document.getElementById('nome').value = item.nome;
+      document.getElementById('email').value = item.email;
+      document.getElementById('indiceEdicao').value = index;
+
+      document.getElementById('btnSalvar').textContent = "Atualizar";
+    }
+
+    function deletar(index) {
+      const banco = JSON.parse(localStorage.getItem('banco')) || [];
+      banco.splice(index, 1);
+      localStorage.setItem('banco', JSON.stringify(banco));
+      carregar();
     }
 
     document.getElementById('form').addEventListener('submit', function(e){
@@ -60,6 +106,7 @@
 
       const nome = document.getElementById('nome').value.trim();
       const email = document.getElementById('email').value.trim();
+      const indice = document.getElementById('indiceEdicao').value;
 
       if (!nome || !email) {
         alert("Preencha todos os campos.");
@@ -67,10 +114,19 @@
       }
 
       const banco = JSON.parse(localStorage.getItem('banco')) || [];
-      banco.push({ nome, email });
+
+      if (indice === "") {
+        banco.push({ nome, email });
+      } else {
+        banco[indice] = { nome, email };
+      }
+
       localStorage.setItem('banco', JSON.stringify(banco));
 
       document.getElementById('form').reset();
+      document.getElementById('indiceEdicao').value = "";
+      document.getElementById('btnSalvar').textContent = "Salvar";
+
       carregar();
     });
 
