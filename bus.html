@@ -1,46 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Formulário simples</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cadastro Mobile</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
 
-  <h3>Cadastro</h3>
+<body class="bg-light">
 
-  <form id="form">
-    <input id="nome" type="text" placeholder="Nome">
-    <input id="email" type="text" placeholder="Email">
-    <button type="submit">Salvar</button>
-  </form>
+  <div class="container py-4" style="max-width: 500px;">
+    
+    <h4 class="text-center mb-4">Cadastro</h4>
 
-  <h3>Dados salvos</h3>
-  <div id="lista"></div>
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <form id="form">
+
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input id="nome" type="text" class="form-control" placeholder="Digite o nome">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input id="email" type="email" class="form-control" placeholder="Digite o email">
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Salvar</button>
+        </form>
+
+      </div>
+    </div>
+
+    <h5 class="mt-4">Dados salvos</h5>
+    <ul id="lista" class="list-group"></ul>
+
+  </div>
+
 
   <script>
     function carregar() {
       const banco = JSON.parse(localStorage.getItem('banco')) || [];
-
       const lista = document.getElementById('lista');
       lista.innerHTML = '';
 
       banco.forEach(item => {
-        const linha = document.createElement('p');
-        linha.textContent = item.nome + ' - ' + item.email;
-        lista.appendChild(linha);
+        const li = document.createElement('li');
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.textContent = item.nome + ", " + item.email;
+        lista.appendChild(li);
       });
     }
 
     document.getElementById('form').addEventListener('submit', function(e){
       e.preventDefault();
 
-      const nome = document.getElementById('nome').value;
-      const email = document.getElementById('email').value;
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!nome || !email) {
+        alert("Preencha todos os campos.");
+        return;
+      }
 
       const banco = JSON.parse(localStorage.getItem('banco')) || [];
       banco.push({ nome, email });
       localStorage.setItem('banco', JSON.stringify(banco));
 
+      document.getElementById('form').reset();
       carregar();
     });
 
