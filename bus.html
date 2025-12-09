@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário simples</title>
+</head>
+<body>
+
+  <h3>Cadastro</h3>
+
+  <form id="form">
+    <input id="nome" type="text" placeholder="Nome">
+    <input id="email" type="text" placeholder="Email">
+    <button type="submit">Salvar</button>
+  </form>
+
+  <h3>Dados salvos</h3>
+  <div id="lista"></div>
+
+  <script>
+    function carregar() {
+      const banco = JSON.parse(localStorage.getItem('banco')) || [];
+
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+
+      banco.forEach(item => {
+        const linha = document.createElement('p');
+        linha.textContent = item.nome + ' - ' + item.email;
+        lista.appendChild(linha);
+      });
+    }
+
+    document.getElementById('form').addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const nome = document.getElementById('nome').value;
+      const email = document.getElementById('email').value;
+
+      const banco = JSON.parse(localStorage.getItem('banco')) || [];
+      banco.push({ nome, email });
+      localStorage.setItem('banco', JSON.stringify(banco));
+
+      carregar();
+    });
+
+    window.onload = carregar;
+  </script>
+
+</body>
+</html>
