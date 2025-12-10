@@ -21,8 +21,18 @@
           <input type="hidden" id="indiceEdicao">
 
           <div class="mb-3">
-            <label class="form-label">IPTU</label>
-            <input id="iptu" type="text" class="form-control" placeholder="Digite o IPTU">
+            <label class="form-label">Linha</label>
+            <input id="linha" type="text" class="form-control" placeholder="Digite a linha">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Origem</label>
+            <input id="origem" type="text" class="form-control" placeholder="Digite a origem">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Destino</label>
+            <input id="destino" type="text" class="form-control" placeholder="Digite o destino">
           </div>
 
           <button type="submit" id="btnSalvar" class="btn btn-primary w-100">Salvar</button>
@@ -39,7 +49,7 @@
 
   <script>
     function carregar() {
-      const banco = JSON.parse(localStorage.getItem('bancoIptu')) || [];
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
       const lista = document.getElementById('lista');
       lista.innerHTML = '';
 
@@ -48,7 +58,7 @@
         li.className = "list-group-item d-flex justify-content-between align-items-center";
 
         const texto = document.createElement('span');
-        texto.textContent = item.iptu;
+        texto.textContent = item.linha + " | " + item.origem + " → " + item.destino;
 
         const containerBtns = document.createElement('div');
         containerBtns.className = "d-flex gap-2";
@@ -74,41 +84,46 @@
     }
 
     function editar(index) {
-      const banco = JSON.parse(localStorage.getItem('bancoIptu')) || [];
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
       const item = banco[index];
 
-      document.getElementById('iptu').value = item.iptu;
+      document.getElementById('linha').value = item.linha;
+      document.getElementById('origem').value = item.origem;
+      document.getElementById('destino').value = item.destino;
+
       document.getElementById('indiceEdicao').value = index;
       document.getElementById('btnSalvar').textContent = "Atualizar";
     }
 
     function deletar(index) {
-      const banco = JSON.parse(localStorage.getItem('bancoIptu')) || [];
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
       banco.splice(index, 1);
-      localStorage.setItem('bancoIptu', JSON.stringify(banco));
+      localStorage.setItem('bancoLinha', JSON.stringify(banco));
       carregar();
     }
 
     document.getElementById('form').addEventListener('submit', function(e){
       e.preventDefault();
 
-      const iptu = document.getElementById('iptu').value.trim();
+      const linha = document.getElementById('linha').value.trim();
+      const origem = document.getElementById('origem').value.trim();
+      const destino = document.getElementById('destino').value.trim();
       const indice = document.getElementById('indiceEdicao').value;
 
-      if (!iptu) {
-        alert("O campo IPTU é obrigatório.");
+      if (!linha || !origem || !destino) {
+        alert("Preencha todos os campos antes de salvar.");
         return;
       }
 
-      const banco = JSON.parse(localStorage.getItem('bancoIptu')) || [];
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
 
       if (indice === "") {
-        banco.push({ iptu });
+        banco.push({ linha, origem, destino });
       } else {
-        banco[indice] = { iptu };
+        banco[indice] = { linha, origem, destino };
       }
 
-      localStorage.setItem('bancoIptu', JSON.stringify(banco));
+      localStorage.setItem('bancoLinha', JSON.stringify(banco));
 
       document.getElementById('form').reset();
       document.getElementById('indiceEdicao').value = "";
