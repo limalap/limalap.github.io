@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linha de ônibus</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+  <div class="container py-4" style="max-width: 500px;">
+
+    <h4 class="text-center mb-4">Linha de ônibus</h4>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <form id="form">
+          <input type="hidden" id="indiceEdicao">
+
+          <div class="mb-3">
+            <label class="form-label">Linha</label>
+            <input id="linha" type="text" class="form-control" placeholder="Digite a linha">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Origem</label>
+            <input id="origem" type="text" class="form-control" placeholder="Digite a origem">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Destino</label>
+            <input id="destino" type="text" class="form-control" placeholder="Digite o destino">
+          </div>
+
+          <button type="submit" id="btnSalvar" class="btn btn-primary w-100">Salvar</button>
+        </form>
+
+      </div>
+    </div>
+
+    <h5 class="mt-4">Dados salvos</h5>
+    <ul id="lista" class="list-group"></ul>
+
+  </div>
+
+
+  <script>
+    function carregar() {
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+
+      banco.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+        const texto = document.createElement('span');
+        texto.innerHTML = item.linha + "<br>" + item.origem + " → " + item.destino;
+
+        const containerBtns = document.createElement('div');
+        containerBtns.className = "d-flex gap-2";
+
+        const btnEditar = document.createElement('button');
+        btnEditar.className = "btn btn-warning btn-sm";
+        btnEditar.textContent = "Editar";
+        btnEditar.onclick = () => editar(index);
+
+        const btnExcluir = document.createElement('button');
+        btnExcluir.className = "btn btn-danger btn-sm";
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.onclick = () => deletar(index);
+
+        containerBtns.appendChild(btnEditar);
+        containerBtns.appendChild(btnExcluir);
+
+        li.appendChild(texto);
+        li.appendChild(containerBtns);
+
+        lista.appendChild(li);
+      });
+    }
+
+    function editar(index) {
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+      const item = banco[index];
+
+      document.getElementById('linha').value = item.linha;
+      document.getElementById('origem').value = item.origem;
+      document.getElementById('destino').value = item.destino;
+
+      document.getElementById('indiceEdicao').value = index;
+      document.getElementById('btnSalvar').textContent = "Atualizar";
+    }
+
+    function deletar(index) {
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+      banco.splice(index, 1);
+      localStorage.setItem('bancoLinha', JSON.stringify(banco));
+      carregar();
+    }
+
+    document.getElementById('form').addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const linha = document.getElementById('linha').value.trim();
+      const origem = document.getElementById('origem').value.trim();
+      const destino = document.getElementById('destino').value.trim();
+      const indice = document.getElementById('indiceEdicao').value;
+
+      if (!linha || !origem || !destino) {
+        alert("Preencha todos os campos antes de salvar.");
+        return;
+      }
+
+      const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+
+      if (indice === "") {
+        banco.push({ linha, origem, destino });
+      } else {
+        banco[indice] = { linha, origem, destino };
+      }
+
+      localStorage.setItem('bancoLinha', JSON.stringify(banco));
+
+      document.getElementById('form').reset();
+      document.getElementById('indiceEdicao').value = "";
+      document.getElementById('btnSalvar').textContent = "Salvar";
+
+      carregar();
+    });
+
+    window.onload = carregar;
+  </script>
+
+</body>
+</html>
