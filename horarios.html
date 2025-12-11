@@ -14,7 +14,7 @@
 
     <h4 class="text-center mb-4">Horários de ônibus</h4>
 
-    <div class="card shadow-sm">
+    <div id="formCard" class="card shadow-sm d-none">
       <div class="card-body">
 
         <form id="form">
@@ -35,17 +35,30 @@
             <select id="tempo" class="form-control"></select>
           </div>
 
-          <button type="submit" id="btnSalvar" class="btn btn-primary w-100">Salvar</button>
+          <div class="d-flex gap-2">
+            <button type="submit" id="btnSalvar" class="btn btn-primary w-100">Salvar</button>
+            <button type="button" id="btnCancelar" class="btn btn-secondary w-100">Cancelar</button>
+          </div>
+
+          <button id="btnExcluir" type="button" class="btn btn-danger w-100 mt-3 d-none">Excluir</button>
+
         </form>
 
       </div>
     </div>
 
-    <h5 class="mt-4">Horários cadastrados</h5>
-    <ul id="lista" class="list-group"></ul>
+    <div id="listaContainer">
+
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <h5 class="m-0">Horários cadastrados</h5>
+        <button id="btnNovo" class="btn btn-success btn-sm">Novo horário</button>
+      </div>
+
+      <ul id="lista" class="list-group mt-2"></ul>
+
+    </div>
 
   </div>
-
 
   <script>
     function descricaoLinha(valorLinha) {
@@ -69,7 +82,6 @@
     function carregarLinhas() {
       const select = document.getElementById('linha');
       select.innerHTML = '';
-
       const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
 
       bancoLinha.forEach(item => {
@@ -94,27 +106,26 @@
           descricaoLinha(item.linha) +
           "<br>Partida " + item.partida + " • " + item.tempo + " min";
 
-        const containerBtns = document.createElement('div');
-        containerBtns.className = "d-flex gap-2";
-
         const btnEditar = document.createElement('button');
         btnEditar.className = "btn btn-warning btn-sm";
         btnEditar.textContent = "Editar";
         btnEditar.onclick = () => editar(index);
 
-        const btnExcluir = document.createElement('button');
-        btnExcluir.className = "btn btn-danger btn-sm";
-        btnExcluir.textContent = "Excluir";
-        btnExcluir.onclick = () => deletar(index);
-
-        containerBtns.appendChild(btnEditar);
-        containerBtns.appendChild(btnExcluir);
-
         li.appendChild(texto);
-        li.appendChild(containerBtns);
+        li.appendChild(btnEditar);
 
         lista.appendChild(li);
       });
+    }
+
+    function mostrarFormulario() {
+      document.getElementById('formCard').classList.remove('d-none');
+      document.getElementById('listaContainer').classList.add('d-none');
+    }
+
+    function esconderFormulario() {
+      document.getElementById('formCard').classList.add('d-none');
+      document.getElementById('listaContainer').classList.remove('d-none');
     }
 
     function editar(index) {
@@ -127,14 +138,40 @@
 
       document.getElementById('indiceEdicao').value = index;
       document.getElementById('btnSalvar').textContent = "Atualizar";
+
+      document.getElementById('btnExcluir').classList.remove('d-none');
+
+      mostrarFormulario();
     }
 
-    function deletar(index) {
-      const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-      banco.splice(index, 1);
-      localStorage.setItem('bancoHorario', JSON.stringify(banco));
-      carregar();
+    function resetarFormulario() {
+      document.getElementById('form').reset();
+      document.getElementById('indiceEdicao').value = "";
+      document.getElementById('btnSalvar').textContent = "Salvar";
+      document.getElementById('btnExcluir').classList.add('d-none');
     }
+
+    document.getElementById('btnNovo').onclick = () => {
+      resetarFormulario();
+      mostrarFormulario();
+    };
+
+    document.getElementById('btnCancelar').onclick = () => {
+      resetarFormulario();
+      esconderFormulario();
+    };
+
+    document.getElementById('btnExcluir').onclick = () => {
+      if (confirm("Você realmente quer deletar esse item?")) {
+        const indice = document.getElementById('indiceEdicao').value;
+        const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+        banco.splice(indice, 1);
+        localStorage.setItem('bancoHorario', JSON.stringify(banco));
+        resetarFormulario();
+        esconderFormulario();
+        carregar();
+      }
+    };
 
     document.getElementById('form').addEventListener('submit', function(e){
       e.preventDefault();
@@ -159,10 +196,8 @@
 
       localStorage.setItem('bancoHorario', JSON.stringify(banco));
 
-      document.getElementById('form').reset();
-      document.getElementById('indiceEdicao').value = "";
-      document.getElementById('btnSalvar').textContent = "Salvar";
-
+      resetarFormulario();
+      esconderFormulario();
       carregar();
     });
 
