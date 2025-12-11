@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -22,7 +22,7 @@
 
           <div class="mb-3">
             <label class="form-label">Linha</label>
-            <input id="linha" type="text" class="form-control" placeholder="Digite a linha">
+            <select id="linha" class="form-control"></select>
           </div>
 
           <div class="mb-3">
@@ -48,7 +48,7 @@
 
 
   <script>
-    function carregarSelect() {
+    function carregarSelectTempo() {
       const select = document.getElementById('tempo');
       select.innerHTML = '';
       for (let m = 5; m <= 120; m += 5) {
@@ -57,6 +57,20 @@
         opt.textContent = m + " minutos";
         select.appendChild(opt);
       }
+    }
+
+    function carregarLinhas() {
+      const select = document.getElementById('linha');
+      select.innerHTML = '';
+
+      const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+
+      bancoLinha.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.linha;
+        opt.textContent = item.linha;
+        select.appendChild(opt);
+      });
     }
 
     function carregar() {
@@ -116,7 +130,7 @@
     document.getElementById('form').addEventListener('submit', function(e){
       e.preventDefault();
 
-      const linha = document.getElementById('linha').value.trim();
+      const linha = document.getElementById('linha').value;
       const partida = document.getElementById('partida').value.trim();
       const tempo = document.getElementById('tempo').value;
       const indice = document.getElementById('indiceEdicao').value;
@@ -144,7 +158,8 @@
     });
 
     window.onload = () => {
-      carregarSelect();
+      carregarLinhas();
+      carregarSelectTempo();
       carregar();
     };
   </script>
