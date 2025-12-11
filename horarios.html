@@ -48,6 +48,13 @@
 
 
   <script>
+    function descricaoLinha(valorLinha) {
+      const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+      const item = bancoLinha.find(x => x.linha === valorLinha);
+      if (!item) return valorLinha;
+      return item.linha + " – " + item.origem + " → " + item.destino;
+    }
+
     function carregarSelectTempo() {
       const select = document.getElementById('tempo');
       select.innerHTML = '';
@@ -68,7 +75,7 @@
       bancoLinha.forEach(item => {
         const opt = document.createElement('option');
         opt.value = item.linha;
-        opt.textContent = item.linha;
+        opt.textContent = item.linha + " – " + item.origem + " → " + item.destino;
         select.appendChild(opt);
       });
     }
@@ -83,7 +90,9 @@
         li.className = "list-group-item d-flex justify-content-between align-items-center";
 
         const texto = document.createElement('span');
-        texto.innerHTML = item.linha + "<br>Partida " + item.partida + " • " + item.tempo + " min";
+        texto.innerHTML =
+          descricaoLinha(item.linha) +
+          "<br>Partida " + item.partida + " • " + item.tempo + " min";
 
         const containerBtns = document.createElement('div');
         containerBtns.className = "d-flex gap-2";
