@@ -10,203 +10,231 @@
 
 <body class="bg-light">
 
-  <div class="container py-4" style="max-width: 500px;">
+  <div class="container py-4" style="max-width: 600px;">
 
-    <h4 class="text-center mb-4">Horários de ônibus</h4>
+    <!-- TÍTULO + BOTÃO NOVO -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="m-0">Horários</h4>
+      <button id="btnNovo" class="btn btn-success btn-sm">Novo horário</button>
+    </div>
 
-    <div id="formCard" class="card shadow-sm d-none">
+    <!-- FORMULÁRIO -->
+    <div id="formContainer" class="card shadow-sm mb-3" style="display: none;">
       <div class="card-body">
 
         <form id="form">
           <input type="hidden" id="indiceEdicao">
 
+          <!-- SELECT DE LINHAS -->
           <div class="mb-3">
             <label class="form-label">Linha</label>
             <select id="linha" class="form-control"></select>
           </div>
 
+          <!-- HORÁRIO -->
           <div class="mb-3">
-            <label class="form-label">Horário de partida (H:i:s)</label>
-            <input id="partida" type="time" step="1" class="form-control">
+            <label class="form-label">Horário de partida</label>
+            <input id="horario" type="time" step="1" class="form-control">
           </div>
 
+          <!-- TEMPO ESTIMADO -->
           <div class="mb-3">
             <label class="form-label">Tempo estimado (minutos)</label>
             <select id="tempo" class="form-control"></select>
           </div>
 
-          <div class="d-flex gap-2">
-            <button type="submit" id="btnSalvar" class="btn btn-primary w-100">Salvar</button>
-            <button type="button" id="btnCancelar" class="btn btn-secondary w-100">Cancelar</button>
+          <!-- BOTÕES 1/3 -->
+          <div class="d-flex gap-2 mt-3">
+
+            <button id="btnSalvar" class="btn btn-primary flex-fill" style="max-width: 33%">Salvar</button>
+
+            <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill" style="max-width: 33%">Cancelar</button>
+
+            <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="max-width: 33%; display: none;">Excluir</button>
+
           </div>
 
-          <button id="btnExcluir" type="button" class="btn btn-danger w-100 mt-3 d-none">Excluir</button>
-
         </form>
-
       </div>
     </div>
 
-    <div id="listaContainer">
-
-      <div class="d-flex justify-content-between align-items-center mt-4">
-        <h5 class="m-0">Horários cadastrados</h5>
-        <button id="btnNovo" class="btn btn-success btn-sm">Novo horário</button>
-      </div>
-
-      <ul id="lista" class="list-group mt-2"></ul>
-
-    </div>
+    <!-- LISTA -->
+    <ul id="lista" class="list-group"></ul>
 
   </div>
 
-  <script>
-    function descricaoLinha(valorLinha) {
-      const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-      const item = bancoLinha.find(x => x.linha === valorLinha);
-      if (!item) return valorLinha;
-      return item.linha + " – " + item.origem + " → " + item.destino;
-    }
+<script>
+  /* ------------------------------------------
+      FUNÇÃO QUE MONTA A DESCRIÇÃO COMPLETA
+     ------------------------------------------ */
+  function descricaoLinha(valor) {
+    const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    const item = bancoLinha.find(l => l.linha === valor);
+    if (!item) return valor;
+    return item.linha + " – " + item.origem + " → " + item.destino;
+  }
 
-    function carregarSelectTempo() {
-      const select = document.getElementById('tempo');
-      select.innerHTML = '';
-      for (let m = 5; m <= 120; m += 5) {
-        const opt = document.createElement('option');
-        opt.value = m;
-        opt.textContent = m + " minutos";
-        select.appendChild(opt);
-      }
-    }
+  /* ------------------------------------------
+      CARREGA SELECT DE LINHAS
+     ------------------------------------------ */
+  function carregarSelectLinhas() {
+    const select = document.getElementById('linha');
+    select.innerHTML = "";
 
-    function carregarLinhas() {
-      const select = document.getElementById('linha');
-      select.innerHTML = '';
-      const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
 
-      bancoLinha.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.linha;
-        opt.textContent = item.linha + " – " + item.origem + " → " + item.destino;
-        select.appendChild(opt);
-      });
-    }
-
-    function carregar() {
-      const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-      const lista = document.getElementById('lista');
-      lista.innerHTML = '';
-
-      banco.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.className = "list-group-item d-flex justify-content-between align-items-center";
-
-        const texto = document.createElement('span');
-        texto.innerHTML =
-          descricaoLinha(item.linha) +
-          "<br>Partida " + item.partida + " • " + item.tempo + " min";
-
-        const btnEditar = document.createElement('button');
-        btnEditar.className = "btn btn-warning btn-sm";
-        btnEditar.textContent = "Editar";
-        btnEditar.onclick = () => editar(index);
-
-        li.appendChild(texto);
-        li.appendChild(btnEditar);
-
-        lista.appendChild(li);
-      });
-    }
-
-    function mostrarFormulario() {
-      document.getElementById('formCard').classList.remove('d-none');
-      document.getElementById('listaContainer').classList.add('d-none');
-    }
-
-    function esconderFormulario() {
-      document.getElementById('formCard').classList.add('d-none');
-      document.getElementById('listaContainer').classList.remove('d-none');
-    }
-
-    function editar(index) {
-      const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-      const item = banco[index];
-
-      document.getElementById('linha').value = item.linha;
-      document.getElementById('partida').value = item.partida;
-      document.getElementById('tempo').value = item.tempo;
-
-      document.getElementById('indiceEdicao').value = index;
-      document.getElementById('btnSalvar').textContent = "Atualizar";
-
-      document.getElementById('btnExcluir').classList.remove('d-none');
-
-      mostrarFormulario();
-    }
-
-    function resetarFormulario() {
-      document.getElementById('form').reset();
-      document.getElementById('indiceEdicao').value = "";
-      document.getElementById('btnSalvar').textContent = "Salvar";
-      document.getElementById('btnExcluir').classList.add('d-none');
-    }
-
-    document.getElementById('btnNovo').onclick = () => {
-      resetarFormulario();
-      mostrarFormulario();
-    };
-
-    document.getElementById('btnCancelar').onclick = () => {
-      resetarFormulario();
-      esconderFormulario();
-    };
-
-    document.getElementById('btnExcluir').onclick = () => {
-      if (confirm("Você realmente quer deletar esse item?")) {
-        const indice = document.getElementById('indiceEdicao').value;
-        const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-        banco.splice(indice, 1);
-        localStorage.setItem('bancoHorario', JSON.stringify(banco));
-        resetarFormulario();
-        esconderFormulario();
-        carregar();
-      }
-    };
-
-    document.getElementById('form').addEventListener('submit', function(e){
-      e.preventDefault();
-
-      const linha = document.getElementById('linha').value;
-      const partida = document.getElementById('partida').value.trim();
-      const tempo = document.getElementById('tempo').value;
-      const indice = document.getElementById('indiceEdicao').value;
-
-      if (!linha || !partida || !tempo) {
-        alert("Preencha todos os campos antes de salvar.");
-        return;
-      }
-
-      const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-
-      if (indice === "") {
-        banco.push({ linha, partida, tempo });
-      } else {
-        banco[indice] = { linha, partida, tempo };
-      }
-
-      localStorage.setItem('bancoHorario', JSON.stringify(banco));
-
-      resetarFormulario();
-      esconderFormulario();
-      carregar();
+    bancoLinha.forEach(item => {
+      const op = document.createElement('option');
+      op.value = item.linha;
+      op.textContent = descricaoLinha(item.linha);
+      select.appendChild(op);
     });
+  }
 
-    window.onload = () => {
-      carregarLinhas();
-      carregarSelectTempo();
-      carregar();
-    };
-  </script>
+  /* ------------------------------------------
+      CARREGA SELECT TEMPO (5 em 5 até 120)
+     ------------------------------------------ */
+  function carregarSelectTempo() {
+    const select = document.getElementById('tempo');
+    select.innerHTML = "";
+
+    for (let i = 5; i <= 120; i += 5) {
+      const op = document.createElement('option');
+      op.value = i;
+      op.textContent = i + " minutos";
+      select.appendChild(op);
+    }
+  }
+
+  /* ------------------------------------------
+      CARREGAR LISTA
+     ------------------------------------------ */
+  function carregarLista() {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    const lista = document.getElementById('lista');
+
+    lista.innerHTML = "";
+
+    banco.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+      const texto = document.createElement('span');
+      texto.innerHTML =
+        descricaoLinha(item.linha) +
+        "<br>Partida: " + item.horario +
+        " • Tempo: " + item.tempo + " min";
+
+      const btnEditar = document.createElement('button');
+      btnEditar.className = "btn btn-warning btn-sm";
+      btnEditar.textContent = "Editar";
+      btnEditar.onclick = () => editar(index);
+
+      li.appendChild(texto);
+      li.appendChild(btnEditar);
+      lista.appendChild(li);
+    });
+  }
+
+  /* ------------------------------------------
+      EXIBIR / ESCONDER FORMULÁRIO
+     ------------------------------------------ */
+  function mostrarForm() {
+    document.getElementById('formContainer').style.display = "block";
+    document.getElementById('lista').style.display = "none";
+  }
+
+  function esconderForm() {
+    document.getElementById('formContainer').style.display = "none";
+    document.getElementById('lista').style.display = "block";
+  }
+
+  /* ------------------------------------------
+      NOVO HORÁRIO
+     ------------------------------------------ */
+  document.getElementById('btnNovo').onclick = () => {
+    document.getElementById('form').reset();
+    document.getElementById('indiceEdicao').value = "";
+    document.getElementById('btnSalvar').textContent = "Salvar";
+    document.getElementById('btnExcluir').style.display = "none";
+    mostrarForm();
+  };
+
+  /* ------------------------------------------
+      EDITAR
+     ------------------------------------------ */
+  function editar(index) {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    const item = banco[index];
+
+    document.getElementById('linha').value = item.linha;
+    document.getElementById('horario').value = item.horario;
+    document.getElementById('tempo').value = item.tempo;
+
+    document.getElementById('indiceEdicao').value = index;
+    document.getElementById('btnSalvar').textContent = "Atualizar";
+    document.getElementById('btnExcluir').style.display = "block";
+
+    mostrarForm();
+  }
+
+  /* ------------------------------------------
+      EXCLUIR (dentro do formulário)
+     ------------------------------------------ */
+  document.getElementById('btnExcluir').onclick = () => {
+    if (!confirm("Você realmente quer deletar esse item?")) return;
+
+    const indice = document.getElementById('indiceEdicao').value;
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+
+    banco.splice(indice, 1);
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+
+    esconderForm();
+    carregarLista();
+  };
+
+  /* ------------------------------------------
+      CANCELAR
+     ------------------------------------------ */
+  document.getElementById('btnCancelar').onclick = () => {
+    esconderForm();
+  };
+
+  /* ------------------------------------------
+      SALVAR / ATUALIZAR
+     ------------------------------------------ */
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const linha = document.getElementById('linha').value;
+    const horario = document.getElementById('horario').value;
+    const tempo = document.getElementById('tempo').value;
+    const indice = document.getElementById('indiceEdicao').value;
+
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+
+    if (indice === "") {
+      banco.push({ linha, horario, tempo });
+    } else {
+      banco[indice] = { linha, horario, tempo };
+    }
+
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+
+    esconderForm();
+    carregarLista();
+  });
+
+  /* ------------------------------------------
+      LOAD INICIAL
+     ------------------------------------------ */
+  window.onload = () => {
+    carregarSelectLinhas();
+    carregarSelectTempo();
+    carregarLista();
+  };
+</script>
 
 </body>
 </html>
