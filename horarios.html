@@ -1,236 +1,157 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Horários de ônibus</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horários de ônibus</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
-<div class="container py-4" style="max-width: 720px;">
+<div class="container py-4" style="max-width:720px">
 
-  <!-- TÍTULO + BOTÕES -->
-  <div class="d-flex align-items-center mb-3 gap-1">
-    <h4 class="m-0 flex-grow-1">Horários</h4>
-    <button id="btnNovo" class="btn btn-success btn-sm">Novo</button>
-    <button id="btnImport" class="btn btn-primary btn-sm">Import</button>
-    <a href="bus.html" id="btnLinhas" class="btn btn-secondary btn-sm">Linhas</a>
-  </div>
+<div class="d-flex align-items-center gap-1 mb-3">
+  <h4 class="m-0 flex-grow-1">Horários</h4>
+  <button id="btnNovo" class="btn btn-success btn-sm">Novo</button>
+  <button id="btnImport" class="btn btn-primary btn-sm">Import</button>
+  <a href="bus.html" class="btn btn-secondary btn-sm">Linhas</a>
+</div>
 
-  <!-- FILTROS -->
-  <div id="filtros" class="card shadow-sm mb-3">
-    <div class="card-body">
-      <div class="mb-2">
-        <select id="filtroLinha" class="form-control fw-bold"></select>
-      </div>
-
-      <div class="d-flex align-items-center gap-2">
-        <select id="filtroDia" class="form-control w-auto">
-          <option value="seg">Segunda</option>
-          <option value="ter">Terça</option>
-          <option value="qua">Quarta</option>
-          <option value="qui">Quinta</option>
-          <option value="sex">Sexta</option>
-          <option value="sab">Sábado</option>
-          <option value="dom">Domingo</option>
-        </select>
-        <button id="btnHoje" type="button" class="btn btn-outline-secondary btn-sm"></button>
-      </div>
+<div id="filtros" class="card shadow-sm mb-3">
+  <div class="card-body">
+    <select id="filtroLinha" class="form-control fw-bold mb-2"></select>
+    <div class="d-flex gap-2">
+      <select id="filtroDia" class="form-control w-auto">
+        <option value="seg">Seg</option><option value="ter">Ter</option>
+        <option value="qua">Qua</option><option value="qui">Qui</option>
+        <option value="sex">Sex</option><option value="sab">Sab</option>
+        <option value="dom">Dom</option>
+      </select>
+      <button id="btnHoje" class="btn btn-outline-secondary btn-sm"></button>
     </div>
   </div>
+</div>
 
-  <!-- FORM HORÁRIO -->
-  <div id="formContainer" class="card shadow-sm mb-3" style="display:none;">
-    <div class="card-body">
-      <form id="form">
-        <input type="hidden" id="indiceEdicao">
+<div id="formContainer" class="card shadow-sm mb-3" style="display:none">
+<div class="card-body">
+<form id="formHorario">
+<select id="linha" class="form-control mb-2"></select>
+<input id="horario" type="time" class="form-control mb-2">
+<select id="tempo" class="form-control mb-2"></select>
 
-        <div class="mb-3">
-          <label class="form-label">Linha</label>
-          <select id="linha" class="form-control"></select>
-        </div>
+<div class="d-flex flex-wrap gap-3 mb-3">
+<label><input type="checkbox" class="dia" value="seg"> Seg</label>
+<label><input type="checkbox" class="dia" value="ter"> Ter</label>
+<label><input type="checkbox" class="dia" value="qua"> Qua</label>
+<label><input type="checkbox" class="dia" value="qui"> Qui</label>
+<label><input type="checkbox" class="dia" value="sex"> Sex</label>
+<label><input type="checkbox" class="dia" value="sab"> Sab</label>
+<label><input type="checkbox" class="dia" value="dom"> Dom</label>
+</div>
 
-        <div class="mb-3">
-          <label class="form-label">Horário</label>
-          <input id="horario" type="time" step="1" class="form-control">
-        </div>
+<div class="d-flex gap-2">
+<button class="btn btn-primary flex-fill">Salvar</button>
+<button type="button" id="btnCancelar" class="btn btn-secondary flex-fill">Cancelar</button>
+</div>
+</form>
+</div>
+</div>
 
-        <div class="mb-3">
-          <label class="form-label">Tempo estimado</label>
-          <select id="tempo" class="form-control"></select>
-        </div>
+<div id="importContainer" class="card shadow-sm mb-3" style="display:none">
+<div class="card-body">
+<select id="importLinha" class="form-control mb-2"></select>
+<textarea id="importJson" class="form-control mb-3" rows="8"></textarea>
+<div class="d-flex gap-2">
+<button id="btnAtualizarImport" class="btn btn-primary">Atualizar horários</button>
+<button id="btnCancelarImport" class="btn btn-secondary">Cancelar</button>
+</div>
+</div>
+</div>
 
-        <div class="mb-3">
-          <label class="form-label">Dias</label>
-          <div class="d-flex flex-wrap gap-3">
-            <label><input type="checkbox" class="dia" value="seg"> Seg</label>
-            <label><input type="checkbox" class="dia" value="ter"> Ter</label>
-            <label><input type="checkbox" class="dia" value="qua"> Qua</label>
-            <label><input type="checkbox" class="dia" value="qui"> Qui</label>
-            <label><input type="checkbox" class="dia" value="sex"> Sex</label>
-            <label><input type="checkbox" class="dia" value="sab"> Sab</label>
-            <label><input type="checkbox" class="dia" value="dom"> Dom</label>
-          </div>
-        </div>
-
-        <div class="d-flex gap-2">
-          <button class="btn btn-primary flex-fill" type="submit">Salvar</button>
-          <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- FORM IMPORT -->
-  <div id="importContainer" class="card shadow-sm mb-3" style="display:none;">
-    <div class="card-body">
-
-      <h5>Importação de horários</h5>
-
-      <div class="mb-3">
-        <label class="form-label">Linha</label>
-        <select id="importLinha" class="form-control"></select>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">JSON</label>
-        <textarea id="importJson" class="form-control" rows="8"></textarea>
-      </div>
-
-      <div class="d-flex gap-2">
-        <button id="btnAtualizarImport" class="btn btn-primary">Atualizar horários</button>
-        <button id="btnCancelarImport" class="btn btn-secondary">Cancelar</button>
-      </div>
-
-    </div>
-  </div>
-
-  <ul id="lista" class="list-group"></ul>
+<ul id="lista" class="list-group"></ul>
 
 </div>
 
 <script>
-  const diasMap = ['dom','seg','ter','qua','qui','sex','sab'];
-  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const diasMap=['dom','seg','ter','qua','qui','sex','sab'];
+const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-  function descricaoLinha(valor) {
-    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    const item = banco.find(l => l.linha === valor);
-    return item ? `${item.linha} - ${item.origem} → ${item.destino}` : valor;
-  }
+const $=id=>document.getElementById(id);
 
-  function salvarHorarioControlado(novo) {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+function salvarHorarioControlado(novo){
+const banco=JSON.parse(localStorage.getItem('bancoHorario'))||[];
+const i=banco.findIndex(h=>h.linha===novo.linha&&h.horario===novo.horario&&h.dias===novo.dias);
+i>=0?banco[i]=novo:banco.push(novo);
+localStorage.setItem('bancoHorario',JSON.stringify(banco));
+}
 
-    const idx = banco.findIndex(h =>
-      h.linha === novo.linha &&
-      h.horario === novo.horario &&
-      h.dias === novo.dias
-    );
+function carregarLinhas(){
+const banco=JSON.parse(localStorage.getItem('bancoLinha'))||[];
+['filtroLinha','linha','importLinha'].forEach(id=>$(id).innerHTML='');
+banco.forEach(l=>{
+['filtroLinha','linha','importLinha'].forEach(id=>{
+$(id).add(new Option(l.linha,l.linha));
+});
+});
+}
 
-    if (idx >= 0) banco[idx] = novo;
-    else banco.push(novo);
+function carregarTempo(){
+for(let i=5;i<=120;i+=5) $('tempo').add(new Option(i+' min',i));
+}
 
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
-  }
+function atualizarHoje(){
+const d=new Date();
+$('btnHoje').textContent=d.getDate()+' '+meses[d.getMonth()]+' '+d.toTimeString().slice(0,5);
+$('filtroDia').value=diasMap[d.getDay()];
+}
 
-  function carregarSelectLinhas() {
-    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    filtroLinha.innerHTML = '';
-    linha.innerHTML = '';
-    importLinha.innerHTML = '';
+function carregarLista(){
+const banco=JSON.parse(localStorage.getItem('bancoHorario'))||[];
+$('lista').innerHTML='';
+banco.filter(h=>h.linha===$('filtroLinha').value&&h.dias.includes($('filtroDia').value))
+.forEach(h=>{
+$('lista').innerHTML+=`<li class="list-group-item">${h.horario} • ${h.tempo} min • ${h.dias}</li>`;
+});
+}
 
-    banco.forEach(item => {
-      const texto = descricaoLinha(item.linha);
-      filtroLinha.add(new Option(texto, item.linha));
-      linha.add(new Option(texto, item.linha));
-      importLinha.add(new Option(texto, item.linha));
-    });
-  }
+function mostrarPrincipal(){
+['formContainer','importContainer'].forEach(id=>$(id).style.display='none');
+['lista','filtros'].forEach(id=>$(id).style.display='block');
+carregarLista();
+}
 
-  function carregarSelectTempo() {
-    for (let i = 5; i <= 120; i += 5) {
-      tempo.add(new Option(i + ' minutos', i));
-    }
-  }
+$('btnNovo').onclick=()=>{$('formContainer').style.display='block';$('lista').style.display='none';$('filtros').style.display='none';};
+$('btnImport').onclick=()=>{$('importContainer').style.display='block';$('lista').style.display='none';$('filtros').style.display='none';atualizarJsonImport();};
+$('btnCancelar').onclick=$('btnCancelarImport').onclick=mostrarPrincipal;
 
-  function atualizarJsonImport() {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    importJson.value = JSON.stringify(
-      banco.filter(h => h.linha === importLinha.value),
-      null,
-      2
-    );
-  }
+function atualizarJsonImport(){
+const banco=JSON.parse(localStorage.getItem('bancoHorario'))||[];
+$('importJson').value=JSON.stringify(banco.filter(h=>h.linha===$('importLinha').value),null,2);
+}
 
-  btnImport.onclick = () => {
-    importContainer.style.display = 'block';
-    filtros.style.display = lista.style.display = formContainer.style.display = 'none';
-    atualizarJsonImport();
-  };
+$('importLinha').onchange=atualizarJsonImport;
 
-  importLinha.onchange = atualizarJsonImport;
+$('btnAtualizarImport').onclick=()=>{
+let dados;
+try{dados=JSON.parse($('importJson').value);}catch{return alert('JSON inválido');}
+dados.forEach(d=>salvarHorarioControlado(d));
+mostrarPrincipal();
+};
 
-  btnAtualizarImport.onclick = () => {
-    let dados;
-    try {
-      dados = JSON.parse(importJson.value);
-    } catch {
-      alert('JSON inválido');
-      return;
-    }
+$('formHorario').onsubmit=e=>{
+e.preventDefault();
+const dias=[...document.querySelectorAll('.dia:checked')].map(c=>c.value).join(',');
+salvarHorarioControlado({linha:$('linha').value,horario:$('horario').value,tempo:$('tempo').value,dias});
+mostrarPrincipal();
+};
 
-    dados.forEach(d => salvarHorarioControlado(d));
-    alert('Horários atualizados');
-  };
-
-  btnNovo.onclick = () => {
-    form.reset();
-    mostrar(formContainer);
-  };
-
-  btnCancelar.onclick = btnCancelarImport.onclick = () => {
-    mostrar(lista);
-    mostrar(filtros);
-    esconder(formContainer);
-    esconder(importContainer);
-  };
-
-  function mostrar(el){ el.style.display = 'block'; }
-  function esconder(el){ el.style.display = 'none'; }
-
-  form.onsubmit = e => {
-    e.preventDefault();
-    const dias = [...document.querySelectorAll('.dia:checked')].map(c => c.value).join(',');
-    salvarHorarioControlado({
-      linha: linha.value,
-      horario: horario.value,
-      tempo: tempo.value,
-      dias
-    });
-    btnCancelar.click();
-    carregarLista();
-  };
-
-  function carregarLista() {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    lista.innerHTML = '';
-    banco.filter(h => h.linha === filtroLinha.value && h.dias.includes(filtroDia.value))
-      .forEach(h => {
-        lista.innerHTML += `
-          <li class="list-group-item">
-            ${h.horario} • ${h.tempo} min • ${h.dias}
-          </li>`;
-      });
-  }
-
-  window.onload = () => {
-    carregarSelectLinhas();
-    carregarSelectTempo();
-  };
+window.onload=()=>{
+carregarLinhas();
+carregarTempo();
+atualizarHoje();
+carregarLista();
+};
 </script>
 
 </body>
