@@ -95,12 +95,26 @@
     </div>
   </div>
 
-  <!-- FORMULÁRIO IMPORT (WIREFRAME) -->
+  <!-- FORMULÁRIO IMPORT -->
   <div id="importContainer" class="card shadow-sm mb-3" style="display:none;">
     <div class="card-body">
+
       <h5>Importação de horários</h5>
-      <p class="text-muted">Área reservada para futura importação de dados.</p>
-      <button id="btnCancelarImport" type="button" class="btn btn-secondary">Cancelar</button>
+
+      <div class="mb-3">
+        <label class="form-label">Linha</label>
+        <select id="importLinha" class="form-control"></select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">JSON da linha</label>
+        <textarea id="importJson" class="form-control" rows="8" spellcheck="false"></textarea>
+      </div>
+
+      <button id="btnCancelarImport" type="button" class="btn btn-secondary">
+        Cancelar
+      </button>
+
     </div>
   </div>
 
@@ -123,11 +137,13 @@
     const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
     filtroLinha.innerHTML = '';
     linha.innerHTML = '';
+
     banco.forEach(item => {
       const texto = descricaoLinha(item.linha);
       filtroLinha.add(new Option(texto, item.linha));
       linha.add(new Option(texto, item.linha));
     });
+
     if (banco.length) filtroLinha.value = banco[0].linha;
   }
 
@@ -135,6 +151,28 @@
     for (let i = 5; i <= 120; i += 5) {
       tempo.add(new Option(i + ' minutos', i));
     }
+  }
+
+  function carregarSelectImportLinhas() {
+    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    importLinha.innerHTML = '';
+
+    banco.forEach(item => {
+      const texto = descricaoLinha(item.linha);
+      importLinha.add(new Option(texto, item.linha));
+    });
+
+    if (banco.length) {
+      importLinha.value = banco[0].linha;
+      atualizarJsonImport();
+    }
+  }
+
+  function atualizarJsonImport() {
+    const linhaSelecionada = importLinha.value;
+    const bancoHorario = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    const dadosLinha = bancoHorario.filter(h => h.linha === linhaSelecionada);
+    importJson.value = JSON.stringify(dadosLinha, null, 2);
   }
 
   function atualizarBotaoData() {
@@ -200,7 +238,10 @@
     formContainer.style.display = 'none';
     filtros.style.display = 'none';
     lista.style.display = 'none';
+    carregarSelectImportLinhas();
   };
+
+  importLinha.onchange = atualizarJsonImport;
 
   btnCancelar.onclick = esconderTudo;
   btnCancelarImport.onclick = esconderTudo;
