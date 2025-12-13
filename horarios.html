@@ -320,6 +320,43 @@
     carregarSelectTempo();
     setDiaAtual();
   };
+
+function atualizarLinha() {
+  let dados;
+
+  try {
+    dados = JSON.parse(importJson.value);
+  } catch (e) {
+    alert('JSON inválido');
+    return;
+  }
+
+  if (!Array.isArray(dados)) {
+    alert('O JSON deve ser uma lista de horários');
+    return;
+  }
+
+  dados.forEach(item => {
+    if (
+      item.linha &&
+      item.horario &&
+      item.tempo &&
+      item.dias
+    ) {
+      salvarHorario({
+        linha: item.linha,
+        horario: item.horario,
+        tempo: item.tempo,
+        dias: item.dias
+      });
+    }
+  });
+
+  atualizarJsonImport();
+  carregarLista();
+
+  alert('Horários atualizados com sucesso');
+}
 </script>
 
 </body>
