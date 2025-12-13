@@ -13,18 +13,16 @@
 <div class="container py-4" style="max-width: 720px;">
 
   <!-- TÍTULO + BOTÕES -->
-  <div class="d-flex align-items-center mb-3">
-    <h4 class="m-0 me-2">Horários</h4>
-
-    <button id="btnNovo" class="btn btn-success btn-sm me-1">Novo</button>
-    <button id="btnImport" class="btn btn-primary btn-sm me-1">Import</button>
+  <div class="d-flex align-items-center mb-3 gap-1">
+    <h4 class="m-0 flex-grow-1">Horários</h4>
+    <button id="btnNovo" class="btn btn-success btn-sm">Novo</button>
+    <button id="btnImport" class="btn btn-primary btn-sm">Import</button>
     <a href="bus.html" id="btnLinhas" class="btn btn-secondary btn-sm">Linhas</a>
   </div>
 
-  <!-- PAINEL DE FILTROS -->
+  <!-- FILTROS -->
   <div id="filtros" class="card shadow-sm mb-3">
     <div class="card-body">
-
       <div class="mb-2">
         <select id="filtroLinha" class="form-control fw-bold"></select>
       </div>
@@ -39,17 +37,14 @@
           <option value="sab">Sábado</option>
           <option value="dom">Domingo</option>
         </select>
-
         <button id="btnHoje" type="button" class="btn btn-outline-secondary btn-sm"></button>
       </div>
-
     </div>
   </div>
 
-  <!-- FORMULÁRIO NOVO / EDITAR -->
+  <!-- FORM HORÁRIO -->
   <div id="formContainer" class="card shadow-sm mb-3" style="display:none;">
     <div class="card-body">
-
       <form id="form">
         <input type="hidden" id="indiceEdicao">
 
@@ -59,7 +54,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Horário de partida</label>
+          <label class="form-label">Horário</label>
           <input id="horario" type="time" step="1" class="form-control">
         </div>
 
@@ -69,7 +64,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Dias da semana</label>
+          <label class="form-label">Dias</label>
           <div class="d-flex flex-wrap gap-3">
             <label><input type="checkbox" class="dia" value="seg"> Seg</label>
             <label><input type="checkbox" class="dia" value="ter"> Ter</label>
@@ -79,23 +74,17 @@
             <label><input type="checkbox" class="dia" value="sab"> Sab</label>
             <label><input type="checkbox" class="dia" value="dom"> Dom</label>
           </div>
-
-          <button id="btnDiasUteis" type="button" class="btn btn-outline-primary btn-sm mt-2">
-            Dias úteis
-          </button>
         </div>
 
-        <div class="d-flex gap-2 mt-3">
-          <button id="btnSalvar" type="submit" class="btn btn-primary flex-fill">Salvar</button>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary flex-fill" type="submit">Salvar</button>
           <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill">Cancelar</button>
-          <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="display:none;">Excluir</button>
         </div>
-
       </form>
     </div>
   </div>
 
-  <!-- FORMULÁRIO IMPORT -->
+  <!-- FORM IMPORT -->
   <div id="importContainer" class="card shadow-sm mb-3" style="display:none;">
     <div class="card-body">
 
@@ -107,18 +96,18 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label">JSON da linha</label>
-        <textarea id="importJson" class="form-control" rows="8" spellcheck="false"></textarea>
+        <label class="form-label">JSON</label>
+        <textarea id="importJson" class="form-control" rows="8"></textarea>
       </div>
 
-      <button id="btnCancelarImport" type="button" class="btn btn-secondary">
-        Cancelar
-      </button>
+      <div class="d-flex gap-2">
+        <button id="btnAtualizarImport" class="btn btn-primary">Atualizar horários</button>
+        <button id="btnCancelarImport" class="btn btn-secondary">Cancelar</button>
+      </div>
 
     </div>
   </div>
 
-  <!-- LISTA -->
   <ul id="lista" class="list-group"></ul>
 
 </div>
@@ -130,21 +119,36 @@
   function descricaoLinha(valor) {
     const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
     const item = banco.find(l => l.linha === valor);
-    return item ? item.linha + ' - ' + item.origem + ' → ' + item.destino : valor;
+    return item ? `${item.linha} - ${item.origem} → ${item.destino}` : valor;
+  }
+
+  function salvarHorarioControlado(novo) {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+
+    const idx = banco.findIndex(h =>
+      h.linha === novo.linha &&
+      h.horario === novo.horario &&
+      h.dias === novo.dias
+    );
+
+    if (idx >= 0) banco[idx] = novo;
+    else banco.push(novo);
+
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
   }
 
   function carregarSelectLinhas() {
     const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
     filtroLinha.innerHTML = '';
     linha.innerHTML = '';
+    importLinha.innerHTML = '';
 
     banco.forEach(item => {
       const texto = descricaoLinha(item.linha);
       filtroLinha.add(new Option(texto, item.linha));
       linha.add(new Option(texto, item.linha));
+      importLinha.add(new Option(texto, item.linha));
     });
-
-    if (banco.length) filtroLinha.value = banco[0].linha;
   }
 
   function carregarSelectTempo() {
@@ -153,165 +157,80 @@
     }
   }
 
-  function salvarHorario(dados) {
+  function atualizarJsonImport() {
     const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-
-    const idx = banco.findIndex(h =>
-      h.linha === dados.linha &&
-      h.horario === dados.horario &&
-      h.dias === dados.dias
+    importJson.value = JSON.stringify(
+      banco.filter(h => h.linha === importLinha.value),
+      null,
+      2
     );
-
-    if (idx >= 0) {
-      banco[idx] = dados;
-    } else {
-      banco.push(dados);
-    }
-
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
   }
-
-  function atualizarBotaoData() {
-    const agora = new Date();
-    btnHoje.textContent =
-      agora.getDate() + ' ' +
-      meses[agora.getMonth()] + ', ' +
-      agora.toTimeString().slice(0,5);
-  }
-
-  function setDiaAtual() {
-    const hoje = new Date();
-    filtroDia.value = diasMap[hoje.getDay()];
-    atualizarBotaoData();
-    carregarLista();
-  }
-
-  function carregarLista() {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    lista.innerHTML = '';
-
-    banco.forEach((item, index) => {
-      if (item.linha !== filtroLinha.value) return;
-      if (!item.dias.includes(filtroDia.value)) return;
-
-      const li = document.createElement('li');
-      li.className = 'list-group-item d-flex justify-content-between align-items-center';
-      li.innerHTML = `
-        <span>
-          ${descricaoLinha(item.linha)}<br>
-          Partida: ${item.horario} • Tempo: ${item.tempo} min<br>
-          Dias: ${item.dias}
-        </span>
-        <button class="btn btn-warning btn-sm" onclick="editar(${index})">Editar</button>
-      `;
-      lista.appendChild(li);
-    });
-  }
-
-  function mostrarForm() {
-    formContainer.style.display = 'block';
-    importContainer.style.display = 'none';
-    filtros.style.display = 'none';
-    lista.style.display = 'none';
-  }
-
-  function esconderTudo() {
-    formContainer.style.display = 'none';
-    importContainer.style.display = 'none';
-    filtros.style.display = 'block';
-    lista.style.display = 'block';
-  }
-
-  btnNovo.onclick = () => {
-    form.reset();
-    indiceEdicao.value = '';
-    btnExcluir.style.display = 'none';
-    mostrarForm();
-  };
 
   btnImport.onclick = () => {
     importContainer.style.display = 'block';
-    formContainer.style.display = 'none';
-    filtros.style.display = 'none';
-    lista.style.display = 'none';
-    carregarSelectImportLinhas();
+    filtros.style.display = lista.style.display = formContainer.style.display = 'none';
+    atualizarJsonImport();
   };
 
-  btnCancelar.onclick = esconderTudo;
-  btnCancelarImport.onclick = esconderTudo;
+  importLinha.onchange = atualizarJsonImport;
 
-  filtroLinha.onchange = filtroDia.onchange = carregarLista;
-  btnHoje.onclick = setDiaAtual;
+  btnAtualizarImport.onclick = () => {
+    let dados;
+    try {
+      dados = JSON.parse(importJson.value);
+    } catch {
+      alert('JSON inválido');
+      return;
+    }
+
+    dados.forEach(d => salvarHorarioControlado(d));
+    alert('Horários atualizados');
+  };
+
+  btnNovo.onclick = () => {
+    form.reset();
+    mostrar(formContainer);
+  };
+
+  btnCancelar.onclick = btnCancelarImport.onclick = () => {
+    mostrar(lista);
+    mostrar(filtros);
+    esconder(formContainer);
+    esconder(importContainer);
+  };
+
+  function mostrar(el){ el.style.display = 'block'; }
+  function esconder(el){ el.style.display = 'none'; }
 
   form.onsubmit = e => {
     e.preventDefault();
-
-    const dias = [...document.querySelectorAll('.dia:checked')]
-      .map(c => c.value)
-      .join(',');
-
-    const dados = {
+    const dias = [...document.querySelectorAll('.dia:checked')].map(c => c.value).join(',');
+    salvarHorarioControlado({
       linha: linha.value,
       horario: horario.value,
       tempo: tempo.value,
       dias
-    };
-
-    salvarHorario(dados);
-    esconderTudo();
-    carregarLista();
-  };
-
-  function editar(index) {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
-    const item = banco[index];
-
-    linha.value = item.linha;
-    horario.value = item.horario;
-    tempo.value = item.tempo;
-    indiceEdicao.value = index;
-
-    document.querySelectorAll('.dia').forEach(c => c.checked = item.dias.includes(c.value));
-
-    btnExcluir.style.display = 'block';
-    mostrarForm();
-  }
-
-  btnExcluir.onclick = () => {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
-    banco.splice(indiceEdicao.value, 1);
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
-    esconderTudo();
-    carregarLista();
-  };
-
-  function carregarSelectImportLinhas() {
-    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    importLinha.innerHTML = '';
-
-    banco.forEach(item => {
-      importLinha.add(new Option(descricaoLinha(item.linha), item.linha));
     });
+    btnCancelar.click();
+    carregarLista();
+  };
 
-    if (banco.length) {
-      importLinha.value = banco[0].linha;
-      atualizarJsonImport();
-    }
-  }
-
-  function atualizarJsonImport() {
+  function carregarLista() {
     const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    const dados = banco.filter(h => h.linha === importLinha.value);
-    importJson.value = JSON.stringify(dados, null, 2);
+    lista.innerHTML = '';
+    banco.filter(h => h.linha === filtroLinha.value && h.dias.includes(filtroDia.value))
+      .forEach(h => {
+        lista.innerHTML += `
+          <li class="list-group-item">
+            ${h.horario} • ${h.tempo} min • ${h.dias}
+          </li>`;
+      });
   }
-
-  importLinha.onchange = atualizarJsonImport;
 
   window.onload = () => {
     carregarSelectLinhas();
     carregarSelectTempo();
-    setDiaAtual();
-  }; 
+  };
 </script>
 
 </body>
