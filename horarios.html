@@ -153,26 +153,22 @@
     }
   }
 
-  function carregarSelectImportLinhas() {
-    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    importLinha.innerHTML = '';
+  function salvarHorario(dados) {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
 
-    banco.forEach(item => {
-      const texto = descricaoLinha(item.linha);
-      importLinha.add(new Option(texto, item.linha));
-    });
+    const idx = banco.findIndex(h =>
+      h.linha === dados.linha &&
+      h.horario === dados.horario &&
+      h.dias === dados.dias
+    );
 
-    if (banco.length) {
-      importLinha.value = banco[0].linha;
-      atualizarJsonImport();
+    if (idx >= 0) {
+      banco[idx] = dados;
+    } else {
+      banco.push(dados);
     }
-  }
 
-  function atualizarJsonImport() {
-    const linhaSelecionada = importLinha.value;
-    const bancoHorario = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    const dadosLinha = bancoHorario.filter(h => h.linha === linhaSelecionada);
-    importJson.value = JSON.stringify(dadosLinha, null, 2);
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
   }
 
   function atualizarBotaoData() {
@@ -241,8 +237,6 @@
     carregarSelectImportLinhas();
   };
 
-  importLinha.onchange = atualizarJsonImport;
-
   btnCancelar.onclick = esconderTudo;
   btnCancelarImport.onclick = esconderTudo;
 
@@ -251,20 +245,19 @@
 
   form.onsubmit = e => {
     e.preventDefault();
-    const dias = [...document.querySelectorAll('.dia:checked')].map(c => c.value).join(',');
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
 
-    const obj = {
+    const dias = [...document.querySelectorAll('.dia:checked')]
+      .map(c => c.value)
+      .join(',');
+
+    const dados = {
       linha: linha.value,
       horario: horario.value,
       tempo: tempo.value,
       dias
     };
 
-    if (indiceEdicao.value === '') banco.push(obj);
-    else banco[indiceEdicao.value] = obj;
-
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+    salvarHorario(dados);
     esconderTudo();
     carregarLista();
   };
@@ -291,6 +284,28 @@
     esconderTudo();
     carregarLista();
   };
+
+  function carregarSelectImportLinhas() {
+    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    importLinha.innerHTML = '';
+
+    banco.forEach(item => {
+      importLinha.add(new Option(descricaoLinha(item.linha), item.linha));
+    });
+
+    if (banco.length) {
+      importLinha.value = banco[0].linha;
+      atualizarJsonImport();
+    }
+  }
+
+  function atualizarJsonImport() {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    const dados = banco.filter(h => h.linha === importLinha.value);
+    importJson.value = JSON.stringify(dados, null, 2);
+  }
+
+  importLinha.onchange = atualizarJsonImport;
 
   window.onload = () => {
     carregarSelectLinhas();
