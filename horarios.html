@@ -3,267 +3,308 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Horários de ônibus</title>
+  <title>Horários de Ônibus</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
-<div class="container py-4" style="max-width: 720px;">
+<div class="container py-4" style="max-width: 700px;">
 
-  <!-- TÍTULO + BOTÃO NOVO -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="m-0">Horários</h4>
-    <button id="btnNovo" class="btn btn-success btn-sm">Novo horário</button>
-  </div>
+  <h4 class="text-center mb-4">Horários de Ônibus</h4>
 
-  <!-- PAINEL DE FILTROS -->
-  <div id="filtros" class="card shadow-sm mb-3">
+  <!-- ================= FILTROS ================= -->
+  <div id="painelFiltros" class="card shadow-sm mb-3">
     <div class="card-body">
 
-      <!-- FILTRO LINHA -->
-      <div class="mb-2">
-        <select id="filtroLinha" class="form-control fw-bold"></select>
+      <div class="mb-3">
+        <label class="form-label">Linha</label>
+        <select id="filtroLinha" class="form-select"></select>
       </div>
 
-      <!-- FILTRO DIA + BOTÃO DATA -->
-      <div class="d-flex align-items-center gap-2">
-        <select id="filtroDia" class="form-control w-auto">
-          <option value="seg">Segunda</option>
-          <option value="ter">Terça</option>
-          <option value="qua">Quarta</option>
-          <option value="qui">Quinta</option>
-          <option value="sex">Sexta</option>
-          <option value="sab">Sábado</option>
-          <option value="dom">Domingo</option>
-        </select>
+      <div class="d-flex gap-2 align-items-end">
+        <div style="flex:1">
+          <label class="form-label">Dia</label>
+          <select id="filtroDia" class="form-select">
+            <option value="seg">Segunda</option>
+            <option value="ter">Terça</option>
+            <option value="qua">Quarta</option>
+            <option value="qui">Quinta</option>
+            <option value="sex">Sexta</option>
+            <option value="sab">Sábado</option>
+            <option value="dom">Domingo</option>
+          </select>
+        </div>
 
-        <button id="btnHoje" type="button" class="btn btn-outline-secondary btn-sm"></button>
+        <button id="btnHoje" class="btn btn-outline-secondary mb-1"></button>
+        <button id="btnImportExport" class="btn btn-outline-primary mb-1">Importar / Exportar</button>
       </div>
 
     </div>
   </div>
 
-  <!-- FORMULÁRIO -->
-  <div id="formContainer" class="card shadow-sm mb-3" style="display:none;">
-    <div class="card-body">
+  <button id="btnNovo" class="btn btn-success w-100 mb-3">Novo horário</button>
 
-      <form id="form">
-        <input type="hidden" id="indiceEdicao">
-
-        <div class="mb-3">
-          <label class="form-label">Linha</label>
-          <select id="linha" class="form-control"></select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Horário de partida</label>
-          <input id="horario" type="time" step="1" class="form-control">
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Tempo estimado</label>
-          <select id="tempo" class="form-control"></select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Dias da semana</label>
-
-          <div class="d-flex flex-wrap gap-3">
-            <label><input type="checkbox" class="dia" value="seg"> Seg</label>
-            <label><input type="checkbox" class="dia" value="ter"> Ter</label>
-            <label><input type="checkbox" class="dia" value="qua"> Qua</label>
-            <label><input type="checkbox" class="dia" value="qui"> Qui</label>
-            <label><input type="checkbox" class="dia" value="sex"> Sex</label>
-            <label><input type="checkbox" class="dia" value="sab"> Sab</label>
-            <label><input type="checkbox" class="dia" value="dom"> Dom</label>
-          </div>
-
-          <button id="btnDiasUteis" type="button" class="btn btn-outline-primary btn-sm mt-2">
-            Dias úteis
-          </button>
-        </div>
-
-        <div class="d-flex gap-2 mt-3">
-          <button id="btnSalvar" type="submit" class="btn btn-primary flex-fill" style="max-width:33%">Salvar</button>
-          <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill" style="max-width:33%">Cancelar</button>
-          <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="max-width:33%; display:none;">Excluir</button>
-        </div>
-
-      </form>
-    </div>
-  </div>
-
-  <!-- LISTA -->
+  <!-- ================= LISTA ================= -->
   <ul id="lista" class="list-group"></ul>
+
+  <!-- ================= FORMULÁRIO HORÁRIO ================= -->
+  <div id="formHorario" class="card shadow-sm d-none mt-3">
+    <div class="card-body">
+      <h5 class="mb-3">Horário</h5>
+
+      <input type="hidden" id="indiceHorario">
+
+      <div class="mb-3">
+        <label class="form-label">Linha</label>
+        <select id="linhaHorario" class="form-select"></select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Horário de partida</label>
+        <input type="time" step="1" id="hora" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Tempo estimado (min)</label>
+        <select id="tempo" class="form-select"></select>
+      </div>
+
+      <div class="mb-2">Dias da semana</div>
+      <div class="mb-2 d-flex flex-wrap gap-2" id="diasCheckbox"></div>
+
+      <button class="btn btn-sm btn-outline-secondary mb-3" onclick="toggleDiasUteis()">Dias úteis</button>
+
+      <div class="d-flex">
+        <button class="btn btn-primary w-33">Salvar</button>
+        <button class="btn btn-secondary w-33" onclick="cancelarHorario()" type="button">Cancelar</button>
+        <button id="btnDeletar" class="btn btn-danger w-33 d-none" onclick="deletarHorario()" type="button">Deletar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= IMPORT / EXPORT ================= -->
+  <div id="formImportExport" class="card shadow-sm d-none mt-3">
+    <div class="card-body">
+      <h5 class="mb-3">Importar / Exportar</h5>
+
+      <div class="mb-3">
+        <label class="form-label">Linha</label>
+        <input id="linhaImport" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">JSON</label>
+        <textarea id="jsonImport" rows="6" class="form-control"></textarea>
+      </div>
+
+      <div class="d-flex">
+        <button class="btn btn-primary w-33" onclick="aplicarImport()">Atualizar</button>
+        <button class="btn btn-secondary w-33" onclick="fecharImport()">Cancelar</button>
+        <button class="btn btn-outline-secondary w-33" onclick="copiarJSON()">Copiar</button>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
-  const diasMap = ['dom','seg','ter','qua','qui','sex','sab'];
+/* ================= UTIL ================= */
+const dias = [
+  {v:'seg',t:'Seg'}, {v:'ter',t:'Ter'}, {v:'qua',t:'Qua'},
+  {v:'qui',t:'Qui'}, {v:'sex',t:'Sex'},
+  {v:'sab',t:'Sab'}, {v:'dom',t:'Dom'}
+];
+
+function getBanco(nome){ return JSON.parse(localStorage.getItem(nome)) || []; }
+function setBanco(nome,d){ localStorage.setItem(nome,JSON.stringify(d)); }
+
+/* ================= INIT ================= */
+window.onload = () => {
+  carregarLinhas();
+  carregarDias();
+  carregarTempo();
+  setDiaHoje();
+  atualizarBotaoHoje();
+  carregarLista();
+  setInterval(atualizarBotaoHoje,60000);
+};
+
+/* ================= FILTROS ================= */
+function carregarLinhas(){
+  const linhas = getBanco('bancoLinha');
+  const selects = [filtroLinha, linhaHorario];
+
+  selects.forEach(s => {
+    s.innerHTML = '';
+    linhas.forEach(l => {
+      const o = document.createElement('option');
+      o.value = l.linha;
+      o.textContent = `${l.linha} - ${l.origem} → ${l.destino}`;
+      s.appendChild(o);
+    });
+  });
+
+  if(linhas.length){
+    filtroLinha.value = linhas[0].linha;
+    linhaHorario.value = linhas[0].linha;
+  }
+}
+
+function setDiaHoje(){
+  const d = new Date().getDay();
+  const map = ['dom','seg','ter','qua','qui','sex','sab'];
+  filtroDia.value = map[d];
+}
+
+function atualizarBotaoHoje(){
+  const d = new Date();
   const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  btnHoje.textContent = `${d.getDate()} ${meses[d.getMonth()]}, ${d.toLocaleTimeString().slice(0,5)}`;
+}
 
-  function descricaoLinha(valor) {
-    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    const item = banco.find(l => l.linha === valor);
-    return item ? `${item.linha} – ${item.origem} → ${item.destino}` : valor;
+btnHoje.onclick = () => {
+  setDiaHoje();
+  carregarLista();
+};
+
+filtroLinha.onchange = filtroDia.onchange = carregarLista;
+
+/* ================= LISTA ================= */
+function carregarLista(){
+  lista.innerHTML = '';
+  const banco = getBanco('bancoHorario');
+  banco.forEach((h,i)=>{
+    if(h.linha!==filtroLinha.value) return;
+    if(!h.dias.includes(filtroDia.value)) return;
+
+    const li = document.createElement('li');
+    li.className='list-group-item d-flex justify-content-between';
+
+    li.innerHTML = `<span>${h.hora} (${h.tempo} min)</span>
+                    <button class="btn btn-sm btn-warning">Editar</button>`;
+    li.querySelector('button').onclick=()=>editarHorario(i);
+    lista.appendChild(li);
+  });
+}
+
+/* ================= FORM HORÁRIO ================= */
+function carregarDias(){
+  diasCheckbox.innerHTML='';
+  dias.forEach(d=>{
+    diasCheckbox.innerHTML+=`
+      <label>
+        <input type="checkbox" value="${d.v}"> ${d.t}
+      </label>`;
+  });
+}
+
+function carregarTempo(){
+  for(let i=5;i<=120;i+=5){
+    tempo.innerHTML+=`<option value="${i}">${i}</option>`;
   }
+}
 
-  function carregarSelectLinhas() {
-    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    const filtro = document.getElementById('filtroLinha');
-    const select = document.getElementById('linha');
+btnNovo.onclick = ()=>{
+  abrirFormHorario();
+};
 
-    filtro.innerHTML = '';
-    select.innerHTML = '';
+function abrirFormHorario(){
+  painelFiltros.classList.add('d-none');
+  lista.classList.add('d-none');
+  formHorario.classList.remove('d-none');
+  indiceHorario.value='';
+  btnDeletar.classList.add('d-none');
+}
 
-    banco.forEach(item => {
-      const texto = descricaoLinha(item.linha);
-      filtro.add(new Option(texto, item.linha));
-      select.add(new Option(texto, item.linha));
-    });
+function editarHorario(i){
+  const h = getBanco('bancoHorario')[i];
+  abrirFormHorario();
+  indiceHorario.value=i;
+  linhaHorario.value=h.linha;
+  hora.value=h.hora;
+  tempo.value=h.tempo;
+  document.querySelectorAll('#diasCheckbox input').forEach(c=>{
+    c.checked=h.dias.includes(c.value);
+  });
+  btnDeletar.classList.remove('d-none');
+}
 
-    if (banco.length) filtro.value = banco[0].linha;
-  }
+formHorario.querySelector('.btn-primary').onclick = ()=>{
+  const diasSel=[...document.querySelectorAll('#diasCheckbox input:checked')].map(c=>c.value);
+  if(!diasSel.length) return alert('Selecione ao menos um dia');
 
-  function carregarSelectTempo() {
-    const select = document.getElementById('tempo');
-    for (let i = 5; i <= 120; i += 5) {
-      select.add(new Option(i + ' minutos', i));
-    }
-  }
+  const banco=getBanco('bancoHorario');
+  const obj={linha:linhaHorario.value,hora:hora.value,tempo:tempo.value,dias:diasSel.join(',')};
 
-  function setDiaAtual() {
-    const hoje = new Date();
-    document.getElementById('filtroDia').value = diasMap[hoje.getDay()];
-    atualizarBotaoData();
+  if(indiceHorario.value==='') banco.push(obj);
+  else banco[indiceHorario.value]=obj;
+
+  setBanco('bancoHorario',banco);
+  cancelarHorario();
+};
+
+function cancelarHorario(){
+  formHorario.classList.add('d-none');
+  painelFiltros.classList.remove('d-none');
+  lista.classList.remove('d-none');
+  carregarLista();
+}
+
+function deletarHorario(){
+  if(!confirm('Você realmente quer deletar esse item?')) return;
+  const banco=getBanco('bancoHorario');
+  banco.splice(indiceHorario.value,1);
+  setBanco('bancoHorario',banco);
+  cancelarHorario();
+}
+
+function toggleDiasUteis(){
+  document.querySelectorAll('#diasCheckbox input').forEach(c=>{
+    if(['seg','ter','qua','qui','sex'].includes(c.value)) c.checked=!c.checked;
+  });
+}
+
+/* ================= IMPORT / EXPORT ================= */
+btnImportExport.onclick = ()=>{
+  painelFiltros.classList.add('d-none');
+  lista.classList.add('d-none');
+  formImportExport.classList.remove('d-none');
+
+  linhaImport.value=filtroLinha.value;
+  const dados=getBanco('bancoHorario').filter(h=>h.linha===filtroLinha.value);
+  jsonImport.value=JSON.stringify(dados,null,2);
+};
+
+function fecharImport(){
+  formImportExport.classList.add('d-none');
+  painelFiltros.classList.remove('d-none');
+  lista.classList.remove('d-none');
+}
+
+function aplicarImport(){
+  try{
+    const dados=JSON.parse(jsonImport.value);
+    const banco=getBanco('bancoHorario').concat(
+      dados.map(d=>({...d,linha:linhaImport.value}))
+    );
+    setBanco('bancoHorario',banco);
+    fecharImport();
     carregarLista();
+  }catch(e){
+    alert('JSON inválido');
   }
+}
 
-  function atualizarBotaoData() {
-    const agora = new Date();
-    const texto =
-      agora.getDate() + ' ' +
-      meses[agora.getMonth()] + ', ' +
-      agora.toTimeString().slice(0,5);
-
-    document.getElementById('btnHoje').textContent = texto;
-  }
-
-  function carregarLista() {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    const linha = filtroLinha.value;
-    const dia = filtroDia.value;
-    const lista = document.getElementById('lista');
-
-    lista.innerHTML = '';
-
-    banco.forEach((item, index) => {
-      if (item.linha !== linha) return;
-      if (!item.dias || !item.dias.split(',').includes(dia)) return;
-
-      const li = document.createElement('li');
-      li.className = 'list-group-item d-flex justify-content-between align-items-center';
-
-      li.innerHTML = `
-        <span>
-          ${descricaoLinha(item.linha)}<br>
-          Partida: ${item.horario} • Tempo: ${item.tempo} min<br>
-          Dias: ${item.dias}
-        </span>
-        <button class="btn btn-warning btn-sm" onclick="editar(${index})">Editar</button>
-      `;
-
-      lista.appendChild(li);
-    });
-  }
-
-  function mostrarForm() {
-    formContainer.style.display = 'block';
-    lista.style.display = 'none';
-    filtros.style.display = 'none';
-  }
-
-  function esconderForm() {
-    formContainer.style.display = 'none';
-    lista.style.display = 'block';
-    filtros.style.display = 'block';
-  }
-
-  btnHoje.onclick = setDiaAtual;
-  filtroLinha.onchange = filtroDia.onchange = carregarLista;
-
-  btnNovo.onclick = () => {
-    form.reset();
-    indiceEdicao.value = '';
-    btnExcluir.style.display = 'none';
-    btnSalvar.textContent = 'Salvar';
-    document.querySelectorAll('.dia').forEach(c => c.checked = false);
-    mostrarForm();
-  };
-
-  btnCancelar.onclick = esconderForm;
-
-  btnDiasUteis.onclick = () => {
-    const uteis = ['seg','ter','qua','qui','sex'];
-    const ativos = uteis.every(d => document.querySelector(`.dia[value="${d}"]`).checked);
-    document.querySelectorAll('.dia').forEach(c => c.checked = false);
-    if (!ativos) uteis.forEach(d => document.querySelector(`.dia[value="${d}"]`).checked = true);
-  };
-
-  form.onsubmit = e => {
-    e.preventDefault();
-
-    const dias = [...document.querySelectorAll('.dia:checked')].map(c => c.value).join(',');
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-
-    const obj = {
-      linha: linha.value,
-      horario: horario.value,
-      tempo: tempo.value,
-      dias
-    };
-
-    if (indiceEdicao.value === '') banco.push(obj);
-    else banco[indiceEdicao.value] = obj;
-
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
-    esconderForm();
-    carregarLista();
-  };
-
-  function editar(index) {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
-    const item = banco[index];
-
-    linha.value = item.linha;
-    horario.value = item.horario;
-    tempo.value = item.tempo;
-    indiceEdicao.value = index;
-
-    document.querySelectorAll('.dia').forEach(c => c.checked = item.dias.includes(c.value));
-
-    btnExcluir.style.display = 'block';
-    btnSalvar.textContent = 'Atualizar';
-    mostrarForm();
-  }
-
-  btnExcluir.onclick = () => {
-    if (!confirm('Você realmente quer deletar esse item?')) return;
-    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
-    banco.splice(indiceEdicao.value, 1);
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
-    esconderForm();
-    carregarLista();
-  };
-
-  window.onload = () => {
-    carregarSelectLinhas();
-    carregarSelectTempo();
-    setDiaAtual();
-  };
+function copiarJSON(){
+  navigator.clipboard.writeText(jsonImport.value);
+}
 </script>
+
+<style>
+.w-33{width:33.33%}
+</style>
 
 </body>
 </html>
