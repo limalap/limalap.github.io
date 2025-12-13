@@ -352,13 +352,16 @@ function atualizarLinha() {
     }
   });
 
-    atualizarJsonImport();
-
   filtroLinha.value = importLinha.value;
-  setDiaAtual();
 
   alert('Horários atualizados com sucesso');
+
+  esconderTudo();
+  carregarLista();
 }
+
+
+
 </script>
 
 </body>
