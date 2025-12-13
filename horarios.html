@@ -10,7 +10,7 @@
 
 <body class="bg-light">
 
-<div class="container py-4" style="max-width: 700px;">
+<div class="container py-4" style="max-width: 720px;">
 
   <!-- TÍTULO + BOTÃO NOVO -->
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -22,25 +22,24 @@
   <div id="filtros" class="card shadow-sm mb-3">
     <div class="card-body">
 
-      <div class="row g-2">
-        <div class="col-6">
-          <select id="filtroLinha" class="form-control">
-            <option value="">Todas as linhas</option>
-          </select>
-        </div>
+      <!-- FILTRO LINHA -->
+      <div class="mb-2">
+        <select id="filtroLinha" class="form-control fw-bold"></select>
+      </div>
 
-        <div class="col-6">
-          <select id="filtroDia" class="form-control">
-            <option value="">Todos os dias</option>
-            <option value="seg">Segunda</option>
-            <option value="ter">Terça</option>
-            <option value="qua">Quarta</option>
-            <option value="qui">Quinta</option>
-            <option value="sex">Sexta</option>
-            <option value="sab">Sábado</option>
-            <option value="dom">Domingo</option>
-          </select>
-        </div>
+      <!-- FILTRO DIA + BOTÃO DATA -->
+      <div class="d-flex align-items-center gap-2">
+        <select id="filtroDia" class="form-control w-auto">
+          <option value="seg">Segunda</option>
+          <option value="ter">Terça</option>
+          <option value="qua">Quarta</option>
+          <option value="qui">Quinta</option>
+          <option value="sex">Sexta</option>
+          <option value="sab">Sábado</option>
+          <option value="dom">Domingo</option>
+        </select>
+
+        <button id="btnHoje" type="button" class="btn btn-outline-secondary btn-sm"></button>
       </div>
 
     </div>
@@ -102,6 +101,9 @@
 </div>
 
 <script>
+  const diasMap = ['dom','seg','ter','qua','qui','sex','sab'];
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
   function descricaoLinha(valor) {
     const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
     const item = banco.find(l => l.linha === valor);
@@ -110,21 +112,19 @@
 
   function carregarSelectLinhas() {
     const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    const selects = [document.getElementById('linha'), document.getElementById('filtroLinha')];
+    const filtro = document.getElementById('filtroLinha');
+    const select = document.getElementById('linha');
 
-    selects.forEach(sel => sel.innerHTML = sel.id === 'filtroLinha'
-      ? '<option value="">Todas as linhas</option>'
-      : '');
+    filtro.innerHTML = '';
+    select.innerHTML = '';
 
     banco.forEach(item => {
       const texto = descricaoLinha(item.linha);
-
-      const op1 = new Option(texto, item.linha);
-      const op2 = new Option(texto, item.linha);
-
-      document.getElementById('linha').add(op1);
-      document.getElementById('filtroLinha').add(op2);
+      filtro.add(new Option(texto, item.linha));
+      select.add(new Option(texto, item.linha));
     });
+
+    if (banco.length) filtro.value = banco[0].linha;
   }
 
   function carregarSelectTempo() {
@@ -134,20 +134,37 @@
     }
   }
 
+  function setDiaAtual() {
+    const hoje = new Date();
+    document.getElementById('filtroDia').value = diasMap[hoje.getDay()];
+    atualizarBotaoData();
+    carregarLista();
+  }
+
+  function atualizarBotaoData() {
+    const agora = new Date();
+    const texto =
+      agora.getDate() + ' ' +
+      meses[agora.getMonth()] + ', ' +
+      agora.toTimeString().slice(0,5);
+
+    document.getElementById('btnHoje').textContent = texto;
+  }
+
   function carregarLista() {
     const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    const filtroLinha = document.getElementById('filtroLinha').value;
-    const filtroDia = document.getElementById('filtroDia').value;
+    const linha = filtroLinha.value;
+    const dia = filtroDia.value;
     const lista = document.getElementById('lista');
 
     lista.innerHTML = '';
 
     banco.forEach((item, index) => {
-      if (filtroLinha && item.linha !== filtroLinha) return;
-      if (filtroDia && (!item.dias || !item.dias.split(',').includes(filtroDia))) return;
+      if (item.linha !== linha) return;
+      if (!item.dias || !item.dias.split(',').includes(dia)) return;
 
       const li = document.createElement('li');
-      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
 
       li.innerHTML = `
         <span>
@@ -174,6 +191,9 @@
     filtros.style.display = 'block';
   }
 
+  btnHoje.onclick = setDiaAtual;
+  filtroLinha.onchange = filtroDia.onchange = carregarLista;
+
   btnNovo.onclick = () => {
     form.reset();
     indiceEdicao.value = '';
@@ -187,10 +207,8 @@
 
   btnDiasUteis.onclick = () => {
     const uteis = ['seg','ter','qua','qui','sex'];
-    const todos = document.querySelectorAll('.dia');
     const ativos = uteis.every(d => document.querySelector(`.dia[value="${d}"]`).checked);
-
-    todos.forEach(c => c.checked = false);
+    document.querySelectorAll('.dia').forEach(c => c.checked = false);
     if (!ativos) uteis.forEach(d => document.querySelector(`.dia[value="${d}"]`).checked = true);
   };
 
@@ -240,12 +258,10 @@
     carregarLista();
   };
 
-  filtroLinha.onchange = filtroDia.onchange = carregarLista;
-
   window.onload = () => {
     carregarSelectLinhas();
     carregarSelectTempo();
-    carregarLista();
+    setDiaAtual();
   };
 </script>
 
