@@ -12,14 +12,12 @@
 
 <div class="container py-4" style="max-width: 720px;">
 
-  <!-- TÍTULO + BOTÃO NOVO -->
+  <!-- TÍTULO + BOTÕES -->
   <div class="d-flex align-items-center mb-3">
     <h4 class="m-0 me-2">Horários</h4>
 
     <button id="btnNovo" class="btn btn-success btn-sm me-1">Novo</button>
-
     <button id="btnImport" class="btn btn-primary btn-sm me-1">Import</button>
-
     <a href="bus.html" id="btnLinhas" class="btn btn-secondary btn-sm">Linhas</a>
   </div>
 
@@ -27,12 +25,10 @@
   <div id="filtros" class="card shadow-sm mb-3">
     <div class="card-body">
 
-      <!-- FILTRO LINHA -->
       <div class="mb-2">
         <select id="filtroLinha" class="form-control fw-bold"></select>
       </div>
 
-      <!-- FILTRO DIA + BOTÃO DATA -->
       <div class="d-flex align-items-center gap-2">
         <select id="filtroDia" class="form-control w-auto">
           <option value="seg">Segunda</option>
@@ -50,7 +46,7 @@
     </div>
   </div>
 
-  <!-- FORMULÁRIO -->
+  <!-- FORMULÁRIO NOVO / EDITAR -->
   <div id="formContainer" class="card shadow-sm mb-3" style="display:none;">
     <div class="card-body">
 
@@ -74,7 +70,6 @@
 
         <div class="mb-3">
           <label class="form-label">Dias da semana</label>
-
           <div class="d-flex flex-wrap gap-3">
             <label><input type="checkbox" class="dia" value="seg"> Seg</label>
             <label><input type="checkbox" class="dia" value="ter"> Ter</label>
@@ -91,9 +86,9 @@
         </div>
 
         <div class="d-flex gap-2 mt-3">
-          <button id="btnSalvar" type="submit" class="btn btn-primary flex-fill" style="max-width:33%">Salvar</button>
-          <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill" style="max-width:33%">Cancelar</button>
-          <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="max-width:33%; display:none;">Excluir</button>
+          <button id="btnSalvar" type="submit" class="btn btn-primary flex-fill">Salvar</button>
+          <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill">Cancelar</button>
+          <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="display:none;">Excluir</button>
         </div>
 
       </form>
@@ -103,16 +98,9 @@
   <!-- FORMULÁRIO IMPORT (WIREFRAME) -->
   <div id="importContainer" class="card shadow-sm mb-3" style="display:none;">
     <div class="card-body">
-
       <h5>Importação de horários</h5>
-      <p class="text-muted">
-        Área reservada para futura importação de dados.
-      </p>
-
-      <button id="btnCancelarImport" type="button" class="btn btn-secondary">
-        Cancelar
-      </button>
-
+      <p class="text-muted">Área reservada para futura importação de dados.</p>
+      <button id="btnCancelarImport" type="button" class="btn btn-secondary">Cancelar</button>
     </div>
   </div>
 
@@ -128,65 +116,52 @@
   function descricaoLinha(valor) {
     const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
     const item = banco.find(l => l.linha === valor);
-    return item ? `${item.linha} – ${item.origem} → ${item.destino}` : valor;
+    return item ? item.linha + ' - ' + item.origem + ' → ' + item.destino : valor;
   }
 
   function carregarSelectLinhas() {
     const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    const filtro = document.getElementById('filtroLinha');
-    const select = document.getElementById('linha');
-
-    filtro.innerHTML = '';
-    select.innerHTML = '';
-
+    filtroLinha.innerHTML = '';
+    linha.innerHTML = '';
     banco.forEach(item => {
       const texto = descricaoLinha(item.linha);
-      filtro.add(new Option(texto, item.linha));
-      select.add(new Option(texto, item.linha));
+      filtroLinha.add(new Option(texto, item.linha));
+      linha.add(new Option(texto, item.linha));
     });
-
-    if (banco.length) filtro.value = banco[0].linha;
+    if (banco.length) filtroLinha.value = banco[0].linha;
   }
 
   function carregarSelectTempo() {
-    const select = document.getElementById('tempo');
     for (let i = 5; i <= 120; i += 5) {
-      select.add(new Option(i + ' minutos', i));
+      tempo.add(new Option(i + ' minutos', i));
     }
-  }
-
-  function setDiaAtual() {
-    const hoje = new Date();
-    document.getElementById('filtroDia').value = diasMap[hoje.getDay()];
-    atualizarBotaoData();
-    carregarLista();
   }
 
   function atualizarBotaoData() {
     const agora = new Date();
-    const texto =
+    btnHoje.textContent =
       agora.getDate() + ' ' +
       meses[agora.getMonth()] + ', ' +
       agora.toTimeString().slice(0,5);
+  }
 
-    document.getElementById('btnHoje').textContent = texto;
+  function setDiaAtual() {
+    const hoje = new Date();
+    filtroDia.value = diasMap[hoje.getDay()];
+    atualizarBotaoData();
+    carregarLista();
   }
 
   function carregarLista() {
     const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-    const linha = filtroLinha.value;
-    const dia = filtroDia.value;
-    const lista = document.getElementById('lista');
-
     lista.innerHTML = '';
 
     banco.forEach((item, index) => {
-      if (item.linha !== linha) return;
-      if (!item.dias || !item.dias.split(',').includes(dia)) return;
+      if (item.linha !== filtroLinha.value) return;
+      if (!item.dias.includes(filtroDia.value)) return;
 
       const li = document.createElement('li');
       li.className = 'list-group-item d-flex justify-content-between align-items-center';
-
       li.innerHTML = `
         <span>
           ${descricaoLinha(item.linha)}<br>
@@ -195,7 +170,6 @@
         </span>
         <button class="btn btn-warning btn-sm" onclick="editar(${index})">Editar</button>
       `;
-
       lista.appendChild(li);
     });
   }
@@ -203,33 +177,86 @@
   function mostrarForm() {
     formContainer.style.display = 'block';
     importContainer.style.display = 'none';
-    lista.style.display = 'none';
     filtros.style.display = 'none';
+    lista.style.display = 'none';
   }
 
-  function esconderForm() {
+  function esconderTudo() {
     formContainer.style.display = 'none';
-    lista.style.display = 'block';
+    importContainer.style.display = 'none';
     filtros.style.display = 'block';
+    lista.style.display = 'block';
   }
-
-  btnHoje.onclick = setDiaAtual;
-  filtroLinha.onchange = filtroDia.onchange = carregarLista;
 
   btnNovo.onclick = () => {
     form.reset();
     indiceEdicao.value = '';
     btnExcluir.style.display = 'none';
-    btnSalvar.textContent = 'Salvar';
-    document.querySelectorAll('.dia').forEach(c => c.checked = false);
     mostrarForm();
   };
 
-  btnCancelar.onclick = esconderForm;
-
-  btnDiasUteis.onclick = () => {
-    const uteis = ['seg','ter','qua','qui','sex'];
-    const ativos = uteis.every(d => document.querySelector(`.dia[value="${d}"]`).checked);
-    document.querySelectorAll('.dia').forEach(c => c.checked = false);
-    if (!ativos) uteis.forEach(d => document.querySelector(`.dia[value="${d}"]`).checked = true);
+  btnImport.onclick = () => {
+    importContainer.style.display = 'block';
+    formContainer.style.display = 'none';
+    filtros.style.display = 'none';
+    lista.style.display = 'none';
   };
+
+  btnCancelar.onclick = esconderTudo;
+  btnCancelarImport.onclick = esconderTudo;
+
+  filtroLinha.onchange = filtroDia.onchange = carregarLista;
+  btnHoje.onclick = setDiaAtual;
+
+  form.onsubmit = e => {
+    e.preventDefault();
+    const dias = [...document.querySelectorAll('.dia:checked')].map(c => c.value).join(',');
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+
+    const obj = {
+      linha: linha.value,
+      horario: horario.value,
+      tempo: tempo.value,
+      dias
+    };
+
+    if (indiceEdicao.value === '') banco.push(obj);
+    else banco[indiceEdicao.value] = obj;
+
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+    esconderTudo();
+    carregarLista();
+  };
+
+  function editar(index) {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
+    const item = banco[index];
+
+    linha.value = item.linha;
+    horario.value = item.horario;
+    tempo.value = item.tempo;
+    indiceEdicao.value = index;
+
+    document.querySelectorAll('.dia').forEach(c => c.checked = item.dias.includes(c.value));
+
+    btnExcluir.style.display = 'block';
+    mostrarForm();
+  }
+
+  btnExcluir.onclick = () => {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
+    banco.splice(indiceEdicao.value, 1);
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+    esconderTudo();
+    carregarLista();
+  };
+
+  window.onload = () => {
+    carregarSelectLinhas();
+    carregarSelectTempo();
+    setDiaAtual();
+  };
+</script>
+
+</body>
+</html>
