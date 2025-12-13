@@ -4,15 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Horários de Ônibus</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
 <div class="container py-4" style="max-width: 700px;">
+
   <h4 class="text-center mb-4">Horários de Ônibus</h4>
 
-  <!-- FILTROS -->
+  <!-- ================= FILTROS ================= -->
   <div id="painelFiltros" class="card shadow-sm mb-3">
     <div class="card-body">
 
@@ -44,13 +46,14 @@
 
   <button id="btnNovo" class="btn btn-success w-100 mb-3">Novo horário</button>
 
-  <!-- LISTA -->
+  <!-- ================= LISTA ================= -->
   <ul id="lista" class="list-group"></ul>
 
-  <!-- FORM HORÁRIO -->
+  <!-- ================= FORMULÁRIO HORÁRIO ================= -->
   <div id="formHorario" class="card shadow-sm d-none mt-3">
     <div class="card-body">
       <h5 class="mb-3">Horário</h5>
+
       <input type="hidden" id="indiceHorario">
 
       <div class="mb-3">
@@ -59,7 +62,7 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Horário</label>
+        <label class="form-label">Horário de partida</label>
         <input type="time" step="1" id="hora" class="form-control">
       </div>
 
@@ -69,18 +72,19 @@
       </div>
 
       <div class="mb-2">Dias da semana</div>
-      <div id="diasCheckbox" class="d-flex flex-wrap gap-2 mb-2"></div>
+      <div class="mb-2 d-flex flex-wrap gap-2" id="diasCheckbox"></div>
+
       <button class="btn btn-sm btn-outline-secondary mb-3" onclick="toggleDiasUteis()">Dias úteis</button>
 
       <div class="d-flex">
-        <button class="btn btn-primary w-33" onclick="salvarHorario()">Salvar</button>
-        <button class="btn btn-secondary w-33" onclick="cancelarHorario()">Cancelar</button>
-        <button id="btnDeletar" class="btn btn-danger w-33 d-none" onclick="deletarHorario()">Deletar</button>
+        <button class="btn btn-primary w-33">Salvar</button>
+        <button class="btn btn-secondary w-33" onclick="cancelarHorario()" type="button">Cancelar</button>
+        <button id="btnDeletar" class="btn btn-danger w-33 d-none" onclick="deletarHorario()" type="button">Deletar</button>
       </div>
     </div>
   </div>
 
-  <!-- IMPORT / EXPORT -->
+  <!-- ================= IMPORT / EXPORT ================= -->
   <div id="formImportExport" class="card shadow-sm d-none mt-3">
     <div class="card-body">
       <h5 class="mb-3">Importar / Exportar</h5>
@@ -102,26 +106,22 @@
       </div>
     </div>
   </div>
+
 </div>
 
-<style>
-.w-33 { width: 33.33%; }
-</style>
-
 <script>
-const DIAS = ['seg','ter','qua','qui','sex','sab','dom'];
+/* ================= UTIL ================= */
+const dias = [
+  {v:'seg',t:'Seg'}, {v:'ter',t:'Ter'}, {v:'qua',t:'Qua'},
+  {v:'qui',t:'Qui'}, {v:'sex',t:'Sex'},
+  {v:'sab',t:'Sab'}, {v:'dom',t:'Dom'}
+];
 
-function getBanco(n){ return JSON.parse(localStorage.getItem(n)) || []; }
-function setBanco(n,v){ localStorage.setItem(n,JSON.stringify(v)); }
+function getBanco(nome){ return JSON.parse(localStorage.getItem(nome)) || []; }
+function setBanco(nome,d){ localStorage.setItem(nome,JSON.stringify(d)); }
 
-function normalizarHorario(h){
-  if(!h.dias) h.dias = DIAS.join(',');
-  if(Array.isArray(h.dias)) h.dias = h.dias.join(',');
-  return h;
-}
-
+/* ================= INIT ================= */
 window.onload = () => {
-  setBanco('bancoHorario', getBanco('bancoHorario').map(normalizarHorario));
   carregarLinhas();
   carregarDias();
   carregarTempo();
@@ -131,63 +131,180 @@ window.onload = () => {
   setInterval(atualizarBotaoHoje,60000);
 };
 
+/* ================= FILTROS ================= */
 function carregarLinhas(){
   const linhas = getBanco('bancoLinha');
-  [filtroLinha, linhaHorario].forEach(sel=>{
-    sel.innerHTML='';
-    linhas.forEach(l=>{
-      const o=document.createElement('option');
-      o.value=l.linha;
-      o.textContent=`${l.linha} - ${l.origem} → ${l.destino}`;
-      sel.appendChild(o);
+  const selects = [filtroLinha, linhaHorario];
+
+  selects.forEach(s => {
+    s.innerHTML = '';
+    linhas.forEach(l => {
+      const o = document.createElement('option');
+      o.value = l.linha;
+      o.textContent = `${l.linha} - ${l.origem} → ${l.destino}`;
+      s.appendChild(o);
     });
   });
-  if(linhas.length) filtroLinha.value = linhas[0].linha;
+
+  if(linhas.length){
+    filtroLinha.value = linhas[0].linha;
+    linhaHorario.value = linhas[0].linha;
+  }
 }
 
 function setDiaHoje(){
-  const d=new Date().getDay();
-  filtroDia.value = DIAS[d===0?6:d-1];
+  const d = new Date().getDay();
+  const map = ['dom','seg','ter','qua','qui','sex','sab'];
+  filtroDia.value = map[d];
 }
 
 function atualizarBotaoHoje(){
-  const d=new Date();
-  const m=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  btnHoje.textContent=`${d.getDate()} ${m[d.getMonth()]}, ${d.toLocaleTimeString().slice(0,5)}`;
+  const d = new Date();
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  btnHoje.textContent = `${d.getDate()} ${meses[d.getMonth()]}, ${d.toLocaleTimeString().slice(0,5)}`;
 }
 
-btnHoje.onclick=()=>{ setDiaHoje(); carregarLista(); };
-filtroLinha.onchange=filtroDia.onchange=carregarLista;
+btnHoje.onclick = () => {
+  setDiaHoje();
+  carregarLista();
+};
 
+filtroLinha.onchange = filtroDia.onchange = carregarLista;
+
+/* ================= LISTA ================= */
 function carregarLista(){
-  lista.innerHTML='';
-  const banco=getBanco('bancoHorario');
-
+  lista.innerHTML = '';
+  const banco = getBanco('bancoHorario');
   banco.forEach((h,i)=>{
-    h=normalizarHorario(h);
     if(h.linha!==filtroLinha.value) return;
-    if(h.dias && !h.dias.includes(filtroDia.value)) return;
+    if(!h.dias.includes(filtroDia.value)) return;
 
-    const li=document.createElement('li');
-    li.className='list-group-item';
+    const li = document.createElement('li');
+    li.className='list-group-item d-flex justify-content-between';
 
-    li.innerHTML = `
-      <div><strong>Linha:</strong> ${h.linha}</div>
-      <div><strong>Horário:</strong> ${h.hora}</div>
-      <div><strong>Tempo:</strong> ${h.tempo} min</div>
-      <div><strong>Dias:</strong> ${h.dias}</div>
-      <div class="mt-2 text-end">
-        <button class="btn btn-sm btn-warning">Editar</button>
-      </div>
-    `;
-
+    li.innerHTML = `<span>${h.hora} (${h.tempo} min)</span>
+                    <button class="btn btn-sm btn-warning">Editar</button>`;
     li.querySelector('button').onclick=()=>editarHorario(i);
     lista.appendChild(li);
   });
 }
 
-/* restante do código permanece igual */
+/* ================= FORM HORÁRIO ================= */
+function carregarDias(){
+  diasCheckbox.innerHTML='';
+  dias.forEach(d=>{
+    diasCheckbox.innerHTML+=`
+      <label>
+        <input type="checkbox" value="${d.v}"> ${d.t}
+      </label>`;
+  });
+}
+
+function carregarTempo(){
+  for(let i=5;i<=120;i+=5){
+    tempo.innerHTML+=`<option value="${i}">${i}</option>`;
+  }
+}
+
+btnNovo.onclick = ()=>{
+  abrirFormHorario();
+};
+
+function abrirFormHorario(){
+  painelFiltros.classList.add('d-none');
+  lista.classList.add('d-none');
+  formHorario.classList.remove('d-none');
+  indiceHorario.value='';
+  btnDeletar.classList.add('d-none');
+}
+
+function editarHorario(i){
+  const h = getBanco('bancoHorario')[i];
+  abrirFormHorario();
+  indiceHorario.value=i;
+  linhaHorario.value=h.linha;
+  hora.value=h.hora;
+  tempo.value=h.tempo;
+  document.querySelectorAll('#diasCheckbox input').forEach(c=>{
+    c.checked=h.dias.includes(c.value);
+  });
+  btnDeletar.classList.remove('d-none');
+}
+
+formHorario.querySelector('.btn-primary').onclick = ()=>{
+  const diasSel=[...document.querySelectorAll('#diasCheckbox input:checked')].map(c=>c.value);
+  if(!diasSel.length) return alert('Selecione ao menos um dia');
+
+  const banco=getBanco('bancoHorario');
+  const obj={linha:linhaHorario.value,hora:hora.value,tempo:tempo.value,dias:diasSel.join(',')};
+
+  if(indiceHorario.value==='') banco.push(obj);
+  else banco[indiceHorario.value]=obj;
+
+  setBanco('bancoHorario',banco);
+  cancelarHorario();
+};
+
+function cancelarHorario(){
+  formHorario.classList.add('d-none');
+  painelFiltros.classList.remove('d-none');
+  lista.classList.remove('d-none');
+  carregarLista();
+}
+
+function deletarHorario(){
+  if(!confirm('Você realmente quer deletar esse item?')) return;
+  const banco=getBanco('bancoHorario');
+  banco.splice(indiceHorario.value,1);
+  setBanco('bancoHorario',banco);
+  cancelarHorario();
+}
+
+function toggleDiasUteis(){
+  document.querySelectorAll('#diasCheckbox input').forEach(c=>{
+    if(['seg','ter','qua','qui','sex'].includes(c.value)) c.checked=!c.checked;
+  });
+}
+
+/* ================= IMPORT / EXPORT ================= */
+btnImportExport.onclick = ()=>{
+  painelFiltros.classList.add('d-none');
+  lista.classList.add('d-none');
+  formImportExport.classList.remove('d-none');
+
+  linhaImport.value=filtroLinha.value;
+  const dados=getBanco('bancoHorario').filter(h=>h.linha===filtroLinha.value);
+  jsonImport.value=JSON.stringify(dados,null,2);
+};
+
+function fecharImport(){
+  formImportExport.classList.add('d-none');
+  painelFiltros.classList.remove('d-none');
+  lista.classList.remove('d-none');
+}
+
+function aplicarImport(){
+  try{
+    const dados=JSON.parse(jsonImport.value);
+    const banco=getBanco('bancoHorario').concat(
+      dados.map(d=>({...d,linha:linhaImport.value}))
+    );
+    setBanco('bancoHorario',banco);
+    fecharImport();
+    carregarLista();
+  }catch(e){
+    alert('JSON inválido');
+  }
+}
+
+function copiarJSON(){
+  navigator.clipboard.writeText(jsonImport.value);
+}
 </script>
+
+<style>
+.w-33{width:33.33%}
+</style>
 
 </body>
 </html>
