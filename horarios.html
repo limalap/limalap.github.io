@@ -10,287 +10,237 @@
 
 <body class="bg-light">
 
-  <div class="container py-4" style="max-width: 600px;">
+<div class="container py-4" style="max-width: 700px;">
 
-    <!-- TÍTULO + BOTÃO NOVO -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4 class="m-0">Horários</h4>
-      <button id="btnNovo" class="btn btn-success btn-sm">Novo horário</button>
-    </div>
-
-    <!-- FORMULÁRIO -->
-    <div id="formContainer" class="card shadow-sm mb-3" style="display: none;">
-      <div class="card-body">
-
-        <form id="form">
-          <input type="hidden" id="indiceEdicao">
-
-          <!-- SELECT DE LINHAS -->
-          <div class="mb-3">
-            <label class="form-label">Linha</label>
-            <select id="linha" class="form-control"></select>
-          </div>
-
-          <!-- HORÁRIO -->
-          <div class="mb-3">
-            <label class="form-label">Horário de partida</label>
-            <input id="horario" type="time" step="1" class="form-control">
-          </div>
-
-          <!-- TEMPO ESTIMADO -->
-          <div class="mb-3">
-            <label class="form-label">Tempo estimado (minutos)</label>
-            <select id="tempo" class="form-control"></select>
-          </div>
-
-          <!-- DIAS DA SEMANA -->
-          <div class="mb-3">
-            <label class="form-label">Dias da semana</label>
-
-            <div class="d-flex flex-wrap gap-3">
-
-              <label><input type="checkbox" class="dia" value="seg"> Seg</label>
-              <label><input type="checkbox" class="dia" value="ter"> Ter</label>
-              <label><input type="checkbox" class="dia" value="qua"> Qua</label>
-              <label><input type="checkbox" class="dia" value="qui"> Qui</label>
-              <label><input type="checkbox" class="dia" value="sex"> Sex</label>
-              <label><input type="checkbox" class="dia" value="sab"> Sab</label>
-              <label><input type="checkbox" class="dia" value="dom"> Dom</label>
-
-            </div>
-
-            <button id="btnDiasUteis" type="button" class="btn btn-outline-primary btn-sm mt-2">
-              Dias úteis
-            </button>
-
-          </div>
-
-          <!-- BOTÕES 1/3 -->
-          <div class="d-flex gap-2 mt-3">
-
-            <button id="btnSalvar" type="submit" class="btn btn-primary flex-fill" style="max-width: 33%">Salvar</button>
-
-            <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill" style="max-width: 33%">Cancelar</button>
-
-            <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="max-width: 33%; display: none;">Excluir</button>
-
-          </div>
-
-        </form>
-      </div>
-    </div>
-
-    <!-- LISTA -->
-    <ul id="lista" class="list-group"></ul>
-
+  <!-- TÍTULO + BOTÃO NOVO -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="m-0">Horários</h4>
+    <button id="btnNovo" class="btn btn-success btn-sm">Novo horário</button>
   </div>
+
+  <!-- PAINEL DE FILTROS -->
+  <div id="filtros" class="card shadow-sm mb-3">
+    <div class="card-body">
+
+      <div class="row g-2">
+        <div class="col-6">
+          <select id="filtroLinha" class="form-control">
+            <option value="">Todas as linhas</option>
+          </select>
+        </div>
+
+        <div class="col-6">
+          <select id="filtroDia" class="form-control">
+            <option value="">Todos os dias</option>
+            <option value="seg">Segunda</option>
+            <option value="ter">Terça</option>
+            <option value="qua">Quarta</option>
+            <option value="qui">Quinta</option>
+            <option value="sex">Sexta</option>
+            <option value="sab">Sábado</option>
+            <option value="dom">Domingo</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO -->
+  <div id="formContainer" class="card shadow-sm mb-3" style="display:none;">
+    <div class="card-body">
+
+      <form id="form">
+        <input type="hidden" id="indiceEdicao">
+
+        <div class="mb-3">
+          <label class="form-label">Linha</label>
+          <select id="linha" class="form-control"></select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Horário de partida</label>
+          <input id="horario" type="time" step="1" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Tempo estimado</label>
+          <select id="tempo" class="form-control"></select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Dias da semana</label>
+
+          <div class="d-flex flex-wrap gap-3">
+            <label><input type="checkbox" class="dia" value="seg"> Seg</label>
+            <label><input type="checkbox" class="dia" value="ter"> Ter</label>
+            <label><input type="checkbox" class="dia" value="qua"> Qua</label>
+            <label><input type="checkbox" class="dia" value="qui"> Qui</label>
+            <label><input type="checkbox" class="dia" value="sex"> Sex</label>
+            <label><input type="checkbox" class="dia" value="sab"> Sab</label>
+            <label><input type="checkbox" class="dia" value="dom"> Dom</label>
+          </div>
+
+          <button id="btnDiasUteis" type="button" class="btn btn-outline-primary btn-sm mt-2">
+            Dias úteis
+          </button>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+          <button id="btnSalvar" type="submit" class="btn btn-primary flex-fill" style="max-width:33%">Salvar</button>
+          <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill" style="max-width:33%">Cancelar</button>
+          <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="max-width:33%; display:none;">Excluir</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- LISTA -->
+  <ul id="lista" class="list-group"></ul>
+
+</div>
 
 <script>
   function descricaoLinha(valor) {
-    const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
-    const item = bancoLinha.find(l => l.linha === valor);
-    if (!item) return valor;
-    return item.linha + " – " + item.origem + " → " + item.destino;
+    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    const item = banco.find(l => l.linha === valor);
+    return item ? `${item.linha} – ${item.origem} → ${item.destino}` : valor;
   }
 
   function carregarSelectLinhas() {
-    const select = document.getElementById('linha');
-    select.innerHTML = "";
+    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    const selects = [document.getElementById('linha'), document.getElementById('filtroLinha')];
 
-    const bancoLinha = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    selects.forEach(sel => sel.innerHTML = sel.id === 'filtroLinha'
+      ? '<option value="">Todas as linhas</option>'
+      : '');
 
-    bancoLinha.forEach(item => {
-      const op = document.createElement('option');
-      op.value = item.linha;
-      op.textContent = descricaoLinha(item.linha);
-      select.appendChild(op);
+    banco.forEach(item => {
+      const texto = descricaoLinha(item.linha);
+
+      const op1 = new Option(texto, item.linha);
+      const op2 = new Option(texto, item.linha);
+
+      document.getElementById('linha').add(op1);
+      document.getElementById('filtroLinha').add(op2);
     });
   }
 
   function carregarSelectTempo() {
     const select = document.getElementById('tempo');
-    select.innerHTML = "";
-
     for (let i = 5; i <= 120; i += 5) {
-      const op = document.createElement('option');
-      op.value = i;
-      op.textContent = i + " minutos";
-      select.appendChild(op);
+      select.add(new Option(i + ' minutos', i));
     }
   }
 
   function carregarLista() {
     const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    const filtroLinha = document.getElementById('filtroLinha').value;
+    const filtroDia = document.getElementById('filtroDia').value;
     const lista = document.getElementById('lista');
 
-    lista.innerHTML = "";
+    lista.innerHTML = '';
 
     banco.forEach((item, index) => {
+      if (filtroLinha && item.linha !== filtroLinha) return;
+      if (filtroDia && (!item.dias || !item.dias.split(',').includes(filtroDia))) return;
+
       const li = document.createElement('li');
       li.className = "list-group-item d-flex justify-content-between align-items-center";
 
-      // Compatibilidade: aceitar tanto 'horario' quanto 'partida'
-      const horario = item.horario || item.partida || "";
+      li.innerHTML = `
+        <span>
+          ${descricaoLinha(item.linha)}<br>
+          Partida: ${item.horario} • Tempo: ${item.tempo} min<br>
+          Dias: ${item.dias}
+        </span>
+        <button class="btn btn-warning btn-sm" onclick="editar(${index})">Editar</button>
+      `;
 
-      // dias pode ser undefined em registros antigos
-      const diasRaw = item.dias || "";
-      const diasFormatados = diasRaw ? diasRaw.replace(/,/g, ", ") : "";
-
-      const texto = document.createElement('span');
-      texto.innerHTML =
-        descricaoLinha(item.linha) +
-        "<br>Partida: " + (horario || "-") +
-        " • Tempo: " + (item.tempo || "-") + " min" +
-        (diasFormatados ? ("<br>Dias: " + diasFormatados) : "");
-
-      const btnEditar = document.createElement('button');
-      btnEditar.className = "btn btn-warning btn-sm";
-      btnEditar.textContent = "Editar";
-      btnEditar.onclick = () => editar(index);
-
-      li.appendChild(texto);
-      li.appendChild(btnEditar);
       lista.appendChild(li);
     });
   }
 
   function mostrarForm() {
-    document.getElementById('formContainer').style.display = "block";
-    document.getElementById('lista').style.display = "none";
+    formContainer.style.display = 'block';
+    lista.style.display = 'none';
+    filtros.style.display = 'none';
   }
 
   function esconderForm() {
-    document.getElementById('formContainer').style.display = "none";
-    document.getElementById('lista').style.display = "block";
+    formContainer.style.display = 'none';
+    lista.style.display = 'block';
+    filtros.style.display = 'block';
   }
 
-  // marcar / desmarcar dias úteis (toggle)
-  document.getElementById('btnDiasUteis').onclick = () => {
-    const dias = document.querySelectorAll('.dia');
-
-    const seg = document.querySelector('.dia[value="seg"]');
-    const ter = document.querySelector('.dia[value="ter"]');
-    const qua = document.querySelector('.dia[value="qua"]');
-    const qui = document.querySelector('.dia[value="qui"]');
-    const sex = document.querySelector('.dia[value="sex"]');
-
-    const todosMarcados = seg.checked && ter.checked && qua.checked && qui.checked && sex.checked;
-
-    // limpar todos
-    dias.forEach(c => c.checked = false);
-
-    if (!todosMarcados) {
-      seg.checked = true;
-      ter.checked = true;
-      qua.checked = true;
-      qui.checked = true;
-      sex.checked = true;
-    }
+  btnNovo.onclick = () => {
+    form.reset();
+    indiceEdicao.value = '';
+    btnExcluir.style.display = 'none';
+    btnSalvar.textContent = 'Salvar';
+    document.querySelectorAll('.dia').forEach(c => c.checked = false);
+    mostrarForm();
   };
 
-  document.getElementById('btnNovo').onclick = () => {
-    document.getElementById('form').reset();
-    document.getElementById('indiceEdicao').value = "";
-    document.getElementById('btnSalvar').textContent = "Salvar";
-    document.getElementById('btnExcluir').style.display = "none";
+  btnCancelar.onclick = esconderForm;
 
-    document.querySelectorAll('.dia').forEach(c => c.checked = false);
+  btnDiasUteis.onclick = () => {
+    const uteis = ['seg','ter','qua','qui','sex'];
+    const todos = document.querySelectorAll('.dia');
+    const ativos = uteis.every(d => document.querySelector(`.dia[value="${d}"]`).checked);
 
-    mostrarForm();
+    todos.forEach(c => c.checked = false);
+    if (!ativos) uteis.forEach(d => document.querySelector(`.dia[value="${d}"]`).checked = true);
+  };
+
+  form.onsubmit = e => {
+    e.preventDefault();
+
+    const dias = [...document.querySelectorAll('.dia:checked')].map(c => c.value).join(',');
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+
+    const obj = {
+      linha: linha.value,
+      horario: horario.value,
+      tempo: tempo.value,
+      dias
+    };
+
+    if (indiceEdicao.value === '') banco.push(obj);
+    else banco[indiceEdicao.value] = obj;
+
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+    esconderForm();
+    carregarLista();
   };
 
   function editar(index) {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
     const item = banco[index];
-    if (!item) return;
 
-    document.getElementById('linha').value = item.linha || "";
-    // suportar 'horario' ou 'partida'
-    document.getElementById('horario').value = item.horario || item.partida || "";
-    document.getElementById('tempo').value = item.tempo || "";
+    linha.value = item.linha;
+    horario.value = item.horario;
+    tempo.value = item.tempo;
+    indiceEdicao.value = index;
 
-    // preencher dias com segurança
-    const diasRaw = item.dias || "";
-    const diasSelecionados = diasRaw ? diasRaw.split(",") : [];
-    document.querySelectorAll('.dia').forEach(c => {
-      c.checked = diasSelecionados.includes(c.value);
-    });
+    document.querySelectorAll('.dia').forEach(c => c.checked = item.dias.includes(c.value));
 
-    document.getElementById('indiceEdicao').value = index;
-    document.getElementById('btnSalvar').textContent = "Atualizar";
-    document.getElementById('btnExcluir').style.display = "block";
-
+    btnExcluir.style.display = 'block';
+    btnSalvar.textContent = 'Atualizar';
     mostrarForm();
   }
 
-  document.getElementById('btnExcluir').onclick = () => {
-    if (!confirm("Você realmente quer deletar esse item?")) return;
-
-    const indice = document.getElementById('indiceEdicao').value;
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-
-    // proteção: se índice inválido, não fazer nada
-    if (indice === "" || isNaN(indice)) {
-      alert("Índice inválido para exclusão.");
-      return;
-    }
-
-    banco.splice(Number(indice), 1);
+  btnExcluir.onclick = () => {
+    if (!confirm('Você realmente quer deletar esse item?')) return;
+    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
+    banco.splice(indiceEdicao.value, 1);
     localStorage.setItem('bancoHorario', JSON.stringify(banco));
-
     esconderForm();
     carregarLista();
   };
 
-  document.getElementById('btnCancelar').onclick = () => {
-    // resetar campos e esconder
-    document.getElementById('form').reset();
-    document.querySelectorAll('.dia').forEach(c => c.checked = false);
-    document.getElementById('indiceEdicao').value = "";
-    document.getElementById('btnExcluir').style.display = "none";
-    document.getElementById('btnSalvar').textContent = "Salvar";
-
-    esconderForm();
-  };
-
-  document.getElementById('form').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const linha = document.getElementById('linha').value;
-    const horario = document.getElementById('horario').value;
-    const tempo = document.getElementById('tempo').value;
-    const indice = document.getElementById('indiceEdicao').value;
-
-    // coletar dias em string separada por vírgula
-    const dias = Array.from(document.querySelectorAll('.dia:checked'))
-      .map(c => c.value)
-      .join(",");
-
-    if (!linha || !horario || !tempo) {
-      alert("Preencha todos os campos antes de salvar.");
-      return;
-    }
-
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-
-    if (indice === "" || indice === null) {
-      banco.push({ linha, horario, tempo, dias });
-    } else {
-      banco[Number(indice)] = { linha, horario, tempo, dias };
-    }
-
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
-
-    // limpar e fechar
-    document.getElementById('form').reset();
-    document.querySelectorAll('.dia').forEach(c => c.checked = false);
-    document.getElementById('indiceEdicao').value = "";
-    document.getElementById('btnExcluir').style.display = "none";
-    document.getElementById('btnSalvar').textContent = "Salvar";
-
-    esconderForm();
-    carregarLista();
-  });
+  filtroLinha.onchange = filtroDia.onchange = carregarLista;
 
   window.onload = () => {
     carregarSelectLinhas();
