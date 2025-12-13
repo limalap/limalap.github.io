@@ -13,11 +13,14 @@
 <div class="container py-4" style="max-width: 720px;">
 
   <!-- TÍTULO + BOTÃO NOVO -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="m-0">Horários</h4>
-    <button id="btnNovo" class="btn btn-success btn-sm">Novo</button>
-     <button id="btnImport" class="btn btn-success btn-sm">Import</button>
-     <button id="btnLinhas" class="btn btn-success btn-sm">Linhas</button>
+  <div class="d-flex align-items-center mb-3">
+    <h4 class="m-0 me-2">Horários</h4>
+
+    <button id="btnNovo" class="btn btn-success btn-sm me-1">Novo</button>
+
+    <button id="btnImport" class="btn btn-primary btn-sm me-1">Import</button>
+
+    <a href="bus.html" id="btnLinhas" class="btn btn-secondary btn-sm">Linhas</a>
   </div>
 
   <!-- PAINEL DE FILTROS -->
@@ -94,6 +97,22 @@
         </div>
 
       </form>
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO IMPORT (WIREFRAME) -->
+  <div id="importContainer" class="card shadow-sm mb-3" style="display:none;">
+    <div class="card-body">
+
+      <h5>Importação de horários</h5>
+      <p class="text-muted">
+        Área reservada para futura importação de dados.
+      </p>
+
+      <button id="btnCancelarImport" type="button" class="btn btn-secondary">
+        Cancelar
+      </button>
+
     </div>
   </div>
 
@@ -183,6 +202,7 @@
 
   function mostrarForm() {
     formContainer.style.display = 'block';
+    importContainer.style.display = 'none';
     lista.style.display = 'none';
     filtros.style.display = 'none';
   }
@@ -213,59 +233,3 @@
     document.querySelectorAll('.dia').forEach(c => c.checked = false);
     if (!ativos) uteis.forEach(d => document.querySelector(`.dia[value="${d}"]`).checked = true);
   };
-
-  form.onsubmit = e => {
-    e.preventDefault();
-
-    const dias = [...document.querySelectorAll('.dia:checked')].map(c => c.value).join(',');
-    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
-
-    const obj = {
-      linha: linha.value,
-      horario: horario.value,
-      tempo: tempo.value,
-      dias
-    };
-
-    if (indiceEdicao.value === '') banco.push(obj);
-    else banco[indiceEdicao.value] = obj;
-
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
-    esconderForm();
-    carregarLista();
-  };
-
-  function editar(index) {
-    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
-    const item = banco[index];
-
-    linha.value = item.linha;
-    horario.value = item.horario;
-    tempo.value = item.tempo;
-    indiceEdicao.value = index;
-
-    document.querySelectorAll('.dia').forEach(c => c.checked = item.dias.includes(c.value));
-
-    btnExcluir.style.display = 'block';
-    btnSalvar.textContent = 'Atualizar';
-    mostrarForm();
-  }
-
-  btnExcluir.onclick = () => {
-    if (!confirm('Você realmente quer deletar esse item?')) return;
-    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
-    banco.splice(indiceEdicao.value, 1);
-    localStorage.setItem('bancoHorario', JSON.stringify(banco));
-    esconderForm();
-    carregarLista();
-  };
-
-  window.onload = () => {
-    carregarSelectLinhas();
-    carregarSelectTempo();
-    setDiaAtual();
-  };
-</script>
-
-</body>
-</html>
