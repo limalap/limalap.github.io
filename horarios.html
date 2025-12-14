@@ -119,6 +119,14 @@
 >
   Atualizar horários
 </button>
+<button
+  id="btnCopiarImport"
+  type="button"
+  class="btn btn-outline-secondary me-2"
+  onclick="copiarJsonImport()"
+>
+  Copiar JSON
+</button>
  <button id="btnCancelarImport" type="button" class="btn btn-secondary">
         Cancelar
       </button>
@@ -360,6 +368,12 @@ function atualizarLinha() {
   carregarLista();
 }
 
+function copiarJsonImport() {
+  importJson.select();
+  importJson.setSelectionRange(0, importJson.value.length);
+  document.execCommand('copy');
+  alert('JSON copiado para a área de transferência');
+}
 
 
 </script>
