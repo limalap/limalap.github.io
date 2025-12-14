@@ -9,10 +9,11 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
+
   <style>
-    html, body {
-      touch-action: manipulation;
-    }
+    html, body { touch-action: manipulation; }
+    #cameraModal video { width: 100%; }
   </style>
 </head>
 
@@ -20,284 +21,139 @@
 
 <div class="container mt-3">
 
-  <!-- PAINEL SUPERIOR -->
+  <!-- FILTROS -->
   <div class="card mb-3">
     <div class="card-body">
 
-      <!-- FILTROS -->
       <div class="d-flex gap-2 mb-2">
         <select id="filtroLoja" class="form-select" onchange="aplicarFiltros()"></select>
         <select id="filtroSetor" class="form-select" onchange="aplicarFiltros()"></select>
       </div>
 
-      <!-- BUSCA -->
       <div class="d-flex gap-2">
         <input id="campoBusca" class="form-control"
                placeholder="Buscar por nome ou EAN"
                oninput="buscarProdutos()">
-
-        <button class="btn btn-outline-secondary"
-                onclick="abrirCameraBusca()">📷</button>
+        <button class="btn btn-outline-secondary" onclick="abrirCameraBusca()">📷</button>
       </div>
 
     </div>
   </div>
 
-  <!-- PRODUTO ATUAL -->
+  <!-- PRODUTO -->
   <div class="card mb-3">
     <div class="card-body">
-
       <h5 id="lojaAtual">Nenhum produto</h5>
       <p><strong>Setor:</strong> <span id="setorAtual">-</span></p>
       <p><strong>Produto:</strong> <span id="nomeAtual">-</span></p>
       <p><strong>EAN:</strong> <span id="eanAtual">-</span></p>
-      <p><strong>Preço (kg):</strong> R$ <span id="precoAtual">00.00</span></p>
+      <p><strong>Preço:</strong> R$ <span id="precoAtual">00.00</span></p>
 
-      <div class="d-flex gap-2 mt-3">
+      <div class="d-flex gap-2">
         <button class="btn btn-secondary flex-fill" onclick="anterior()">&lt;&lt;</button>
         <button class="btn btn-warning flex-fill" onclick="editarProduto()">Editar</button>
         <button class="btn btn-primary flex-fill" onclick="novoProduto()">Novo</button>
         <button class="btn btn-secondary flex-fill" onclick="proximo()">&gt;&gt;</button>
       </div>
-
     </div>
   </div>
 
-  <!-- FORMULÁRIO -->
+  <!-- FORM -->
   <div class="card d-none" id="formCard">
     <div class="card-body">
-
-      <h6 id="formTitulo">Novo Produto</h6>
-
-      <div class="mb-2 d-flex gap-2">
-        <select id="formLoja" class="form-select"></select>
-        <button class="btn btn-outline-primary" onclick="novaLoja()">+</button>
-      </div>
-
-      <div class="mb-2 d-flex gap-2">
-        <select id="formSetor" class="form-select"></select>
-        <button class="btn btn-outline-primary" onclick="novoSetor()">+</button>
-      </div>
+      <h6 id="formTitulo"></h6>
 
       <div class="mb-2">
-        <input id="formNome" class="form-control" placeholder="Nome do produto">
+        <input id="formNome" class="form-control" placeholder="Produto">
       </div>
 
       <div class="mb-2 d-flex gap-2">
         <input id="formEan" class="form-control" placeholder="EAN">
-        <button class="btn btn-outline-secondary"
-                onclick="abrirCameraFormulario()">📷</button>
+        <button class="btn btn-outline-secondary" onclick="abrirCameraFormulario()">📷</button>
       </div>
 
-      <div class="mb-3">
-        <input id="formPreco" class="form-control" type="number" step="0.01">
+      <div class="mb-2">
+        <input id="formPreco" type="number" step="0.01" class="form-control">
       </div>
 
       <div class="d-flex gap-2">
         <button class="btn btn-success flex-fill" onclick="salvarProduto()">Salvar</button>
         <button class="btn btn-secondary flex-fill" onclick="cancelarFormulario()">Cancelar</button>
-        <button class="btn btn-danger flex-fill" id="btnExcluir"
-                onclick="excluirProduto()"></button>
       </div>
-
     </div>
   </div>
 
 </div>
 
+<!-- MODAL CAMERA -->
+<div class="modal fade" id="cameraModal" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div id="cameraView"></div>
+        <button class="btn btn-danger w-100" onclick="fecharCamera()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  let produtos = JSON.parse(localStorage.getItem("produto")) || [];
-  let lojas = JSON.parse(localStorage.getItem("lojas")) || [];
-  let setores = JSON.parse(localStorage.getItem("setores")) || [];
+  let destinoEan = null;
 
-  let produtosFiltrados = [];
-  let indexAtual = 0;
-  let modoEdicao = false;
+  function iniciarCamera(callback) {
+    destinoEan = callback;
 
-  function salvarProdutos() {
-    localStorage.setItem("produto", JSON.stringify(produtos));
-  }
+    const modal = new bootstrap.Modal(document.getElementById("cameraModal"));
+    modal.show();
 
-  function atualizarSelect(id, lista, opcaoTodos = null) {
-    const s = document.getElementById(id);
-    s.innerHTML = "";
-
-    if (opcaoTodos) {
-      const o = document.createElement("option");
-      o.value = "";
-      o.text = opcaoTodos;
-      s.appendChild(o);
-    }
-
-    lista.forEach(v => {
-      const o = document.createElement("option");
-      o.value = v;
-      o.text = v;
-      s.appendChild(o);
-    });
-  }
-
-  function aplicarFiltros() {
-    document.getElementById("campoBusca").value = "";
-    filtrar();
-  }
-
-  function buscarProdutos() {
-    document.getElementById("filtroSetor").value = "";
-    filtrar();
-  }
-
-  function filtrar() {
-    const loja = filtroLoja.value;
-    const setor = filtroSetor.value;
-    const busca = campoBusca.value.toLowerCase();
-
-    produtosFiltrados = produtos.filter(p => {
-      if (p.loja !== loja) return false;
-
-      if (busca) {
-        return (p.nome || "").toLowerCase().includes(busca) ||
-               (p.ean || "").includes(busca);
+    Quagga.init({
+      inputStream: {
+        type: "LiveStream",
+        target: document.querySelector("#cameraView"),
+        constraints: {
+          facingMode: "environment"
+        }
+      },
+      decoder: {
+        readers: ["ean_reader", "ean_13_reader"]
       }
-
-      if (setor && (p.setor || "") !== setor) return false;
-      return true;
+    }, err => {
+      if (!err) Quagga.start();
     });
 
-    indexAtual = 0;
-    mostrarProduto();
+    Quagga.onDetected(onDetectado);
   }
 
-  function mostrarProduto() {
-    if (produtosFiltrados.length === 0) {
-      lojaAtual.innerText = "Nenhum produto";
-      setorAtual.innerText = "-";
-      nomeAtual.innerText = "-";
-      eanAtual.innerText = "-";
-      precoAtual.innerText = "00.00";
-      return;
-    }
+  function onDetectado(result) {
+    const code = result.codeResult.code;
+    if (!code) return;
 
-    const p = produtosFiltrados[indexAtual];
-    lojaAtual.innerText = p.loja;
-    setorAtual.innerText = p.setor || "";
-    nomeAtual.innerText = p.nome;
-    eanAtual.innerText = p.ean;
-    precoAtual.innerText = p.preco.toFixed(2);
+    Quagga.offDetected(onDetectado);
+    Quagga.stop();
+    bootstrap.Modal.getInstance(document.getElementById("cameraModal")).hide();
+
+    destinoEan(code);
   }
 
-  function proximo() {
-    if (indexAtual < produtosFiltrados.length - 1) {
-      indexAtual++;
-      mostrarProduto();
-    }
+  function fecharCamera() {
+    Quagga.stop();
+    bootstrap.Modal.getInstance(document.getElementById("cameraModal")).hide();
   }
 
-  function anterior() {
-    if (indexAtual > 0) {
-      indexAtual--;
-      mostrarProduto();
-    }
-  }
-
-  function novoProduto() {
-    modoEdicao = false;
-    formTitulo.innerText = "Novo Produto";
-    formNome.value = "";
-    formEan.value = "";
-    formPreco.value = "0.00";
-    atualizarSelect("formLoja", lojas);
-    atualizarSelect("formSetor", setores);
-    btnExcluir.innerText = "";
-    formCard.classList.remove("d-none");
-  }
-
-  function editarProduto() {
-    if (!produtosFiltrados.length) return;
-    modoEdicao = true;
-
-    const p = produtosFiltrados[indexAtual];
-    formTitulo.innerText = "Editar Produto";
-    formNome.value = p.nome;
-    formEan.value = p.ean;
-    formPreco.value = p.preco.toFixed(2);
-
-    atualizarSelect("formLoja", lojas);
-    atualizarSelect("formSetor", setores);
-
-    formLoja.value = p.loja;
-    formSetor.value = p.setor || "";
-
-    btnExcluir.innerText = "Excluir";
-    formCard.classList.remove("d-none");
-  }
-
-  function salvarProduto() {
-    const produto = {
-      loja: formLoja.value,
-      setor: formSetor.value || "",
-      nome: formNome.value || "",
-      ean: formEan.value || "",
-      preco: parseFloat(formPreco.value) || 0
-    };
-
-    if (modoEdicao) {
-      const idx = produtos.indexOf(produtosFiltrados[indexAtual]);
-      produtos[idx] = produto;
-    } else {
-      produtos.push(produto);
-    }
-
-    salvarProdutos();
-    formCard.classList.add("d-none");
-    filtrar();
-  }
-
-  function excluirProduto() {
-    if (!confirm("Deseja realmente excluir este produto?")) return;
-    const p = produtosFiltrados[indexAtual];
-    produtos = produtos.filter(x => x !== p);
-    salvarProdutos();
-    formCard.classList.add("d-none");
-    filtrar();
-  }
-
-  function cancelarFormulario() {
-    formCard.classList.add("d-none");
-  }
-
-  function novaLoja() {
-    const n = prompt("Nome da nova loja:");
-    if (!n || lojas.includes(n)) return;
-    lojas.push(n);
-    localStorage.setItem("lojas", JSON.stringify(lojas));
-    atualizarSelect("formLoja", lojas);
-    atualizarSelect("filtroLoja", lojas);
-  }
-
-  function novoSetor() {
-    const n = prompt("Nome do novo setor:");
-    if (!n || setores.includes(n)) return;
-    setores.push(n);
-    localStorage.setItem("setores", JSON.stringify(setores));
-    atualizarSelect("formSetor", setores);
-    atualizarSelect("filtroSetor", setores, "Todos os setores");
-  }
-
-  /* Placeholder de câmera */
-  function abrirCameraBusca() {
-    alert("Scanner já integrado. Use a câmera conforme implementado anteriormente.");
-  }
+  /* FUNÇÕES SEPARADAS */
 
   function abrirCameraFormulario() {
-    alert("Scanner já integrado. Use a câmera conforme implementado anteriormente.");
+    iniciarCamera(code => {
+      document.getElementById("formEan").value = code;
+    });
   }
 
-  atualizarSelect("filtroLoja", lojas);
-  atualizarSelect("filtroSetor", setores, "Todos os setores");
-
-  if (lojas.length) filtroLoja.value = lojas[0];
-  filtrar();
+  function abrirCameraBusca() {
+    iniciarCamera(code => {
+      campoBusca.value = code;
+      buscarProdutos();
+    });
+  }
 </script>
 
 </body>
