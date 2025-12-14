@@ -17,7 +17,28 @@
 <body class="bg-light">
 
 <div class="container mt-4">
+<!-- PAINEL SUPERIOR -->
+  <div class="card mb-3">
+    <div class="card-body">
 
+      <!-- FILTROS -->
+      <div class="d-flex gap-2 mb-2">
+        <select id="filtroLoja" class="form-select" onchange="aplicarFiltros()"></select>
+        <select id="filtroSetor" class="form-select" onchange="aplicarFiltros()"></select>
+      </div>
+
+      <!-- BUSCA -->
+      <div class="d-flex gap-2">
+        <input id="campoBusca" class="form-control"
+               placeholder="Buscar por nome ou EAN"
+               oninput="buscarProdutos()">
+
+        <button class="btn btn-outline-secondary"
+                onclick="abrirCameraBusca()">📷</button>
+      </div>
+
+    </div>
+  </div>
   <!-- Produto atual -->
   <div class="card mb-3">
     <div class="card-body">
