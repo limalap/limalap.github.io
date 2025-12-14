@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Coleta de Preços</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4">
+
+  <!-- Produto atual -->
+  <div class="card mb-3">
+    <div class="card-body">
+
+      <h5 class="card-title" id="loja">Nenhum produto</h5>
+
+      <p class="mb-1"><strong>Produto:</strong> <span id="nome">-</span></p>
+      <p class="mb-1"><strong>EAN:</strong> <span id="ean">-</span></p>
+      <p class="mb-1"><strong>Preço (kg):</strong> R$ <span id="preco">00.00</span></p>
+
+      <div class="d-flex justify-content-between mt-3">
+        <button class="btn btn-secondary" onclick="anterior()">Anterior</button>
+        <button class="btn btn-secondary" onclick="proximo()">Próximo</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Novo produto -->
+  <div class="card">
+    <div class="card-body">
+
+      <h6 class="card-title">Novo Produto</h6>
+
+      <div class="mb-2">
+        <input id="novaLoja" class="form-control" placeholder="Loja">
+      </div>
+
+      <div class="mb-2">
+        <input id="novoNome" class="form-control" placeholder="Nome do produto">
+      </div>
+
+      <div class="mb-2">
+        <input id="novoEan" class="form-control" placeholder="EAN">
+      </div>
+
+      <div class="mb-3">
+        <input id="novoPreco" class="form-control" type="number" step="0.01" placeholder="Preço (padrão 00.00)">
+      </div>
+
+      <button class="btn btn-primary w-100" onclick="adicionarProduto()">Adicionar Produto</button>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let produtos = JSON.parse(localStorage.getItem("produto")) || [];
+  let indexAtual = 0;
+
+  function salvar() {
+    localStorage.setItem("produto", JSON.stringify(produtos));
+  }
+
+  function mostrarProduto() {
+    if (produtos.length === 0) {
+      document.getElementById("loja").innerText = "Nenhum produto";
+      document.getElementById("nome").innerText = "-";
+      document.getElementById("ean").innerText = "-";
+      document.getElementById("preco").innerText = "00.00";
+      return;
+    }
+
+    const p = produtos[indexAtual];
+
+    document.getElementById("loja").innerText = p.loja;
+    document.getElementById("nome").innerText = p.nome;
+    document.getElementById("ean").innerText = p.ean;
+    document.getElementById("preco").innerText = p.preco.toFixed(2);
+  }
+
+  function proximo() {
+    if (indexAtual < produtos.length - 1) {
+      indexAtual++;
+      mostrarProduto();
+    }
+  }
+
+  function anterior() {
+    if (indexAtual > 0) {
+      indexAtual--;
+      mostrarProduto();
+    }
+  }
+
+  function adicionarProduto() {
+    const precoInput = document.getElementById("novoPreco").value;
+
+    const produto = {
+      loja: document.getElementById("novaLoja").value || "",
+      nome: document.getElementById("novoNome").value || "",
+      ean: document.getElementById("novoEan").value || "",
+      preco: precoInput === "" ? 0.00 : parseFloat(precoInput)
+    };
+
+    produtos.push(produto);
+    salvar();
+
+    indexAtual = produtos.length - 1;
+    mostrarProduto();
+
+    document.getElementById("novaLoja").value = "";
+    document.getElementById("novoNome").value = "";
+    document.getElementById("novoEan").value = "";
+    document.getElementById("novoPreco").value = "";
+  }
+
+  mostrarProduto();
+</script>
+
+</body>
+</html>
