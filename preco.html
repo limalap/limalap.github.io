@@ -22,14 +22,12 @@
       <p class="mb-1"><strong>EAN:</strong> <span id="ean">-</span></p>
       <p class="mb-1"><strong>Preço (kg):</strong> R$ <span id="preco">00.00</span></p>
 
-      <div class="d-flex justify-content-between mt-3">
-        <button class="btn btn-secondary" onclick="anterior()">Anterior</button>
-        <button class="btn btn-secondary" onclick="proximo()">Próximo</button>
-      </div>
-
-      <div class="d-flex justify-content-between mt-2">
-        <button class="btn btn-outline-primary w-50 me-1" onclick="novoProduto()">Novo Produto</button>
-        <button class="btn btn-outline-warning w-50 ms-1" onclick="editarProduto()">Editar Produto</button>
+      <!-- Linha única de botões -->
+      <div class="d-flex justify-content-between gap-2 mt-3">
+        <button class="btn btn-secondary flex-fill" onclick="anterior()">&lt;&lt;</button>
+        <button class="btn btn-warning flex-fill" onclick="editarProduto()">Editar</button>
+        <button class="btn btn-primary flex-fill" onclick="novoProduto()">Novo</button>
+        <button class="btn btn-secondary flex-fill" onclick="proximo()">&gt;&gt;</button>
       </div>
 
     </div>
