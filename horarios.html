@@ -117,7 +117,7 @@
   class="btn btn-primary me-2"
   onclick="atualizarLinha()"
 >
-  Atualizar horários
+  Atualizar
 </button>
 <button
   id="btnCopiarImport"
@@ -125,7 +125,7 @@
   class="btn btn-outline-secondary me-2"
   onclick="copiarJsonImport()"
 >
-  Copiar JSON
+  Copiar
 </button>
  <button id="btnCancelarImport" type="button" class="btn btn-secondary">
         Cancelar
@@ -369,10 +369,26 @@ function atualizarLinha() {
 }
 
 function copiarJsonImport() {
-  importJson.select();
-  importJson.setSelectionRange(0, importJson.value.length);
-  document.execCommand('copy');
-  alert('JSON copiado para a área de transferência');
+  const texto = importJson.value;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(texto).then(() => {
+      alert('JSON copiado para a área de transferência');
+    }).catch(() => {
+      alert('Falha ao copiar o JSON');
+    });
+  } else {
+    const textareaTemp = document.createElement('textarea');
+    textareaTemp.value = texto;
+    textareaTemp.style.position = 'fixed';
+    textareaTemp.style.opacity = '0';
+    document.body.appendChild(textareaTemp);
+    textareaTemp.focus();
+    textareaTemp.select();
+    document.execCommand('copy');
+    document.body.removeChild(textareaTemp);
+    alert('JSON copiado para a área de transferência');
+  }
 }
 
 
