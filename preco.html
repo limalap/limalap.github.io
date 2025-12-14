@@ -23,6 +23,7 @@
     <div class="card-body">
 
       <h5 id="lojaAtual">Nenhum produto</h5>
+      <p><strong>Setor:</strong> <span id="setorAtual">-</span></p>
       <p><strong>Produto:</strong> <span id="nomeAtual">-</span></p>
       <p><strong>EAN:</strong> <span id="eanAtual">-</span></p>
       <p><strong>Preço (kg):</strong> R$ <span id="precoAtual">00.00</span></p>
@@ -43,9 +44,18 @@
 
       <h6 id="formTitulo">Novo Produto</h6>
 
+      <!-- Loja -->
       <div class="mb-2 d-flex gap-2">
         <select id="formLoja" class="form-select"></select>
         <button class="btn btn-outline-primary" onclick="novaLoja()">+</button>
+      </div>
+
+      <!-- Setor -->
+      <div class="mb-2 d-flex gap-2">
+        <select id="formSetor" class="form-select">
+          <option value="">(sem setor)</option>
+        </select>
+        <button class="btn btn-outline-primary" onclick="novoSetor()">+</button>
       </div>
 
       <div class="mb-2">
@@ -61,7 +71,7 @@
         <input id="formPreco" class="form-control" type="number" step="0.01">
       </div>
 
-      <!-- BOTÕES -->
+      <!-- Botões -->
       <div class="d-flex gap-2">
         <button class="btn btn-success flex-fill" onclick="salvarProduto()">Salvar</button>
         <button class="btn btn-secondary flex-fill" onclick="cancelarEdicao()">Cancelar</button>
@@ -98,24 +108,34 @@
 <script>
 let produtos = JSON.parse(localStorage.getItem("produto")) || [];
 let lojas = JSON.parse(localStorage.getItem("lojas")) || [];
+let setores = JSON.parse(localStorage.getItem("setores")) || [];
+
 let indexAtual = 0;
 let modoEdicao = false;
 
 let campoEanDestino = null;
 let quaggaAtivo = false;
 
-/* Migração */
+/* Migração lojas */
 if (lojas.length === 0 && produtos.length > 0) {
   lojas = [...new Set(produtos.map(p => p.loja).filter(l => l))];
   localStorage.setItem("lojas", JSON.stringify(lojas));
 }
 
+/* Migração setores (opcional, segura) */
+if (setores.length === 0 && produtos.length > 0) {
+  setores = [...new Set(produtos.map(p => p.setor).filter(s => s))];
+  localStorage.setItem("setores", JSON.stringify(setores));
+}
+
 function salvarProdutos() {
   localStorage.setItem("produto", JSON.stringify(produtos));
 }
-
 function salvarLojas() {
   localStorage.setItem("lojas", JSON.stringify(lojas));
+}
+function salvarSetores() {
+  localStorage.setItem("setores", JSON.stringify(setores));
 }
 
 function atualizarSelectLojas(sel = "") {
@@ -129,19 +149,33 @@ function atualizarSelectLojas(sel = "") {
   });
 }
 
+function atualizarSelectSetores(sel = "") {
+  formSetor.innerHTML = `<option value="">(sem setor)</option>`;
+  setores.forEach(s => {
+    const o = document.createElement("option");
+    o.value = s;
+    o.text = s;
+    if (s === sel) o.selected = true;
+    formSetor.appendChild(o);
+  });
+}
+
 function mostrarProduto() {
   if (!produtos.length) {
     lojaAtual.innerText = "Nenhum produto";
+    setorAtual.innerText = "-";
     nomeAtual.innerText = "-";
     eanAtual.innerText = "-";
     precoAtual.innerText = "00.00";
     return;
   }
+
   const p = produtos[indexAtual];
-  lojaAtual.innerText = p.loja;
-  nomeAtual.innerText = p.nome;
-  eanAtual.innerText = p.ean;
-  precoAtual.innerText = p.preco.toFixed(2);
+  lojaAtual.innerText = p.loja || "-";
+  setorAtual.innerText = p.setor || "-";
+  nomeAtual.innerText = p.nome || "-";
+  eanAtual.innerText = p.ean || "-";
+  precoAtual.innerText = (p.preco || 0).toFixed(2);
 }
 
 function proximo() {
@@ -150,7 +184,6 @@ function proximo() {
     mostrarProduto();
   }
 }
-
 function anterior() {
   if (indexAtual > 0) {
     indexAtual--;
@@ -165,6 +198,7 @@ function novoProduto() {
   formEan.value = "";
   formPreco.value = "0.00";
   atualizarSelectLojas();
+  atualizarSelectSetores();
   btnExcluir.style.visibility = "hidden";
   formCard.classList.remove("d-none");
 }
@@ -174,26 +208,28 @@ function editarProduto() {
   modoEdicao = true;
   const p = produtos[indexAtual];
   formTitulo.innerText = "Editar Produto";
-  formNome.value = p.nome;
-  formEan.value = p.ean;
-  formPreco.value = p.preco.toFixed(2);
+  formNome.value = p.nome || "";
+  formEan.value = p.ean || "";
+  formPreco.value = (p.preco || 0).toFixed(2);
   atualizarSelectLojas(p.loja);
+  atualizarSelectSetores(p.setor || "");
   btnExcluir.style.visibility = "visible";
   formCard.classList.remove("d-none");
 }
 
 function salvarProduto() {
-  const p = {
-    loja: formLoja.value,
+  const produto = {
+    loja: formLoja.value || "",
+    setor: formSetor.value || "",
     nome: formNome.value || "",
     ean: formEan.value || "",
     preco: parseFloat(formPreco.value) || 0
   };
 
   if (modoEdicao) {
-    produtos[indexAtual] = p;
+    produtos[indexAtual] = produto;
   } else {
-    produtos.push(p);
+    produtos.push(produto);
     indexAtual = produtos.length - 1;
   }
 
@@ -208,11 +244,9 @@ function cancelarEdicao() {
 
 function excluirProduto() {
   if (!modoEdicao) return;
-
   if (!confirm("Deseja realmente excluir este produto?")) return;
 
   produtos.splice(indexAtual, 1);
-
   if (indexAtual > 0) indexAtual--;
 
   salvarProdutos();
@@ -227,6 +261,15 @@ function novaLoja() {
   lojas.push(n);
   salvarLojas();
   atualizarSelectLojas(n);
+}
+
+function novoSetor() {
+  const n = prompt("Nome do novo setor:");
+  if (!n) return;
+  if (setores.includes(n)) return alert("Este setor já existe.");
+  setores.push(n);
+  salvarSetores();
+  atualizarSelectSetores(n);
 }
 
 /* QUAGGA */
