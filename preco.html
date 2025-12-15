@@ -17,17 +17,14 @@
 <body class="bg-light">
 
 <div class="container mt-4">
-<!-- PAINEL SUPERIOR -->
   <div class="card mb-3">
     <div class="card-body">
 
-      <!-- FILTROS -->
       <div class="d-flex gap-2 mb-2">
         <select id="filtroLoja" class="form-select" onchange="aplicarFiltros()"></select>
         <select id="filtroSetor" class="form-select" onchange="aplicarFiltros()"></select>
       </div>
 
-      <!-- BUSCA -->
       <div class="d-flex gap-2">
         <input id="campoBusca" class="form-control"
                placeholder="Buscar por nome ou EAN"
@@ -39,7 +36,7 @@
 
     </div>
   </div>
-  <!-- Produto atual -->
+
   <div class="card mb-3">
     <div class="card-body">
 
@@ -59,19 +56,16 @@
     </div>
   </div>
 
-  <!-- Formulário -->
   <div class="card d-none" id="formCard">
     <div class="card-body">
 
       <h6 id="formTitulo">Novo Produto</h6>
 
-      <!-- Loja -->
       <div class="mb-2 d-flex gap-2">
         <select id="formLoja" class="form-select"></select>
         <button class="btn btn-outline-primary" onclick="novaLoja()">+</button>
       </div>
 
-      <!-- Setor -->
       <div class="mb-2 d-flex gap-2">
         <select id="formSetor" class="form-select">
           <option value="">(sem setor)</option>
@@ -92,7 +86,6 @@
         <input id="formPreco" class="form-control" type="number" step="0.01">
       </div>
 
-      <!-- Botões -->
       <div class="d-flex gap-2">
         <button class="btn btn-success flex-fill" onclick="salvarProduto()">Salvar</button>
         <button class="btn btn-secondary flex-fill" onclick="cancelarEdicao()">Cancelar</button>
@@ -104,7 +97,6 @@
 
 </div>
 
-<!-- Modal Scanner -->
 <div class="modal fade" id="modalScanner" tabindex="-1">
   <div class="modal-dialog modal-fullscreen">
     <div class="modal-content">
@@ -137,13 +129,11 @@ let modoEdicao = false;
 let campoEanDestino = null;
 let quaggaAtivo = false;
 
-/* Migração lojas */
 if (lojas.length === 0 && produtos.length > 0) {
   lojas = [...new Set(produtos.map(p => p.loja).filter(l => l))];
   localStorage.setItem("lojas", JSON.stringify(lojas));
 }
 
-/* Migração setores (opcional, segura) */
 if (setores.length === 0 && produtos.length > 0) {
   setores = [...new Set(produtos.map(p => p.setor).filter(s => s))];
   localStorage.setItem("setores", JSON.stringify(setores));
@@ -179,6 +169,35 @@ function atualizarSelectSetores(sel = "") {
     if (s === sel) o.selected = true;
     formSetor.appendChild(o);
   });
+}
+
+function atualizarFiltroLojas(sel = "") {
+  filtroLoja.innerHTML = `<option value="">Todas as lojas</option>`;
+  lojas.forEach(l => {
+    const o = document.createElement("option");
+    o.value = l;
+    o.text = l;
+    if (l === sel) o.selected = true;
+    filtroLoja.appendChild(o);
+  });
+}
+
+function atualizarFiltroSetores(sel = "") {
+  filtroSetor.innerHTML = `<option value="">Todos os setores</option>`;
+  setores.forEach(s => {
+    const o = document.createElement("option");
+    o.value = s;
+    o.text = s;
+    if (s === sel) o.selected = true;
+    filtroSetor.appendChild(o);
+  });
+}
+
+function atualizarLojasESetores() {
+  atualizarSelectLojas();
+  atualizarFiltroLojas();
+  atualizarSelectSetores();
+  atualizarFiltroSetores();
 }
 
 function mostrarProduto() {
@@ -281,7 +300,9 @@ function novaLoja() {
   if (lojas.includes(n)) return alert("Esta loja já existe.");
   lojas.push(n);
   salvarLojas();
+  atualizarLojasESetores();
   atualizarSelectLojas(n);
+  atualizarFiltroLojas(n);
 }
 
 function novoSetor() {
@@ -290,10 +311,11 @@ function novoSetor() {
   if (setores.includes(n)) return alert("Este setor já existe.");
   setores.push(n);
   salvarSetores();
+  atualizarLojasESetores();
   atualizarSelectSetores(n);
+  atualizarFiltroSetores(n);
 }
 
-/* QUAGGA */
 function abrirLeitorEAN(idCampo) {
   campoEanDestino = document.getElementById(idCampo);
   const modal = new bootstrap.Modal(modalScanner);
@@ -349,6 +371,7 @@ function fecharLeitor() {
   if (modal) modal.hide();
 }
 
+atualizarLojasESetores();
 mostrarProduto();
 </script>
 
