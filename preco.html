@@ -120,8 +120,8 @@
 
 <script>
 let produtos = JSON.parse(localStorage.getItem("produto")) || [];
-let lojas = JSON.parse(localStorage.getItem("lojas")) || [];
-let setores = JSON.parse(localStorage.getItem("setores")) || [];
+let lojas    = JSON.parse(localStorage.getItem("lojas")) || [];
+let setores  = JSON.parse(localStorage.getItem("setores")) || [];
 
 let indexAtual = 0;
 let modoEdicao = false;
@@ -154,7 +154,7 @@ function atualizarSelectLojas(sel = "") {
   lojas.forEach(l => {
     const o = document.createElement("option");
     o.value = l;
-    o.text = l;
+    o.text  = l;
     if (l === sel) o.selected = true;
     formLoja.appendChild(o);
   });
@@ -165,7 +165,7 @@ function atualizarSelectSetores(sel = "") {
   setores.forEach(s => {
     const o = document.createElement("option");
     o.value = s;
-    o.text = s;
+    o.text  = s;
     if (s === sel) o.selected = true;
     formSetor.appendChild(o);
   });
@@ -176,7 +176,7 @@ function atualizarFiltroLojas(sel = "") {
   lojas.forEach(l => {
     const o = document.createElement("option");
     o.value = l;
-    o.text = l;
+    o.text  = l;
     if (l === sel) o.selected = true;
     filtroLoja.appendChild(o);
   });
@@ -187,7 +187,7 @@ function atualizarFiltroSetores(sel = "") {
   setores.forEach(s => {
     const o = document.createElement("option");
     o.value = s;
-    o.text = s;
+    o.text  = s;
     if (s === sel) o.selected = true;
     filtroSetor.appendChild(o);
   });
@@ -200,7 +200,7 @@ function atualizarLojasESetores() {
   atualizarFiltroSetores();
 }
 
-// verifica se um produto passa pelos filtros atuais de loja e setor
+// verifica se um produto passa pelos filtros atuais de loja / setor / busca
 function passaFiltros(produto) {
   const lojaSel  = (filtroLoja.value  || "").trim();
   const setorSel = (filtroSetor.value || "").trim();
@@ -220,8 +220,8 @@ function passaFiltros(produto) {
     return false;
   }
 
-  const ean   = (produto.ean  || "").toString();
-  const nome  = (produto.nome || "").toLowerCase();
+  const ean    = (produto.ean  || "").toString();
+  const nome   = (produto.nome || "").toLowerCase();
   const tLower = termo.toLowerCase();
 
   // Detecta "busca por EAN": só dígitos e tamanho mínimo (ajuste se quiser)
@@ -246,7 +246,7 @@ function aplicarFiltros() {
   mostrarProduto();
 }
 
-// chamado pelo oninput do campo de busca (aqui apenas reaproveitamos filtros de loja/setor)
+// chamado pelo oninput do campo de busca
 function buscarProdutos() {
   const termo = (campoBusca.value || "").trim();
 
@@ -261,33 +261,35 @@ function buscarProdutos() {
 
 function mostrarProduto() {
   if (!produtos.length) {
-    lojaAtual.innerText = "Nenhum produto";
+    lojaAtual.innerText  = "Nenhum produto";
     setorAtual.innerText = "-";
-    nomeAtual.innerText = "-";
-    eanAtual.innerText = "-";
+    nomeAtual.innerText  = "-";
+    eanAtual.innerText   = "-";
     precoAtual.innerText = "00.00";
     return;
   }
 
   const lojaSel  = (filtroLoja.value  || "").trim();
   const setorSel = (filtroSetor.value || "").trim();
+  const termoRaw = (campoBusca.value  || "").trim();
+  const buscando = termoRaw !== "";
 
-  // se não há filtros, comportamento original
-  if (!lojaSel && !setorSel) {
+  // sem filtros de loja/setor e sem busca → comportamento original
+  if (!buscando && !lojaSel && !setorSel) {
     if (indexAtual < 0) indexAtual = 0;
     if (indexAtual >= produtos.length) indexAtual = produtos.length - 1;
 
     const p0 = produtos[indexAtual];
 
-    lojaAtual.innerText = p0.loja || "-";
+    lojaAtual.innerText  = p0.loja  || "-";
     setorAtual.innerText = p0.setor || "-";
-    nomeAtual.innerText = p0.nome || "-";
-    eanAtual.innerText = p0.ean || "-";
+    nomeAtual.innerText  = p0.nome  || "-";
+    eanAtual.innerText   = p0.ean   || "-";
     precoAtual.innerText = (p0.preco || 0).toFixed(2);
     return;
   }
 
-  // com filtros: garantimos que indexAtual aponte para um produto que passa nos filtros
+  // com filtros (loja/setor) OU com busca: garantimos que indexAtual aponte para um produto que passa nos filtros
   let p = produtos[indexAtual];
   if (!p || !passaFiltros(p)) {
     // procura a partir do início o primeiro produto que passa nos filtros
@@ -300,11 +302,11 @@ function mostrarProduto() {
     }
 
     if (encontrado === -1) {
-      // não há produtos para essa combinação de filtros
-      lojaAtual.innerText = "Nenhum produto";
+      // não há produtos para essa combinação de filtros / busca
+      lojaAtual.innerText  = "Nenhum produto";
       setorAtual.innerText = "-";
-      nomeAtual.innerText = "-";
-      eanAtual.innerText = "-";
+      nomeAtual.innerText  = "-";
+      eanAtual.innerText   = "-";
       precoAtual.innerText = "00.00";
       return;
     }
@@ -313,10 +315,10 @@ function mostrarProduto() {
     p = produtos[indexAtual];
   }
 
-  lojaAtual.innerText = p.loja || "-";
+  lojaAtual.innerText  = p.loja  || "-";
   setorAtual.innerText = p.setor || "-";
-  nomeAtual.innerText = p.nome || "-";
-  eanAtual.innerText = p.ean || "-";
+  nomeAtual.innerText  = p.nome  || "-";
+  eanAtual.innerText   = p.ean   || "-";
   precoAtual.innerText = (p.preco || 0).toFixed(2);
 }
 
@@ -325,9 +327,11 @@ function proximo() {
 
   const lojaSel  = (filtroLoja.value  || "").trim();
   const setorSel = (filtroSetor.value || "").trim();
+  const termoRaw = (campoBusca.value  || "").trim();
+  const buscando = termoRaw !== "";
 
-  // sem filtros: comportamento original
-  if (!lojaSel && !setorSel) {
+  // sem filtros e sem busca: comportamento original
+  if (!buscando && !lojaSel && !setorSel) {
     if (indexAtual < produtos.length - 1) {
       indexAtual++;
       mostrarProduto();
@@ -335,7 +339,7 @@ function proximo() {
     return;
   }
 
-  // com filtros: avança até o próximo produto que passa
+  // com filtros e/ou busca: avança até o próximo produto que passa
   for (let i = indexAtual + 1; i < produtos.length; i++) {
     if (passaFiltros(produtos[i])) {
       indexAtual = i;
@@ -351,9 +355,11 @@ function anterior() {
 
   const lojaSel  = (filtroLoja.value  || "").trim();
   const setorSel = (filtroSetor.value || "").trim();
+  const termoRaw = (campoBusca.value  || "").trim();
+  const buscando = termoRaw !== "";
 
-  // sem filtros: comportamento original
-  if (!lojaSel && !setorSel) {
+  // sem filtros e sem busca: comportamento original
+  if (!buscando && !lojaSel && !setorSel) {
     if (indexAtual > 0) {
       indexAtual--;
       mostrarProduto();
@@ -361,7 +367,7 @@ function anterior() {
     return;
   }
 
-  // com filtros: volta até o produto anterior que passa
+  // com filtros e/ou busca: volta até o produto anterior que passa
   for (let i = indexAtual - 1; i >= 0; i--) {
     if (passaFiltros(produtos[i])) {
       indexAtual = i;
@@ -400,10 +406,10 @@ function editarProduto() {
 
 function salvarProduto() {
   const produto = {
-    loja: formLoja.value || "",
+    loja:  formLoja.value || "",
     setor: formSetor.value || "",
-    nome: formNome.value || "",
-    ean: formEan.value || "",
+    nome:  formNome.value || "",
+    ean:   formEan.value  || "",
     preco: parseFloat(formPreco.value) || 0
   };
 
@@ -415,6 +421,7 @@ function salvarProduto() {
   }
 
   salvarProdutos();
+  atualizarLojasESetores(); // garante filtros atualizados para novas lojas/setores
   mostrarProduto();
   formCard.classList.add("d-none");
 }
