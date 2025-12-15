@@ -134,7 +134,7 @@ let filtroLojaSelecionada  = "";
 let filtroSetorSelecionado = "";
 
 if (lojas.length === 0 && produtos.length > 0) {
-  lojas = [...new Set(produtos.map(p => p.loja).filter(l => l))];
+  lojas = [...new Set(produtos.map(p => p.loja).filter(l => l))]; 
   localStorage.setItem("lojas", JSON.stringify(lojas));
 }
 
