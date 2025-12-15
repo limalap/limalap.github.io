@@ -129,17 +129,18 @@ let modoEdicao = false;
 let campoEanDestino = null;
 let quaggaAtivo = false;
 
-// loja atualmente filtrada para exibição
-let filtroLojaSelecionada = "";
+// filtros atualmente selecionados
+let filtroLojaSelecionada  = "";
+let filtroSetorSelecionado = "";
 
 if (lojas.length === 0 && produtos.length > 0) {
   lojas = [...new Set(produtos.map(p => p.loja).filter(l => l))];
-  localStorage.setItem("lojas", JSON.stringify(lojas)); 
+  localStorage.setItem("lojas", JSON.stringify(lojas));
 }
 
 if (setores.length === 0 && produtos.length > 0) {
   setores = [...new Set(produtos.map(p => p.setor).filter(s => s))];
-  localStorage.setItem("setores", JSON.stringify(setores)); 
+  localStorage.setItem("setores", JSON.stringify(setores));
 }
 
 function salvarProdutos() {
@@ -203,29 +204,36 @@ function atualizarLojasESetores() {
   atualizarFiltroSetores();
 }
 
-// encontra o primeiro índice de produto que pertence à loja filtrada
-function encontrarPrimeiroProdutoDaLoja(loja) {
-  if (!loja) {
+// encontra o primeiro índice de produto que respeita os filtros atuais
+function encontrarPrimeiroProdutoFiltrado() {
+  // nenhum filtro: volta ao comportamento padrão (primeiro item, se existir)
+  if (!filtroLojaSelecionada && !filtroSetorSelecionado) {
     return produtos.length ? 0 : -1;
   }
+
   for (let i = 0; i < produtos.length; i++) {
-    if ((produtos[i].loja || "") === loja) {
+    const p = produtos[i];
+    const lojaOk  = !filtroLojaSelecionada  || (p.loja  || "") === filtroLojaSelecionada;
+    const setorOk = !filtroSetorSelecionado || (p.setor || "") === filtroSetorSelecionado;
+
+    if (lojaOk && setorOk) {
       return i;
     }
   }
   return -1;
 }
 
-// aplica o filtro selecionado no combo de lojas
+// aplica filtros de loja e setor
 function aplicarFiltros() {
-  filtroLojaSelecionada = (filtroLoja.value || "").trim();
+  filtroLojaSelecionada  = (filtroLoja.value  || "").trim();
+  filtroSetorSelecionado = (filtroSetor.value || "").trim();
+
   indexAtual = 0;
   mostrarProduto();
 }
 
-// placeholder simples para o campo de busca (mantém compatibilidade com o HTML)
+// placeholder simples para o campo de busca, reaproveitando a mesma lógica
 function buscarProdutos() {
-  // no momento, só reaplica o filtro de loja
   aplicarFiltros();
 }
 
@@ -240,11 +248,11 @@ function mostrarProduto() {
     return;
   }
 
-  // se há filtro de loja e nenhum produto pertence a essa loja,
-  // exibe vazio e não permite navegação
-  if (filtroLojaSelecionada) {
-    const idx = encontrarPrimeiroProdutoDaLoja(filtroLojaSelecionada);
+  // quando algum filtro está ativo (loja, setor ou ambos)
+  if (filtroLojaSelecionada || filtroSetorSelecionado) {
+    const idx = encontrarPrimeiroProdutoFiltrado();
     if (idx === -1) {
+      // combinação de filtros sem itens
       lojaAtual.innerText  = "Nenhum produto";
       setorAtual.innerText = "-";
       nomeAtual.innerText  = "-";
@@ -253,9 +261,12 @@ function mostrarProduto() {
       return;
     }
 
-    // garante que o indexAtual aponte para um produto da loja filtrada
     const pAtual = produtos[indexAtual];
-    if (!pAtual || (pAtual.loja || "") !== filtroLojaSelecionada) {
+    const lojaOkAtual  = !filtroLojaSelecionada  || ((pAtual?.loja  || "") === filtroLojaSelecionada);
+    const setorOkAtual = !filtroSetorSelecionado || ((pAtual?.setor || "") === filtroSetorSelecionado);
+
+    // se o item atual não respeita os filtros, aponta para o primeiro válido
+    if (!pAtual || !lojaOkAtual || !setorOkAtual) {
       indexAtual = idx;
     }
   }
@@ -272,8 +283,8 @@ function mostrarProduto() {
 function proximo() {
   if (!produtos.length) return;
 
-  // sem filtro de loja: comportamento original
-  if (!filtroLojaSelecionada) {
+  // sem filtros: comportamento original
+  if (!filtroLojaSelecionada && !filtroSetorSelecionado) {
     if (indexAtual < produtos.length - 1) {
       indexAtual++;
       mostrarProduto();
@@ -281,22 +292,26 @@ function proximo() {
     return;
   }
 
-  // com filtro de loja: pula para o próximo produto da mesma loja
+  // com filtros: avança até o próximo item que respeite loja e setor
   for (let i = indexAtual + 1; i < produtos.length; i++) {
-    if ((produtos[i].loja || "") === filtroLojaSelecionada) {
+    const p = produtos[i];
+    const lojaOk  = !filtroLojaSelecionada  || (p.loja  || "") === filtroLojaSelecionada;
+    const setorOk = !filtroSetorSelecionado || (p.setor || "") === filtroSetorSelecionado;
+
+    if (lojaOk && setorOk) {
       indexAtual = i;
       mostrarProduto();
       return;
     }
   }
-  // se não encontrar outro da mesma loja, não faz nada (fim da lista filtrada)
+  // se não encontrar outro que respeite os filtros, não faz nada (fim da lista filtrada)
 }
 
 function anterior() {
   if (!produtos.length) return;
 
-  // sem filtro de loja: comportamento original
-  if (!filtroLojaSelecionada) {
+  // sem filtros: comportamento original
+  if (!filtroLojaSelecionada && !filtroSetorSelecionado) {
     if (indexAtual > 0) {
       indexAtual--;
       mostrarProduto();
@@ -304,15 +319,19 @@ function anterior() {
     return;
   }
 
-  // com filtro de loja: volta para o produto anterior da mesma loja
+  // com filtros: volta até o item anterior que respeite loja e setor
   for (let i = indexAtual - 1; i >= 0; i--) {
-    if ((produtos[i].loja || "") === filtroLojaSelecionada) {
+    const p = produtos[i];
+    const lojaOk  = !filtroLojaSelecionada  || (p.loja  || "") === filtroLojaSelecionada;
+    const setorOk = !filtroSetorSelecionado || (p.setor || "") === filtroSetorSelecionado;
+
+    if (lojaOk && setorOk) {
       indexAtual = i;
       mostrarProduto();
       return;
     }
   }
-  // se não encontrar outro da mesma loja, não faz nada (início da lista filtrada)
+  // se não encontrar outro que respeite os filtros, não faz nada (início da lista filtrada)
 }
 
 function novoProduto() {
@@ -359,10 +378,14 @@ function salvarProduto() {
 
   salvarProdutos();
 
-  // se a loja ainda não estiver cadastrada na lista de lojas, adiciona
+  // garante que nova loja/novo setor entrem nas listas de filtro
   if (produto.loja && !lojas.includes(produto.loja)) {
     lojas.push(produto.loja);
     salvarLojas();
+  }
+  if (produto.setor && !setores.includes(produto.setor)) {
+    setores.push(produto.setor);
+    salvarSetores();
   }
 
   atualizarLojasESetores();
