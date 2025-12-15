@@ -31,7 +31,7 @@
                oninput="buscarProdutos()">
 
         <button class="btn btn-outline-secondary"
-                onclick="abrirLeitorEAN('campoBusca'); buscarProdutos();">📷</button>
+                onclick="abrirLeitorEAN('campoBusca')">📷</button>
       </div>
 
     </div>
@@ -506,6 +506,10 @@ function iniciarQuagga() {
 function onDetectado(r) {
   if (!r?.codeResult?.code) return;
   campoEanDestino.value = r.codeResult.code;
+  if(campoEanDestino.id=="campoBusca"){
+    buscarProdutos();
+  }
+  
   fecharLeitor();
 }
 
