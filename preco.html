@@ -204,11 +204,40 @@ function atualizarLojasESetores() {
 function passaFiltros(produto) {
   const lojaSel  = (filtroLoja.value  || "").trim();
   const setorSel = (filtroSetor.value || "").trim();
+  const termoRaw = (campoBusca.value  || "").trim();
 
-  if (lojaSel && (produto.loja || "") !== lojaSel) return false;
-  if (setorSel && (produto.setor || "") !== setorSel) return false;
+  // SEM texto na busca → usa loja + setor (comportamento padrão)
+  if (termoRaw === "") {
+    if (lojaSel && (produto.loja || "") !== lojaSel) return false;
+    if (setorSel && (produto.setor || "") !== setorSel) return false;
+    return true;
+  }
 
-  return true;
+  // COM texto na busca → setor é ignorado, só loja (se houver) influencia
+  const termo = termoRaw;
+  if (lojaSel && (produto.loja || "") !== lojaSel) {
+    // se nenhuma loja selecionada, NÃO entra aqui → todas as lojas são válidas
+    return false;
+  }
+
+  const ean   = (produto.ean  || "").toString();
+  const nome  = (produto.nome || "").toLowerCase();
+  const tLower = termo.toLowerCase();
+
+  // Detecta "busca por EAN": só dígitos e tamanho mínimo (ajuste se quiser)
+  const soDigitos = /^[0-9]+$/.test(termo);
+  const isEAN = soDigitos && termo.length >= 8;
+
+  if (isEAN) {
+    // Busca exata de EAN → mesmo EAN em várias lojas será listado separadamente
+    return ean === termo;
+  } else {
+    // Busca textual por nome (contém) OU parte do EAN
+    const nomeMatch = nome.includes(tLower);
+    const eanMatch  = ean.includes(termo);
+    if (!nomeMatch && !eanMatch) return false;
+    return true;
+  }
 }
 
 // chamado pelos onchange de filtroLoja e filtroSetor
@@ -219,7 +248,13 @@ function aplicarFiltros() {
 
 // chamado pelo oninput do campo de busca (aqui apenas reaproveitamos filtros de loja/setor)
 function buscarProdutos() {
-  // se no futuro quiser filtrar por texto, a lógica entra aqui
+  const termo = (campoBusca.value || "").trim();
+
+  // Se estiver buscando, setor deixa de influenciar: força para "Todos os setores"
+  if (termo !== "") {
+    filtroSetor.value = "";
+  }
+
   indexAtual = 0;
   mostrarProduto();
 }
