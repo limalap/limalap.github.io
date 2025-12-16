@@ -1,0 +1,1604 @@
+[
+  {
+    "ean": "0000000003742",
+    "nome": "MILHO VERDE PCT 3UN"
+  },
+  {
+    "ean": "0000000003780",
+    "nome": "MOSTARDA UN"
+  },
+  {
+    "ean": "0000000003889",
+    "nome": "RUCULA MC UN"
+  },
+  {
+    "ean": "0000000003940",
+    "nome": "FLOR VIOLETA UN"
+  },
+  {
+    "ean": "0000000005241",
+    "nome": "FRUTI COCO VERDE UN"
+  },
+  {
+    "ean": "0000000007269",
+    "nome": "ABACAXI PEROLA UN"
+  },
+  {
+    "ean": "0000000010009",
+    "nome": "VALE GAS SUPERGASBRAS  P13 BAGE"
+  },
+  {
+    "ean": "0000000016803",
+    "nome": "LEITE FERMENTADO BOB ESP MORANGO 480GR"
+  },
+  {
+    "ean": "0000000021197",
+    "nome": "LOURO UN"
+  },
+  {
+    "ean": "0000000033985",
+    "nome": "FRUTI ABACAXI TERRA DE AREIA UN"
+  },
+  {
+    "ean": "0000000049641",
+    "nome": "JORNAL FOLHA DO SUL BAGE UN"
+  },
+  {
+    "ean": "0000000064965",
+    "nome": "ALHO PORO MC"
+  },
+  {
+    "ean": "0000000066952",
+    "nome": "DOCINHO OLHO DE SOGRA PELOTAS UN"
+  },
+  {
+    "ean": "0000000067058",
+    "nome": "DOCINHO PANELINHA DE COCO PELOTAS UN"
+  },
+  {
+    "ean": "0000000067096",
+    "nome": "DOCINHO NINHO PELOTAS UN"
+  },
+  {
+    "ean": "0000000067102",
+    "nome": "DOCINHO BEM CASADO PELOTAS UN"
+  },
+  {
+    "ean": "0000000067126",
+    "nome": "DOCINHO BEIJO DO ALEMAO PELOTAS UN"
+  },
+  {
+    "ean": "0000000067133",
+    "nome": "DOCINHO BRIGADEIRO PELOTAS UN"
+  },
+  {
+    "ean": "0000000067171",
+    "nome": "DOCINHO TROUXINHA CASTELHANA PELOTAS UN"
+  },
+  {
+    "ean": "0000000067195",
+    "nome": "DOCINHO TROUXINHA DE NOZES PELOTAS UN"
+  },
+  {
+    "ean": "0000000067201",
+    "nome": "DOCINHO BOMBOM DE CEREJA PELOTAS UN"
+  },
+  {
+    "ean": "0000000067232",
+    "nome": "DOCINHO TROUXINHA CHOCOLATE PELOTAS UN"
+  },
+  {
+    "ean": "0000000067737",
+    "nome": "PASTEL FRANGO FRITO LANCHE UN"
+  },
+  {
+    "ean": "0000000067744",
+    "nome": "PASTEL CARNE FRITO LANCHE UN"
+  },
+  {
+    "ean": "0000000068277",
+    "nome": "DOCINHO BRIGADEIRO UN"
+  },
+  {
+    "ean": "0000000068307",
+    "nome": "DOCINHO DOIS AMORES UN"
+  },
+  {
+    "ean": "0000000068321",
+    "nome": "DOCINHO PRESTIGIO UN"
+  },
+  {
+    "ean": "0000000068369",
+    "nome": "DOCINHO BRIGADEIRO BRANCO UN"
+  },
+  {
+    "ean": "0000000069281",
+    "nome": "PAO NICOLINI SANDUICHE FAT 230G UN"
+  },
+  {
+    "ean": "0000000085526",
+    "nome": "BALA DORI SORTIDA 100GR"
+  },
+  {
+    "ean": "0000000101295",
+    "nome": "CHOCOLATE NESTLE CHOCOTRIO CHOCOLATE 90G"
+  },
+  {
+    "ean": "0000000101301",
+    "nome": "CHOCOLATE NESTLE CHOCOTRIO AMENDOIM 90G"
+  },
+  {
+    "ean": "0000000102100",
+    "nome": "PEPINO CORNICHON LA VIOLETERA 180GR"
+  },
+  {
+    "ean": "0000000102148",
+    "nome": "PASSATA DI POMODORI RUSTICA 680G"
+  },
+  {
+    "ean": "0000000112079",
+    "nome": "FRUTI MORANGO CNL 250G"
+  },
+  {
+    "ean": "0000000607995",
+    "nome": "VASILHAME 600ML"
+  },
+  {
+    "ean": "0000000610285",
+    "nome": "LAMINA INOX WILKINSON 3UN"
+  },
+  {
+    "ean": "0000075058852",
+    "nome": "DESOD REXONA ANTIBAC INVISIB 50ML"
+  },
+  {
+    "ean": "0000075062835",
+    "nome": "DESOD DOVE ORIGINAL STICK 45G"
+  },
+  {
+    "ean": "0000075062842",
+    "nome": "DESOD DOVE INVISIBLE DRY STICK 45G"
+  },
+  {
+    "ean": "0000075076702",
+    "nome": "DESOD DOVE SPORT FRESH STICH 45G"
+  },
+  {
+    "ean": "0000075076719",
+    "nome": "DESOD DOVE INVIBLE DRY MEN STICK 45G"
+  },
+  {
+    "ean": "0000075076818",
+    "nome": "DESOD REXONA CLINICAL CLASSIC 58GR"
+  },
+  {
+    "ean": "0000077940131",
+    "nome": "TORRONE ARCOR TURRON 25GR"
+  },
+  {
+    "ean": "0000077961419",
+    "nome": "CHOCOLATE ARCOR TORTUGUITA LEITEBAU 15GR"
+  },
+  {
+    "ean": "0000077961860",
+    "nome": "CHOCOLATE ARCOR TORTUGUITA CHOC BCO15,5G"
+  },
+  {
+    "ean": "0000077975737",
+    "nome": "TORRONE ARCOR CHOCOLATADA 25GR"
+  },
+  {
+    "ean": "0000078600010",
+    "nome": "BALA TIC TAC MENTA 16GR"
+  },
+  {
+    "ean": "0000078600027",
+    "nome": "BALA TIC TAC LARANJA 16GR"
+  },
+  {
+    "ean": "0000078602731",
+    "nome": "CHOCOLATE KINDER OVO JOY SURPRESA 20GR"
+  },
+  {
+    "ean": "0000078605831",
+    "nome": "BALA TIC TAC MORANGO 16GR"
+  },
+  {
+    "ean": "0000078901919",
+    "nome": "OLEO PEROBA KING 100ML"
+  },
+  {
+    "ean": "0000078902312",
+    "nome": "REPELENTE REPELEX 100ML"
+  },
+  {
+    "ean": "0000078903784",
+    "nome": "SOBREMESA BATAVO CREAMY CHOCOLATE 180GR"
+  },
+  {
+    "ean": "0000078903791",
+    "nome": "SOBREMESA BATAVO CREAMY CHOC BCO 180GR"
+  },
+  {
+    "ean": "0000078905351",
+    "nome": "CERVEJA ANTARCTICA ORIGINAL GF 600ML"
+  },
+  {
+    "ean": "0000078905498",
+    "nome": "CERVEJA HEINEKEN GF 600ML"
+  },
+  {
+    "ean": "0000078907171",
+    "nome": "BOMBOM AMOR CARIOCA BRANCO UN"
+  },
+  {
+    "ean": "0000078907188",
+    "nome": "BOMBOM AMOR CARIOCA UN"
+  },
+  {
+    "ean": "0000078907850",
+    "nome": "HIDRATANTE PAIXAO INSPIRADORA 200ML"
+  },
+  {
+    "ean": "0000078908901",
+    "nome": "REFRIGERANTE COCA COLA MINI PET 200ML"
+  },
+  {
+    "ean": "0000078909434",
+    "nome": "BOMBOM FERRERO ROCHER T3"
+  },
+  {
+    "ean": "0000078912298",
+    "nome": "FLAN BATAVO FRUTAS VERMELHAS 200GR"
+  },
+  {
+    "ean": "0000078912359",
+    "nome": "CHOCOLATE BATON PRETO 16GR"
+  },
+  {
+    "ean": "0000078912366",
+    "nome": "CHOCOLATE BATON BRANCO 16GR"
+  },
+  {
+    "ean": "0000078913547",
+    "nome": "BOMBOM LACTA SONHO DE VALSA PTO UN"
+  },
+  {
+    "ean": "0000078913769",
+    "nome": "BOMBOM LACTA OURO BRANCO UN"
+  },
+  {
+    "ean": "0000078914957",
+    "nome": "HIDRATANTE PAIXAO IRRESISTIVEL 200ML"
+  },
+  {
+    "ean": "0000078915671",
+    "nome": "CHOCOLATE ARCOR TORTUGUITA BRIG 15,5GR"
+  },
+  {
+    "ean": "0000078921733",
+    "nome": "DESOD ROLLON DOVE MEN INVISIBLE DRY 50ML"
+  },
+  {
+    "ean": "0000078922310",
+    "nome": "CHICLE MENTOS FRESH WINTERGREEN 56GR"
+  },
+  {
+    "ean": "0000078922327",
+    "nome": "CHICLE MENTOS PURE FRESH MINT 56GR"
+  },
+  {
+    "ean": "0000078923409",
+    "nome": "DESOD REXONA MEN ACTIVE ROLLON 50 ML"
+  },
+  {
+    "ean": "0000078924345",
+    "nome": "DESOD REXONA BAMBOO WOMEN ROLLON 50ML"
+  },
+  {
+    "ean": "0000078924383",
+    "nome": "DESOD REXONA S/PERF WOMEN  ROLLON 50ML"
+  },
+  {
+    "ean": "0000078924468",
+    "nome": "DESOD DOVE FEM ANT ORIGINAL ROLLON 50M"
+  },
+  {
+    "ean": "0000078925472",
+    "nome": "DESOD REXONA  INVISIBLE ROLLON 50ML"
+  },
+  {
+    "ean": "0000078927254",
+    "nome": "DESOD ROLLON DOVE MEN PROT TOTAL 50ML"
+  },
+  {
+    "ean": "0000078929340",
+    "nome": "CHOCOLATE NEUGEBAUER STIKADINHO 12,3G"
+  },
+  {
+    "ean": "0000078929357",
+    "nome": "CHOCOLATE NEUGEBAUER REFEICAO UN"
+  },
+  {
+    "ean": "0000078933873",
+    "nome": "REFRIGERANTE COCA COLA ZERO MINI PT 200M"
+  },
+  {
+    "ean": "0000078934115",
+    "nome": "CERVEJA SOL PREMIUM LONG NECK 330ML"
+  },
+  {
+    "ean": "0000078934696",
+    "nome": "BALA TIC TAC FRUTAS 16GR"
+  },
+  {
+    "ean": "0000078935495",
+    "nome": "CERVEJA HEINEKEN LONG NECK 250ML"
+  },
+  {
+    "ean": "0000078936195",
+    "nome": "SOBREMESA NESTLE CHANDELLE CHOC 180GR"
+  },
+  {
+    "ean": "0000078936683",
+    "nome": "CERVEJA HEINEKEN LONG NECK 330ML"
+  },
+  {
+    "ean": "0000078938793",
+    "nome": "DROPS HALLS CEREJA 28GR"
+  },
+  {
+    "ean": "0000078938816",
+    "nome": "DROPS HALLS EUCALIPTO EXTRA FORTE 27,5GR"
+  },
+  {
+    "ean": "0000078938830",
+    "nome": "DROPS HALLS MENTA 28GR"
+  },
+  {
+    "ean": "0000078938847",
+    "nome": "DROPS HALLS MORANGO 28GR"
+  },
+  {
+    "ean": "0000078938854",
+    "nome": "DROPS HALLS MELANCIA 28GR"
+  },
+  {
+    "ean": "0000078939745",
+    "nome": "REFRIGERANTE SPRITE MINI PET 200ML"
+  },
+  {
+    "ean": "0000078945494",
+    "nome": "BALA TIC TAC MENTA FRESH 16G"
+  },
+  {
+    "ean": "0000080050315",
+    "nome": "CHOCOLATE KINDER T1 12,5GR"
+  },
+  {
+    "ean": "0000080052487",
+    "nome": "BOMBOM FERRERO RAFAELLO T3"
+  },
+  {
+    "ean": "0000080052760",
+    "nome": "CHOCOLATE KINDER BUENO 2UN 43GR"
+  },
+  {
+    "ean": "0000080761761",
+    "nome": "CHOCOLATE KINDER BUENO WHITE C/2 39GR"
+  },
+  {
+    "ean": "00027084929539",
+    "nome": "BRINQUEDO BARBIE FASHION"
+  },
+  {
+    "ean": "0027084120134",
+    "nome": "BRINQUEDO HOTWHEELS UN"
+  },
+  {
+    "ean": "0040232746116",
+    "nome": "ARROZ RECANTO T1 5KG"
+  },
+  {
+    "ean": "0040232746123",
+    "nome": "ARROZ RECANTO PARBOILIZADO 5KG"
+  },
+  {
+    "ean": "0041333000992",
+    "nome": "PILHA DURACELL C ALCALINA 2UN"
+  },
+  {
+    "ean": "0041333001005",
+    "nome": "PILHA DURACELL AA2  2UN"
+  },
+  {
+    "ean": "0041333001029",
+    "nome": "PILHA DURACELL AA ALCALINA 4UN"
+  },
+  {
+    "ean": "0041333001074",
+    "nome": "PILHA DURACELL PALITO A3 ALCALINA 2UN"
+  },
+  {
+    "ean": "0041333001098",
+    "nome": "PILHA DURACELL AAA ALCALINA 4UN"
+  },
+  {
+    "ean": "0041333038216",
+    "nome": "BATERIA DURACELL LITIO 2UN"
+  },
+  {
+    "ean": "0041333121062",
+    "nome": "PILHA DURACELL ALCALINA MN21 UN"
+  },
+  {
+    "ean": "0041594206621",
+    "nome": "COPO TERMICO 180ML C 25UN"
+  },
+  {
+    "ean": "0047400179240",
+    "nome": "CARGA GILLETTE MACH 3 2UN"
+  },
+  {
+    "ean": "0049932622942",
+    "nome": "ASSADEIRA MARINEX FILETADA MEDIA 1,3L UN"
+  },
+  {
+    "ean": "0049932649543",
+    "nome": "ASSADEIRA MARINEX REDON 2,4L UN"
+  },
+  {
+    "ean": "0049932653649",
+    "nome": "ASSADEIRA MARINEX RETAN GRANDE 2,9LT UN"
+  },
+  {
+    "ean": "0049932666441",
+    "nome": "ASSADEIRA MARINEX OVAL 3,2L UN"
+  },
+  {
+    "ean": "0070330132665",
+    "nome": "CANETA BIC 4 CORES AZ/VM/PT/VD UN"
+  },
+  {
+    "ean": "0070330143395",
+    "nome": "CANETA BIC CRISTAL AZUL C/4UN"
+  },
+  {
+    "ean": "0070330147768",
+    "nome": "CANETA BIC CRISTAL FINA AZ/PT/VM UN"
+  },
+  {
+    "ean": "0070330152168",
+    "nome": "CANETA BIC FASHION C/4UN"
+  },
+  {
+    "ean": "0070330177864",
+    "nome": "CANETA BIC ECOLUTIONS AZUL C/3UN"
+  },
+  {
+    "ean": "0070330302815",
+    "nome": "MARCA TEXTO BIC ROSA UN"
+  },
+  {
+    "ean": "0070330302822",
+    "nome": "MARCA TEXTO BIC VERDE UN"
+  },
+  {
+    "ean": "0070330342637",
+    "nome": "MARCA TEXTO BIC AMARELO UN"
+  },
+  {
+    "ean": "0070330347977",
+    "nome": "MARCADOR BIC PRETO UN"
+  },
+  {
+    "ean": "0070330347984",
+    "nome": "MARCADOR BIC VM UN"
+  },
+  {
+    "ean": "0070330423220",
+    "nome": "LAPIS DE COR BIC EVOLUTION 24UN"
+  },
+  {
+    "ean": "0070330428584",
+    "nome": "LAPIS DE COR BIC EVOLUTION C12 UN"
+  },
+  {
+    "ean": "0070330433458",
+    "nome": "GIZ DE CERA BIC EVOLUTION 12UN"
+  },
+  {
+    "ean": "0070330433717",
+    "nome": "LAPIS DE COR BIC EVOL GRATIS 4LAPIS"
+  },
+  {
+    "ean": "0070330506077",
+    "nome": "CORRETIVO LIQUIDO BIC AQUA UN"
+  },
+  {
+    "ean": "0070330515444",
+    "nome": "COLA BASTAO BIC 8GR"
+  },
+  {
+    "ean": "0070330909229",
+    "nome": "ISQUEIRO BIC MAXI UN"
+  },
+  {
+    "ean": "0070330913431",
+    "nome": "ISQUEIRO BIC MINI UN"
+  },
+  {
+    "ean": "0070847022206",
+    "nome": "ENERGETICO MONSTER ULTRA 473ML"
+  },
+  {
+    "ean": "0070847022305",
+    "nome": "ENERGETICO MONSTER ABS ZERO 473ML"
+  },
+  {
+    "ean": "0070847033301",
+    "nome": "ENERGETICO MONSTER MANGO LOKO 473ML"
+  },
+  {
+    "ean": "0070847033929",
+    "nome": "ENERGETICO MONSTER ULTRA VIOLET 473ML"
+  },
+  {
+    "ean": "0079400500205",
+    "nome": "DESOD DOVE POWDER STICK 45G"
+  },
+  {
+    "ean": "0082184090442",
+    "nome": "WHISKY JACK DANIELS 1L"
+  },
+  {
+    "ean": "0192505072269",
+    "nome": "BISCOITO PANINE GROSTOLI CASEIRO 250GR"
+  },
+  {
+    "ean": "0192505291073",
+    "nome": "SNACK PANINE PASTELZINHO CHURRASCO 150GR"
+  },
+  {
+    "ean": "0192505316349",
+    "nome": "BISCOITO PANINE MARINERA MALTEADA 240GR"
+  },
+  {
+    "ean": "0609963445851",
+    "nome": "GUARDANAPO NATUPEL PREMIUM 20X20CM"
+  },
+  {
+    "ean": "0609963445868",
+    "nome": "GUARDANAPO NATUPEL PREMIUM 30X32,5CM"
+  },
+  {
+    "ean": "0611269101713",
+    "nome": "ENERGETICO RED BULL SEM ACUCAR 250ML"
+  },
+  {
+    "ean": "0611269991000",
+    "nome": "ENERGETICO RED BULL 250ML"
+  },
+  {
+    "ean": "0618231718412",
+    "nome": "HORTI TOMATE CEREJA AMARELO 250G"
+  },
+  {
+    "ean": "0618341325692",
+    "nome": "KOMBUCHA ORGANICA DOUTOR K ABAC MENT 350"
+  },
+  {
+    "ean": "0618341325739",
+    "nome": "KOMBUCHA ORGANICA DOUTOR K LARA GENG 350"
+  },
+  {
+    "ean": "0619205336953",
+    "nome": "BISCOITO AMR GAITINHA ACUCARADA 350GR"
+  },
+  {
+    "ean": "0619205336960",
+    "nome": "BISCOITO AMR GAITINHA 350GR"
+  },
+  {
+    "ean": "0619205336977",
+    "nome": "BISCOITO AMR CANELA LISA 350GR"
+  },
+  {
+    "ean": "0619205336984",
+    "nome": "BISCOITO AMR CANELA FOLHADA 350GR"
+  },
+  {
+    "ean": "0619205336991",
+    "nome": "BISCOITO AMR FOLHADO 350GR"
+  },
+  {
+    "ean": "0619205337004",
+    "nome": "BISCOITO AMR REDONDO 350GR"
+  },
+  {
+    "ean": "0619205337011",
+    "nome": "BISCOITO AMR DENTINHO TRADICIONAL 100GR"
+  },
+  {
+    "ean": "0619205337028",
+    "nome": "BISCOITO AMR DENTINHO QUEIJO 100GR"
+  },
+  {
+    "ean": "0619205337035",
+    "nome": "BISCOITO AMR DENTINHO MANTEIGA 100GR"
+  },
+  {
+    "ean": "0619205337073",
+    "nome": "BISCOITO AMR BROA DE MILHO 350GR"
+  },
+  {
+    "ean": "0619205342251",
+    "nome": "CARVAO BRASA FORTE 4KG"
+  },
+  {
+    "ean": "0619205342268",
+    "nome": "CARVAO BRASA FORTE 3KG"
+  },
+  {
+    "ean": "0700083126504",
+    "nome": "PAPEL OFICIO PAMPAPEL A4 PCT 500FLS"
+  },
+  {
+    "ean": "0703305298300",
+    "nome": "COLA BIC BRANCA 90GR"
+  },
+  {
+    "ean": "0729208082099",
+    "nome": "RACAO TROLLY CAO 5KG"
+  },
+  {
+    "ean": "0732783036906",
+    "nome": "LEITE LV DALIA INTEGRAL 1L"
+  },
+  {
+    "ean": "0732783053149",
+    "nome": "LEITE LV DALIA DESNATADO 1L"
+  },
+  {
+    "ean": "0732783055181",
+    "nome": "SUINO CARNE MOI DALIA500g"
+  },
+  {
+    "ean": "0736532665713",
+    "nome": "HORTI TOMATE CEREJA VERMELHO BJ 250G"
+  },
+  {
+    "ean": "0742832534215",
+    "nome": "ARROZ RECANTO PARB T1 1KG"
+  },
+  {
+    "ean": "0745125682075",
+    "nome": "KOMBUCHA ORGANICA DOUTOR K GUAR ACAI 350"
+  },
+  {
+    "ean": "1220000250031",
+    "nome": "ENERGETICO MONSTER PACIFIC PUNCH 473ML"
+  },
+  {
+    "ean": "1220000250055",
+    "nome": "SUPLEMENTO REIGN LEMON HDZ 473ML"
+  },
+  {
+    "ean": "1220000250079",
+    "nome": "SUPLEMENTO REIGN MELON MANIA 473 ML"
+  },
+  {
+    "ean": "1220000250222",
+    "nome": "ENERGETICO MONSTER WATERMELON 473ML"
+  },
+  {
+    "ean": "2001700000008",
+    "nome": "SALGADO FESTA NICOLINI KG"
+  },
+  {
+    "ean": "2003900000000",
+    "nome": "CAPA FILE ASSADA KG"
+  },
+  {
+    "ean": "2004100000005",
+    "nome": "SNO CHULETA RESF KG"
+  },
+  {
+    "ean": "2004900000007",
+    "nome": "AVE MILLENIUM TEMP KG"
+  },
+  {
+    "ean": "2005200000001",
+    "nome": "CHESTER PERDIGAO AZEITE ERVAS KG"
+  },
+  {
+    "ean": "2008300000001",
+    "nome": "FGO COXA PPONA KG"
+  },
+  {
+    "ean": "2008400000000",
+    "nome": "VAZIO NOVILHO KG"
+  },
+  {
+    "ean": "2009200000009",
+    "nome": "LINGUICA FRIMESA GRANEL R"
+  },
+  {
+    "ean": "2009500000006",
+    "nome": "QUEIJO RICOTA FRESCA RODEIO KG"
+  },
+  {
+    "ean": "2010500000002",
+    "nome": "LINGUICA SANTA CLARA MISTA DEF VACUO KG"
+  },
+  {
+    "ean": "2010600000001",
+    "nome": "SNO BACON SANTA CLARA DEFUMADO MINI KG"
+  },
+  {
+    "ean": "2010900000008",
+    "nome": "BIFE PALETA KG"
+  },
+  {
+    "ean": "2011200000002",
+    "nome": "SALAMINHO SANTA CLARA KVC KG"
+  },
+  {
+    "ean": "2015900000003",
+    "nome": "MORTADELA EXCELSIOR C/TOUC FAT KG"
+  },
+  {
+    "ean": "2018600000007",
+    "nome": "FILE MIGNON NOVILHO KG"
+  },
+  {
+    "ean": "2019100000009",
+    "nome": "SUINO CHULETA CONG KG"
+  },
+  {
+    "ean": "2019200000008",
+    "nome": "SNO LEITAO CONG KG"
+  },
+  {
+    "ean": "2019300000007",
+    "nome": "SUINO TOUCINHO CONG KG"
+  },
+  {
+    "ean": "2019500000005",
+    "nome": "OVINO COSTELA CONG KG"
+  },
+  {
+    "ean": "2019700000003",
+    "nome": "OVINO PESCOCO CONG KG"
+  },
+  {
+    "ean": "2019900000001",
+    "nome": "LOMBO SUINO RESFRIADO KG"
+  },
+  {
+    "ean": "2020000000006",
+    "nome": "COSTELA SUINA RESF KG"
+  },
+  {
+    "ean": "2020300000003",
+    "nome": "CAPA DE FILE VACUO KG"
+  },
+  {
+    "ean": "2020400000002",
+    "nome": "ALCATRA RESFRIADA KG"
+  },
+  {
+    "ean": "2020500000001",
+    "nome": "COXAO DENTRO KG"
+  },
+  {
+    "ean": "2020700000009",
+    "nome": "CUPIM BOV FRIGON RESF VC"
+  },
+  {
+    "ean": "2020800000008",
+    "nome": "AGULHA RESFRIADA KG"
+  },
+  {
+    "ean": "2020900000007",
+    "nome": "BIFE COXAO FORA KG"
+  },
+  {
+    "ean": "2021100000002",
+    "nome": "BOVINO CHULETA KG"
+  },
+  {
+    "ean": "2021200000001",
+    "nome": "COXAO DE FORA KG"
+  },
+  {
+    "ean": "2021600000007",
+    "nome": "BOV TIRAS P/ STROGONOFF RESF KG"
+  },
+  {
+    "ean": "2021700000006",
+    "nome": "LINGUA BOVINA CONG KG"
+  },
+  {
+    "ean": "2022100000009",
+    "nome": "ENTRECOT NOVILHO RESF KG"
+  },
+  {
+    "ean": "2022200000008",
+    "nome": "PALETA BOVINA KG"
+  },
+  {
+    "ean": "2022300000007",
+    "nome": "BOV APARA LOMBO RESF KG"
+  },
+  {
+    "ean": "2022400000006",
+    "nome": "PATINHO KG"
+  },
+  {
+    "ean": "2022500000005",
+    "nome": "CONTRA FILE BOVINO NOV KG"
+  },
+  {
+    "ean": "2022700000003",
+    "nome": "PEITO BOVINO KG"
+  },
+  {
+    "ean": "2022900000001",
+    "nome": "GUISADO 1ï¿½ RESF KG"
+  },
+  {
+    "ean": "2023000000007",
+    "nome": "GUISADO 2ï¿½ KG"
+  },
+  {
+    "ean": "2023200000005",
+    "nome": "BOV RABADA CONG KG"
+  },
+  {
+    "ean": "2023600000001",
+    "nome": "BOV CUBOS P/CARRETEIRO RESF KG"
+  },
+  {
+    "ean": "2023700000000",
+    "nome": "RIPA DE CHULETA RESF KG"
+  },
+  {
+    "ean": "2023900000008",
+    "nome": "RINS BOVINO CONG KG"
+  },
+  {
+    "ean": "2024000000004",
+    "nome": "PATA BOVINA CONG KG"
+  },
+  {
+    "ean": "2024400000000",
+    "nome": "PERU PERDIGÃO TEMP KG"
+  },
+  {
+    "ean": "2024500000009",
+    "nome": "PERU SADIA TEMPERADO KG"
+  },
+  {
+    "ean": "2024600000008",
+    "nome": "PRESUNTO TENDER FRIMESA KG"
+  },
+  {
+    "ean": "2024700000007",
+    "nome": "MONDONGO CONG KG"
+  },
+  {
+    "ean": "2025200000009",
+    "nome": "FILE MIGNON BOV VACUO KG"
+  },
+  {
+    "ean": "2025400000007",
+    "nome": "SUINO LOMBO CONG KG"
+  },
+  {
+    "ean": "2025600000005",
+    "nome": "SUINO BACON KG"
+  },
+  {
+    "ean": "2026100000007",
+    "nome": "COXA S/COXA ASSADA KG"
+  },
+  {
+    "ean": "2026200000006",
+    "nome": "COXA FRANGO DORSO CONG KG"
+  },
+  {
+    "ean": "2026300000005",
+    "nome": "COXA S COXA FRANGO CONG"
+  },
+  {
+    "ean": "2026400000004",
+    "nome": "COXA S/COXA FRANGO KG"
+  },
+  {
+    "ean": "2026600000002",
+    "nome": "DORSO DE FRANGO CONG KG"
+  },
+  {
+    "ean": "2026800000000",
+    "nome": "FILE PEITO FRANGO CONG KG"
+  },
+  {
+    "ean": "2026900000009",
+    "nome": "GALINHA MATRIZ CONG KG"
+  },
+  {
+    "ean": "2027300000002",
+    "nome": "PEITO FRANGO CONG KG"
+  },
+  {
+    "ean": "2027600000009",
+    "nome": "FRANGO RESFRIADO KG"
+  },
+  {
+    "ean": "2028200000000",
+    "nome": "FRANGO ASSADO KG"
+  },
+  {
+    "ean": "2028500000007",
+    "nome": "CHESTER PERDIGï¿½O CONG K"
+  },
+  {
+    "ean": "2028700000005",
+    "nome": "FRANGO CONGELADO KG"
+  },
+  {
+    "ean": "2030000000005",
+    "nome": "ABACATE KG"
+  },
+  {
+    "ean": "2030400000001",
+    "nome": "BANANA PRATA KG"
+  },
+  {
+    "ean": "2030500000000",
+    "nome": "BANANA CATURRA KG"
+  },
+  {
+    "ean": "2031300000009",
+    "nome": "FRANGO SOBRECOXA GRAN KG"
+  },
+  {
+    "ean": "2031700000005",
+    "nome": "KIWI KG"
+  },
+  {
+    "ean": "2031900000003",
+    "nome": "LARANJA CEU KG"
+  },
+  {
+    "ean": "2032000000009",
+    "nome": "LARANJA SUCO KG"
+  },
+  {
+    "ean": "2032200000007",
+    "nome": "FRUTI LIMA KG"
+  },
+  {
+    "ean": "2032300000006",
+    "nome": "LIMAO TAITI KG"
+  },
+  {
+    "ean": "2032400000005",
+    "nome": "MACA IMPORTADA KG"
+  },
+  {
+    "ean": "2032500000004",
+    "nome": "FRUTI MELAO GAUCHO KG"
+  },
+  {
+    "ean": "2032600000003",
+    "nome": "MACA GALA KG"
+  },
+  {
+    "ean": "2032800000001",
+    "nome": "MACA VERDE KG"
+  },
+  {
+    "ean": "2032900000000",
+    "nome": "MAMAO FORMOSA KG"
+  },
+  {
+    "ean": "2033000000006",
+    "nome": "MELAO ESPANHOL KG"
+  },
+  {
+    "ean": "2033100000005",
+    "nome": "MAMAO PAPAIA KG"
+  },
+  {
+    "ean": "2033200000004",
+    "nome": "MANGA KG"
+  },
+  {
+    "ean": "2033500000001",
+    "nome": "FRUTI MELANCIA INT KG"
+  },
+  {
+    "ean": "2033600000000",
+    "nome": "FRUTI MELAO ORANGE KG"
+  },
+  {
+    "ean": "2034000000003",
+    "nome": "PERA IMPORTADA KG"
+  },
+  {
+    "ean": "2034100000002",
+    "nome": "MELAO CARVA"
+  },
+  {
+    "ean": "2034200000001",
+    "nome": "BIFE ALCATRA KG"
+  },
+  {
+    "ean": "2034300000000",
+    "nome": "BIFE PATINHO KG"
+  },
+  {
+    "ean": "2034400000009",
+    "nome": "BIFE COXAO DENTRO KG"
+  },
+  {
+    "ean": "2034800000005",
+    "nome": "FRUTI UVA KG"
+  },
+  {
+    "ean": "2035100000009",
+    "nome": "ABOBORA CABOTIA KG"
+  },
+  {
+    "ean": "2035300000007",
+    "nome": "AIPIM KG"
+  },
+  {
+    "ean": "2035600000004",
+    "nome": "ABOBORA TRONCO KG"
+  },
+  {
+    "ean": "2035800000002",
+    "nome": "BATATA BRANCA KG"
+  },
+  {
+    "ean": "2035900000001",
+    "nome": "BATATA DOCE ROSA KG"
+  },
+  {
+    "ean": "2036000000007",
+    "nome": "INHAME KG"
+  },
+  {
+    "ean": "2036200000005",
+    "nome": "BATATA ROSA KG"
+  },
+  {
+    "ean": "2036300000004",
+    "nome": "BERINJELA KG"
+  },
+  {
+    "ean": "20366000000001",
+    "nome": "CEBOLA KG"
+  },
+  {
+    "ean": "2036700000000",
+    "nome": "CENOURA KG"
+  },
+  {
+    "ean": "2036900000008",
+    "nome": "HORTI CHUCHU KG"
+  },
+  {
+    "ean": "2038000000001",
+    "nome": "PEPINO JAPONES KG"
+  },
+  {
+    "ean": "2038100000000",
+    "nome": "PEPINO SALADA KG"
+  },
+  {
+    "ean": "2038200000009",
+    "nome": "PIMENTAO VERDE KG"
+  },
+  {
+    "ean": "2038600000005",
+    "nome": "REPOLHO VERDE KG"
+  },
+  {
+    "ean": "2038700000004",
+    "nome": "REPOLHO ROXO KG"
+  },
+  {
+    "ean": "2038900000002",
+    "nome": "TOMATE LONGA VIDA KG"
+  },
+  {
+    "ean": "2039200000006",
+    "nome": "TOMATE ITALIANO KG"
+  },
+  {
+    "ean": "2039300000005",
+    "nome": "VAGEM KG"
+  },
+  {
+    "ean": "2039600000002",
+    "nome": "SUINO FILE C/BAC DALIA KG"
+  },
+  {
+    "ean": "2044600000006",
+    "nome": "SALSICHA EXCELSIOR DEF 18CM KG"
+  },
+  {
+    "ean": "2045100000008",
+    "nome": null,
+    "erro": "HTTPSConnectionPool(host='bage.supernicolini.com.br', port=443): Read timed out. (read timeout=20)"
+  },
+  {
+    "ean": "2048200000008",
+    "nome": "SALAME ITALIANO GIGANTE FAT KG"
+  },
+  {
+    "ean": "2049700000000",
+    "nome": "ABOBORA ITALIANA KG"
+  },
+  {
+    "ean": "2049800000009",
+    "nome": "PIMENTAO VERMELHO KG"
+  },
+  {
+    "ean": "2049900000008",
+    "nome": "CORACAO BOVINO CONG KG"
+  },
+  {
+    "ean": "2050000000003",
+    "nome": "COSTELA BOV TIRAS CONG KG"
+  },
+  {
+    "ean": "2050600000007",
+    "nome": "PIMENTAO AMARELO KG"
+  },
+  {
+    "ean": "2051000000000",
+    "nome": "SUINO PELE SALGADA KG"
+  },
+  {
+    "ean": "2051100000009",
+    "nome": "SUINO ESPINHACO SALG KG"
+  },
+  {
+    "ean": "2051200000008",
+    "nome": null,
+    "erro": "HTTPSConnectionPool(host='bage.supernicolini.com.br', port=443): Read timed out. (read timeout=20)"
+  },
+  {
+    "ean": "2051400000006",
+    "nome": "SUINO PERNIL C/O CONG KG"
+  },
+  {
+    "ean": "2051600000004",
+    "nome": "SUINO RABO SALGADO KG"
+  },
+  {
+    "ean": "2051700000003",
+    "nome": "SUINO TOUCINHO C/PELE KG"
+  },
+  {
+    "ean": "2052300000004",
+    "nome": "SNO PALETA C/OSSO CONG KG"
+  },
+  {
+    "ean": "2053500000009",
+    "nome": "ALHO KG"
+  },
+  {
+    "ean": "2057700000005",
+    "nome": "MORCELA BRANCA CASTRO KG"
+  },
+  {
+    "ean": "2057800000004",
+    "nome": "MORCELA PRETA CASTRO KG"
+  },
+  {
+    "ean": "2058000000009",
+    "nome": "GOIABA KG"
+  },
+  {
+    "ean": "2058600000003",
+    "nome": "BETERRABA KG"
+  },
+  {
+    "ean": "2058700000002",
+    "nome": "PASSAS UVA BRANCA S/SEM KG"
+  },
+  {
+    "ean": "2060300000009",
+    "nome": "CADERNO CREDEAL CD MY COLLEC 1M 80F FEM"
+  },
+  {
+    "ean": "2061700000002",
+    "nome": "ABOBORA PESCOCO P/DOCE KG"
+  },
+  {
+    "ean": "2062800000008",
+    "nome": "MAMAO PAPAYA PARTIDO KG"
+  },
+  {
+    "ean": "2063600000007",
+    "nome": "PAO BILHA CERVEJINHA KG"
+  },
+  {
+    "ean": "2063800000005",
+    "nome": "PAO FRANCES CACETINHO KG"
+  },
+  {
+    "ean": "2063900000004",
+    "nome": "PAO FRANCES FIBRAS KG"
+  },
+  {
+    "ean": "2064300000007",
+    "nome": "PAO MASSINHA DOCE CREME FAROFA KG"
+  },
+  {
+    "ean": "2064400000006",
+    "nome": "PAO MASSINHA DOCE CREME COCO KG"
+  },
+  {
+    "ean": "2064600000004",
+    "nome": "CUCA PEQUENA  BAUNILHA KG"
+  },
+  {
+    "ean": "2065100000006",
+    "nome": "PAO DE QUEIJO KG"
+  },
+  {
+    "ean": "2065300000004",
+    "nome": "PASTEL FOLHADO FRANGO LANCHE KG"
+  },
+  {
+    "ean": "2065400000003",
+    "nome": "PASTEL FOLH PRES E QUEIJO LANCHE KG"
+  },
+  {
+    "ean": "2067000000001",
+    "nome": "ENROLADO FOLHADO SALSICHA LANCH KG"
+  },
+  {
+    "ean": "2067200000009",
+    "nome": "PAO MASSINHA INTEGRAL  KG"
+  },
+  {
+    "ean": "2067700000004",
+    "nome": "PAO TOTOZINHO KG"
+  },
+  {
+    "ean": "2067800000003",
+    "nome": "PAO SONHO FRITO KG"
+  },
+  {
+    "ean": "2069000000005",
+    "nome": "MAMAO FORMOSA PARTIDO KG"
+  },
+  {
+    "ean": "2071200000006",
+    "nome": "PALETA SUINA RESF KG"
+  },
+  {
+    "ean": "2071300000005",
+    "nome": "PERNIL SUINO RESF KG"
+  },
+  {
+    "ean": "2071400000004",
+    "nome": "TORTA NICOLINI BOMBOM KG"
+  },
+  {
+    "ean": "2071600000002",
+    "nome": "GENGIBRE KG"
+  },
+  {
+    "ean": "2074600000003",
+    "nome": "SALSICHA MINU 17CM KG"
+  },
+  {
+    "ean": "2074700000002",
+    "nome": "SALSICHA MINU 25CM KG"
+  },
+  {
+    "ean": "2075800000008",
+    "nome": "TORTA NICOLINI CHOCOLATE KG"
+  },
+  {
+    "ean": "2076000000003",
+    "nome": "MORANGO KG"
+  },
+  {
+    "ean": "2076400000009",
+    "nome": "TORTA NICOLINI CREME DE OVOS KG"
+  },
+  {
+    "ean": "2077100000009",
+    "nome": "PAO PARA CACHORRINHO KG"
+  },
+  {
+    "ean": "2077200000008",
+    "nome": "AMEIXA ROSA KG"
+  },
+  {
+    "ean": "2077300000007",
+    "nome": "FRUTI PESSEGO BRANCO KG"
+  },
+  {
+    "ean": "2077900000001",
+    "nome": "ASSADO DE TIRAS BOVINO KG"
+  },
+  {
+    "ean": "2078600000001",
+    "nome": "MARACUJA  KG"
+  },
+  {
+    "ean": "2079300000001",
+    "nome": "HORTI ABOBORA PESCOCO DOCE EMBALADA KG"
+  },
+  {
+    "ean": "2079400000000",
+    "nome": "HORTI ABOBORA MORANGA VERMELHA EMB KG"
+  },
+  {
+    "ean": "2080400000006",
+    "nome": "PAO BAGUETE KG"
+  },
+  {
+    "ean": "2081800000009",
+    "nome": "RECHEADA PRONTA UN"
+  },
+  {
+    "ean": "2083200000009",
+    "nome": "PAO HAMBURGUER KG"
+  },
+  {
+    "ean": "2084200000006",
+    "nome": "EMPADA FOLHADA FRANGO LANCHE KG"
+  },
+  {
+    "ean": "2085000000005",
+    "nome": "QUEIJO MUSSARELA RALADO FRESCO KG"
+  },
+  {
+    "ean": "2085700000008",
+    "nome": "HORTI GENGIBRE EMB KG"
+  },
+  {
+    "ean": "2089600000007",
+    "nome": "PAO DE MILHO KG"
+  },
+  {
+    "ean": "2090000000009",
+    "nome": "TRIPA GORDA BOVINA CON KG"
+  },
+  {
+    "ean": "2090100000008",
+    "nome": "HORTI PIMENTA VERMELHA EMB KG"
+  },
+  {
+    "ean": "2090200000007",
+    "nome": "HORTI PIMENTAO AMARELO EMB KG"
+  },
+  {
+    "ean": "2090700000002",
+    "nome": "CUCA PEQUENA DOCE DE LEITE KG"
+  },
+  {
+    "ean": "2091200000004",
+    "nome": "MAMINHA ASSADA KG"
+  },
+  {
+    "ean": "2091400000002",
+    "nome": "COXINHA ASA ASSADA KG"
+  },
+  {
+    "ean": "20915000000001",
+    "nome": "SUINO COSTELA ASSADA KG"
+  },
+  {
+    "ean": "2091600000000",
+    "nome": "SALADA MAIONESE PRONTA Kg"
+  },
+  {
+    "ean": "2092200000001",
+    "nome": "LIMAO SICILIANO KG"
+  },
+  {
+    "ean": "2092700000006",
+    "nome": "HORTI ABOBORA CABOTIA PARTIDA KG"
+  },
+  {
+    "ean": "2095100000003",
+    "nome": "HORTI PIMENTAO VERDE EMB KG"
+  },
+  {
+    "ean": "2095200000002",
+    "nome": "HORTI PIMENTAO VERMELHO EMB KG"
+  },
+  {
+    "ean": "2096200000009",
+    "nome": "CUCA GOIABADA REQUEIJAO KG"
+  },
+  {
+    "ean": "2096400000007",
+    "nome": "LINGUICA CASTRO MISTA FINA KG"
+  },
+  {
+    "ean": "2097000000008",
+    "nome": "PASTEL FOLHADO CARNE LANCHE KG"
+  },
+  {
+    "ean": "2098100000004",
+    "nome": "PXE FILE INTERFOLHADO KG"
+  },
+  {
+    "ean": "2098900000006",
+    "nome": "COXAO DENTRO PECA INT KG"
+  },
+  {
+    "ean": "2099000000002",
+    "nome": "PATINHO PECA INT VACUO KG"
+  },
+  {
+    "ean": "2099500000007",
+    "nome": "COXAO FORA PC IN VACUO KG"
+  },
+  {
+    "ean": "2099600000006",
+    "nome": "TATU PECA INT VACUO KG"
+  },
+  {
+    "ean": "2099700000005",
+    "nome": "ALCATRA PECA INT VACUO KG"
+  },
+  {
+    "ean": "2101200000000",
+    "nome": "LARANJA UMBIGO IMPORTACAO"
+  },
+  {
+    "ean": "2101600000006",
+    "nome": "CENTRO PALETA KG"
+  },
+  {
+    "ean": "2102900000000",
+    "nome": "PALETA BOVINA S/OSSO KG"
+  },
+  {
+    "ean": "2103100000005",
+    "nome": "BOV BRISKET RESF KG"
+  },
+  {
+    "ean": "2103600000000",
+    "nome": "TORTA NICOLINI MARTA ROCHA KG"
+  },
+  {
+    "ean": "2104400000009",
+    "nome": "POLENTA FRITA KG"
+  },
+  {
+    "ean": "2105900000001",
+    "nome": "BOV BIFE VAZIO RESF KG"
+  },
+  {
+    "ean": "2106700000000",
+    "nome": "FIGO KG"
+  },
+  {
+    "ean": "2109000000008",
+    "nome": "MORTADELA EXCELSIOR C/TOUC INT KG"
+  },
+  {
+    "ean": "2110100000003",
+    "nome": "FRUTI PINHAO EMB KG"
+  },
+  {
+    "ean": "2112000000008",
+    "nome": "LINGUICA CALABRESA FRIMESA KG"
+  },
+  {
+    "ean": "2115900000000",
+    "nome": "PERU SEARA TEMPERADO KG"
+  },
+  {
+    "ean": "2119700000000",
+    "nome": "TORRADA NICOLINI COMPLETA UN"
+  },
+  {
+    "ean": "2120400000009",
+    "nome": "TORRADA NICOLINI SIMPLES UN"
+  },
+  {
+    "ean": "2122100000006",
+    "nome": "SOBRECOXA ASSADA KG"
+  },
+  {
+    "ean": "2123000000004",
+    "nome": "PAO BAGUETE MULTIGRAOS KG"
+  },
+  {
+    "ean": "2123200000002",
+    "nome": "PAO BRIOCHE AMANTEIGADO TRAD  REDONDO KG"
+  },
+  {
+    "ean": "2123300000001",
+    "nome": "PAO NICOLINI AUSTRALIANO KG"
+  },
+  {
+    "ean": "2123400000000",
+    "nome": "PAO ITALIANO KG"
+  },
+  {
+    "ean": "2123500000009",
+    "nome": "PAO BISCOITAO KG"
+  },
+  {
+    "ean": "2123700000007",
+    "nome": "PIZZA CASEIRA CALABRESA KG"
+  },
+  {
+    "ean": "2123800000006",
+    "nome": "PAO PRETO COM LINHACA KG"
+  },
+  {
+    "ean": "2125100000007",
+    "nome": "SUINO OSSO PERNIL CONG KG"
+  },
+  {
+    "ean": "2128600000003",
+    "nome": "PAO ESFIHA C PAO DE BRIOCHE KG"
+  },
+  {
+    "ean": "2128700000002",
+    "nome": "PAO BRIOCHE CREME FAROFA KG"
+  },
+  {
+    "ean": "2128800000001",
+    "nome": "PAO BRIOCHE ACUCAR KG"
+  },
+  {
+    "ean": "2129100000005",
+    "nome": "BISCOITO GALLETA MINI DOCE KG"
+  },
+  {
+    "ean": "2129600000000",
+    "nome": "PICANHA BOVINA NOVILHO KG"
+  },
+  {
+    "ean": "2135200000005",
+    "nome": "MORTADELA LEBON C TOUC INT KG"
+  },
+  {
+    "ean": "2135900000008",
+    "nome": "LINGUICA CASTRO SUINA CAMPEIRA KG"
+  },
+  {
+    "ean": "2139800000007",
+    "nome": "BATATA DOCE ASSADA KG"
+  },
+  {
+    "ean": "2140000000001",
+    "nome": "PEITO FRANGO MINU FAT KG"
+  },
+  {
+    "ean": "2140600000005",
+    "nome": "TORTA NICOLINI BOMBOM PEDACOS KG"
+  },
+  {
+    "ean": "2140700000004",
+    "nome": "TORTA NICOLINI CHOC C/ MORANG PEDACOS KG"
+  },
+  {
+    "ean": "2141400000004",
+    "nome": "TORTA NICOLINI MARTA ROCHA PEDACOS KG"
+  },
+  {
+    "ean": "2141800000000",
+    "nome": "TORTA NICOLINI PESSEGO C/COCO MINI KG"
+  }
+]
