@@ -1,21 +1,23 @@
 {
   "name": "MyBus",
   "short_name": "MyBus",
-  "start_url": "/mybus/",
-  "scope": "/mybus/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0a0a0a",
   "icons": [
     {
-      "src": "/mybus/img/icon-192.png",
+      "src": "img/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/mybus/img/icon-512.png",
+      "src": "img/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
