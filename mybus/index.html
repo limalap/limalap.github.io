@@ -340,6 +340,24 @@
     setDiaAtual();
   };
 
+function garantirLinha(linhaCodigo) {
+  const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+
+  const existe = banco.some(l => l.linha === linhaCodigo);
+
+  if (!existe) {
+    banco.push({
+      linha: linhaCodigo,
+      origem: 'Origem não definida',
+      destino: 'Destino não definido'
+    });
+
+    localStorage.setItem('bancoLinha', JSON.stringify(banco));
+  }
+}
+
+
+
 function atualizarLinha() {
   let dados;
 
@@ -362,6 +380,7 @@ function atualizarLinha() {
       item.tempo &&
       item.dias
     ) {
+      garantirLinha(item.linha);
       salvarHorario({
         linha: item.linha,
         horario: item.horario,
