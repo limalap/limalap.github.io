@@ -1,0 +1,21 @@
+{
+  "name": "MyBus",
+  "short_name": "MyBus",
+  "start_url": "/mybus/",
+  "scope": "/mybus/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/mybus/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/mybus/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
