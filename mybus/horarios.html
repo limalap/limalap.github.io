@@ -23,12 +23,14 @@
 
   <!-- TÍTULO + BOTÕES -->
   <div class="d-flex align-items-center mb-3">
-    <h4 class="m-0 me-2">Horários</h4>
+  <h4 class="m-0">Horários</h4>
 
+  <div class="ms-auto">
     <button id="btnNovo" class="btn btn-success btn-sm me-1">Novo</button>
     <button id="btnImport" class="btn btn-primary btn-sm me-1">Import</button>
     <a href="bus.html" id="btnLinhas" class="btn btn-secondary btn-sm">Linhas</a>
   </div>
+</div>
 
   <!-- PAINEL DE FILTROS -->
   <div id="filtros" class="card shadow-sm mb-3">
@@ -338,6 +340,24 @@
     setDiaAtual();
   };
 
+
+function garantirLinha(linhaCodigo) {
+  const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+
+  const existe = banco.some(l => l.linha === linhaCodigo);
+
+  if (!existe) {
+    banco.push({
+      linha: linhaCodigo,
+      origem: 'Origem não definida',
+      destino: 'Destino não definido'
+    });
+
+    localStorage.setItem('bancoLinha', JSON.stringify(banco));
+  }
+}
+
+
 function atualizarLinha() {
   let dados;
 
@@ -360,6 +380,7 @@ function atualizarLinha() {
       item.tempo &&
       item.dias
     ) {
+       garantirLinha(item.linha);
       salvarHorario({
         linha: item.linha,
         horario: item.horario,
