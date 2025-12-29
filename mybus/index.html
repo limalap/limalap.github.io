@@ -1,1 +1,404 @@
-<html> xxx
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark"></html> 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Horários de ônibus</title>
+  <link rel="manifest" href="/mybus/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MyBus"> 
+
+
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container py-4" style="max-width: 720px;">
+
+  <!-- TÍTULO + BOTÕES -->
+  <div class="d-flex align-items-center mb-3">
+    <h4 class="m-0 me-2">Horários</h4>
+
+    <button id="btnNovo" class="btn btn-success btn-sm me-1">Novo</button>
+    <button id="btnImport" class="btn btn-primary btn-sm me-1">Import</button>
+    <a href="bus.html" id="btnLinhas" class="btn btn-secondary btn-sm">Linhas</a>
+  </div>
+
+  <!-- PAINEL DE FILTROS -->
+  <div id="filtros" class="card shadow-sm mb-3">
+    <div class="card-body">
+
+      <div class="mb-2">
+        <select id="filtroLinha" class="form-control fw-bold"></select>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <select id="filtroDia" class="form-control w-auto">
+          <option value="seg">Segunda</option>
+          <option value="ter">Terça</option>
+          <option value="qua">Quarta</option>
+          <option value="qui">Quinta</option>
+          <option value="sex">Sexta</option>
+          <option value="sab">Sábado</option>
+          <option value="dom">Domingo</option>
+        </select>
+
+        <button id="btnHoje" type="button" class="btn btn-outline-secondary btn-sm"></button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO NOVO / EDITAR -->
+  <div id="formContainer" class="card shadow-sm mb-3" style="display:none;">
+    <div class="card-body">
+
+      <form id="form">
+        <input type="hidden" id="indiceEdicao">
+
+        <div class="mb-3">
+          <label class="form-label">Linha</label>
+          <select id="linha" class="form-control"></select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Horário de partida</label>
+          <input id="horario" type="time" step="1" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Tempo estimado</label>
+          <select id="tempo" class="form-control"></select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Dias da semana</label>
+          <div class="d-flex flex-wrap gap-3">
+            <label><input type="checkbox" class="dia" value="seg"> Seg</label>
+            <label><input type="checkbox" class="dia" value="ter"> Ter</label>
+            <label><input type="checkbox" class="dia" value="qua"> Qua</label>
+            <label><input type="checkbox" class="dia" value="qui"> Qui</label>
+            <label><input type="checkbox" class="dia" value="sex"> Sex</label>
+            <label><input type="checkbox" class="dia" value="sab"> Sab</label>
+            <label><input type="checkbox" class="dia" value="dom"> Dom</label>
+          </div>
+
+          <button id="btnDiasUteis" type="button" class="btn btn-outline-primary btn-sm mt-2">
+            Dias úteis
+          </button>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+          <button id="btnSalvar" type="submit" class="btn btn-primary flex-fill">Salvar</button>
+          <button id="btnCancelar" type="button" class="btn btn-secondary flex-fill">Cancelar</button>
+          <button id="btnExcluir" type="button" class="btn btn-danger flex-fill" style="display:none;">Excluir</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO IMPORT -->
+  <div id="importContainer" class="card shadow-sm mb-3" style="display:none;">
+    <div class="card-body">
+
+      <h5>Importação de horários</h5>
+
+      <div class="mb-3">
+        <label class="form-label">Linha</label>
+        <select id="importLinha" class="form-control"></select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">JSON da linha</label>
+        <textarea id="importJson" class="form-control" rows="8" spellcheck="false"></textarea>
+      </div>
+
+     <button
+  id="btnAtualizarImport"
+  type="button"
+  class="btn btn-primary me-2"
+  onclick="atualizarLinha()"
+>
+  Atualizar
+</button>
+<button
+  id="btnCopiarImport"
+  type="button"
+  class="btn btn-outline-secondary me-2"
+  onclick="copiarJsonImport()"
+>
+  Copiar
+</button>
+ <button id="btnCancelarImport" type="button" class="btn btn-secondary">
+        Cancelar
+      </button>
+
+    </div>
+  </div>
+
+  <!-- LISTA -->
+  <ul id="lista" class="list-group"></ul>
+
+</div>
+
+<script>
+  const diasMap = ['dom','seg','ter','qua','qui','sex','sab'];
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  function descricaoLinha(valor) {
+    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    const item = banco.find(l => l.linha === valor);
+    return item ? item.linha + ' - ' + item.origem + ' → ' + item.destino : valor;
+  }
+
+  function carregarSelectLinhas() {
+    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    filtroLinha.innerHTML = '';
+    linha.innerHTML = '';
+
+    banco.forEach(item => {
+      const texto = descricaoLinha(item.linha);
+      filtroLinha.add(new Option(texto, item.linha));
+      linha.add(new Option(texto, item.linha));
+    });
+
+    if (banco.length) filtroLinha.value = banco[0].linha;
+  }
+
+  function carregarSelectTempo() {
+    for (let i = 5; i <= 120; i += 5) {
+      tempo.add(new Option(i + ' minutos', i));
+    }
+  }
+
+  function salvarHorario(dados) {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+
+    const idx = banco.findIndex(h =>
+      h.linha === dados.linha &&
+      h.horario === dados.horario &&
+      h.dias === dados.dias
+    );
+
+    if (idx >= 0) {
+      banco[idx] = dados;
+    } else {
+      banco.push(dados);
+    }
+
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+  }
+
+  function atualizarBotaoData() {
+    const agora = new Date();
+    btnHoje.textContent =
+      agora.getDate() + ' ' +
+      meses[agora.getMonth()] + ', ' +
+      agora.toTimeString().slice(0,5);
+  }
+
+  function setDiaAtual() {
+    const hoje = new Date();
+    filtroDia.value = diasMap[hoje.getDay()];
+    atualizarBotaoData();
+    carregarLista();
+  }
+
+  function carregarLista() {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    lista.innerHTML = '';
+
+    banco.forEach((item, index) => {
+      if (item.linha !== filtroLinha.value) return;
+      if (!item.dias.includes(filtroDia.value)) return;
+
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+      li.innerHTML = `
+        <span>
+          ${descricaoLinha(item.linha)}<br>
+          Partida: ${item.horario} • Tempo: ${item.tempo} min<br>
+          Dias: ${item.dias}
+        </span>
+        <button class="btn btn-warning btn-sm" onclick="editar(${index})">Editar</button>
+      `;
+      lista.appendChild(li);
+    });
+  }
+
+  function mostrarForm() {
+    formContainer.style.display = 'block';
+    importContainer.style.display = 'none';
+    filtros.style.display = 'none';
+    lista.style.display = 'none';
+  }
+
+  function esconderTudo() {
+    formContainer.style.display = 'none';
+    importContainer.style.display = 'none';
+    filtros.style.display = 'block';
+    lista.style.display = 'block';
+  }
+
+  btnNovo.onclick = () => {
+    form.reset();
+    indiceEdicao.value = '';
+    btnExcluir.style.display = 'none';
+    mostrarForm();
+  };
+
+  btnImport.onclick = () => {
+    importContainer.style.display = 'block';
+    formContainer.style.display = 'none';
+    filtros.style.display = 'none';
+    lista.style.display = 'none';
+    carregarSelectImportLinhas();
+  };
+
+  btnCancelar.onclick = esconderTudo;
+  btnCancelarImport.onclick = esconderTudo;
+
+  filtroLinha.onchange = filtroDia.onchange = carregarLista;
+  btnHoje.onclick = setDiaAtual;
+
+  form.onsubmit = e => {
+    e.preventDefault();
+
+    const dias = [...document.querySelectorAll('.dia:checked')]
+      .map(c => c.value)
+      .join(',');
+
+    const dados = {
+      linha: linha.value,
+      horario: horario.value,
+      tempo: tempo.value,
+      dias
+    };
+
+    salvarHorario(dados);
+    esconderTudo();
+    carregarLista();
+  };
+
+  function editar(index) {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
+    const item = banco[index];
+
+    linha.value = item.linha;
+    horario.value = item.horario;
+    tempo.value = item.tempo;
+    indiceEdicao.value = index;
+
+    document.querySelectorAll('.dia').forEach(c => c.checked = item.dias.includes(c.value));
+
+    btnExcluir.style.display = 'block';
+    mostrarForm();
+  }
+
+  btnExcluir.onclick = () => {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario'));
+    banco.splice(indiceEdicao.value, 1);
+    localStorage.setItem('bancoHorario', JSON.stringify(banco));
+    esconderTudo();
+    carregarLista();
+  };
+
+  function carregarSelectImportLinhas() {
+    const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+    importLinha.innerHTML = '';
+
+    banco.forEach(item => {
+      importLinha.add(new Option(descricaoLinha(item.linha), item.linha));
+    });
+
+    if (banco.length) {
+      importLinha.value = banco[0].linha;
+      atualizarJsonImport();
+    }
+  }
+
+  function atualizarJsonImport() {
+    const banco = JSON.parse(localStorage.getItem('bancoHorario')) || [];
+    const dados = banco.filter(h => h.linha === importLinha.value);
+    importJson.value = JSON.stringify(dados, null, 2);
+  }
+
+  importLinha.onchange = atualizarJsonImport;
+
+  window.onload = () => {
+    carregarSelectLinhas();
+    carregarSelectTempo();
+    setDiaAtual();
+  };
+
+function atualizarLinha() {
+  let dados;
+
+  try {
+    dados = JSON.parse(importJson.value);
+  } catch (e) {
+    alert('JSON inválido');
+    return;
+  }
+
+  if (!Array.isArray(dados)) {
+    alert('O JSON deve ser uma lista de horários');
+    return;
+  }
+
+  dados.forEach(item => {
+    if (
+      item.linha &&
+      item.horario &&
+      item.tempo &&
+      item.dias
+    ) {
+      salvarHorario({
+        linha: item.linha,
+        horario: item.horario,
+        tempo: item.tempo,
+        dias: item.dias
+      });
+    }
+  });
+
+  filtroLinha.value = importLinha.value;
+
+  alert('Horários atualizados com sucesso');
+
+  esconderTudo();
+  carregarLista();
+}
+
+function copiarJsonImport() {
+  const texto = importJson.value;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(texto).then(() => {
+      alert('JSON copiado para a área de transferência');
+    }).catch(() => {
+      alert('Falha ao copiar o JSON');
+    });
+  } else {
+    const textareaTemp = document.createElement('textarea');
+    textareaTemp.value = texto;
+    textareaTemp.style.position = 'fixed';
+    textareaTemp.style.opacity = '0';
+    document.body.appendChild(textareaTemp);
+    textareaTemp.focus();
+    textareaTemp.select();
+    document.execCommand('copy');
+    document.body.removeChild(textareaTemp);
+    alert('JSON copiado para a área de transferência');
+  }
+}
+
+
+</script>
+
+</body>
+</html>
