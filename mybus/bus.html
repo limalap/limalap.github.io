@@ -16,18 +16,15 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="">
+<body>
 
   <div class="container py-4" style="max-width: 500px;">
-<div class="d-flex align-items-center mb-3">
-  <h4 class="m-0">Linha de ônibus</h4>
-
-  <div class="ms-auto">
-    <a href="index.html" id="btnLinhas" class="btn btn-secondary btn-sm">
-      Sair
-    </a>
-  </div>
-</div>
+    <div class="d-flex align-items-center mb-3">
+      <h4 class="m-0">Linha de ônibus</h4>
+      <div class="ms-auto">
+        <a href="index.html" class="btn btn-secondary btn-sm">Sair</a>
+      </div>
+    </div>
 
     <div class="card shadow-sm">
       <div class="card-body">
@@ -50,6 +47,16 @@
             <input id="destino" type="text" class="form-control" placeholder="Digite o destino">
           </div>
 
+          <div class="mb-3">
+            <label class="form-label">Distância (km)</label>
+            <input id="distancia" type="number" step="0.1" class="form-control" placeholder="Ex: 12.5">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Velocidade média (km/h)</label>
+            <input id="velocidade" type="number" step="0.1" class="form-control" placeholder="Ex: 30">
+          </div>
+
           <button type="submit" id="btnSalvar" class="btn btn-primary w-100">Salvar</button>
         </form>
 
@@ -58,9 +65,7 @@
 
     <h5 class="mt-4">Dados salvos</h5>
     <ul id="lista" class="list-group"></ul>
-
   </div>
-
 
   <script>
     function carregar() {
@@ -73,7 +78,11 @@
         li.className = "list-group-item d-flex justify-content-between align-items-center";
 
         const texto = document.createElement('span');
-        texto.innerHTML = item.linha + "<br>" + item.origem + " → " + item.destino;
+        texto.innerHTML =
+          item.linha + "<br>" +
+          item.origem + " → " + item.destino + "<br>" +
+          "Distância: " + (item.distancia ?? '-') + " km | " +
+          "Velocidade: " + (item.velocidade ?? '-') + " km/h";
 
         const containerBtns = document.createElement('div');
         containerBtns.className = "d-flex gap-2";
@@ -93,7 +102,6 @@
 
         li.appendChild(texto);
         li.appendChild(containerBtns);
-
         lista.appendChild(li);
       });
     }
@@ -102,12 +110,14 @@
       const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
       const item = banco[index];
 
-      document.getElementById('linha').value = item.linha;
-      document.getElementById('origem').value = item.origem;
-      document.getElementById('destino').value = item.destino;
+      linha.value = item.linha;
+      origem.value = item.origem;
+      destino.value = item.destino;
+      distancia.value = item.distancia ?? '';
+      velocidade.value = item.velocidade ?? '';
 
-      document.getElementById('indiceEdicao').value = index;
-      document.getElementById('btnSalvar').textContent = "Atualizar";
+      indiceEdicao.value = index;
+      btnSalvar.textContent = "Atualizar";
     }
 
     function deletar(index) {
@@ -120,29 +130,33 @@
     document.getElementById('form').addEventListener('submit', function(e){
       e.preventDefault();
 
-      const linha = document.getElementById('linha').value.trim();
-      const origem = document.getElementById('origem').value.trim();
-      const destino = document.getElementById('destino').value.trim();
-      const indice = document.getElementById('indiceEdicao').value;
+      const dados = {
+        linha: linha.value.trim(),
+        origem: origem.value.trim(),
+        destino: destino.value.trim(),
+        distancia: distancia.value ? Number(distancia.value) : null,
+        velocidade: velocidade.value ? Number(velocidade.value) : null
+      };
 
-      if (!linha || !origem || !destino) {
-        alert("Preencha todos os campos antes de salvar.");
+      if (!dados.linha || !dados.origem || !dados.destino) {
+        alert("Preencha todos os campos obrigatórios.");
         return;
       }
 
       const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
+      const indice = indiceEdicao.value;
 
       if (indice === "") {
-        banco.push({ linha, origem, destino });
+        banco.push(dados);
       } else {
-        banco[indice] = { linha, origem, destino };
+        banco[indice] = dados;
       }
 
       localStorage.setItem('bancoLinha', JSON.stringify(banco));
 
-      document.getElementById('form').reset();
-      document.getElementById('indiceEdicao').value = "";
-      document.getElementById('btnSalvar').textContent = "Salvar";
+      form.reset();
+      indiceEdicao.value = "";
+      btnSalvar.textContent = "Salvar";
 
       carregar();
     });
