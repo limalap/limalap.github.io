@@ -128,7 +128,7 @@ function clearCache() {
 function init() {
   // define automaticamente SS / SA / DF
   const tipoHoje = getTipoDia();
-  if (sDiaEl) sDiaEl.value = 'DF' //tipoHoje;
+  if (sDiaEl) sDiaEl.value = tipoHoje;
 
   const cached = getDb();
   if (cached) {
