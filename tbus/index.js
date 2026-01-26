@@ -1,12 +1,18 @@
+// index.js (atualizado) - Bootstrap list-group + tipo do dia (SS/SA/DF) + origens/destinos únicos no init
+
 const LS_KEY = "gti_linhas_db_v1";
 
 const listaEl  = document.getElementById("lista");
 const statusEl = document.getElementById("status");
 const btnSync  = document.getElementById("btnSync");
 const btnClear = document.getElementById("btnClear");
-const sDiaEl   = document.getElementById("Sdia");
+const sDiaEl   = document.getElementById("Sdia"); // select tipo de dia (SS/SA/DF)
 
 let currentDb = { linhas: [] };
+
+// Arrays globais (sempre atualizados)
+let ORIGENS_UNICAS = [];
+let DESTINOS_UNICOS = [];
 
 /* ======================
    UTIL
@@ -26,6 +32,9 @@ function escapeHtml(str) {
 
 /* ======================
    TIPO DE DIA
+   SS = segunda a sexta
+   SA = sábado
+   DF = domingo e feriados
 ====================== */
 function getTipoDia(date = new Date(), feriados = []) {
   const d = new Date(
@@ -33,11 +42,29 @@ function getTipoDia(date = new Date(), feriados = []) {
   );
 
   const diaSemana = d.getDay(); // 0=domingo, 6=sábado
-  const dataISO = d.toISOString().slice(0, 10);
+  const dataISO = d.toISOString().slice(0, 10); // YYYY-MM-DD
 
   if (diaSemana === 0 || feriados.includes(dataISO)) return "DF";
   if (diaSemana === 6) return "SA";
   return "SS";
+}
+
+/* ======================
+   ORIGENS/DESTINOS ÚNICOS
+====================== */
+function getOrigensDestinosUnicos(linhas) {
+  const origens = new Set();
+  const destinos = new Set();
+
+  (linhas || []).forEach((l) => {
+    if (l?.origem) origens.add(String(l.origem).trim());
+    if (l?.destino) destinos.add(String(l.destino).trim());
+  });
+
+  return {
+    origens: Array.from(origens),
+    destinos: Array.from(destinos),
+  };
 }
 
 /* ======================
@@ -75,7 +102,7 @@ function renderListaLinhas(linhas) {
 }
 
 /* ======================
-   DADOS
+   DB (localStorage)
 ====================== */
 function getDb() {
   try {
@@ -91,6 +118,19 @@ function saveDb(db) {
 }
 
 /* ======================
+   REFRESH DE LISTAS ÚNICAS
+====================== */
+function refreshOrigensDestinos() {
+  const { origens, destinos } = getOrigensDestinosUnicos(currentDb.linhas);
+  ORIGENS_UNICAS = origens;
+  DESTINOS_UNICOS = destinos;
+
+  // debug opcional
+  console.log("ORIGENS_UNICAS:", ORIGENS_UNICAS);
+  console.log("DESTINOS_UNICOS:", DESTINOS_UNICOS);
+}
+
+/* ======================
    AÇÕES
 ====================== */
 async function syncFromJson() {
@@ -101,6 +141,10 @@ async function syncFromJson() {
 
     currentDb = await res.json();
     saveDb(currentDb);
+
+    // atualiza arrays únicos sempre que sincronizar
+    refreshOrigensDestinos();
+
     renderListaLinhas(currentDb.linhas);
     setStatus("Dados carregados do db.json.");
   } catch (err) {
@@ -109,6 +153,10 @@ async function syncFromJson() {
     const cached = getDb();
     if (cached) {
       currentDb = cached;
+
+      // atualiza arrays únicos no fallback também
+      refreshOrigensDestinos();
+
       renderListaLinhas(currentDb.linhas);
       setStatus("Carregado do localStorage.");
     }
@@ -118,6 +166,9 @@ async function syncFromJson() {
 function clearCache() {
   localStorage.removeItem(LS_KEY);
   currentDb = { linhas: [] };
+  ORIGENS_UNICAS = [];
+  DESTINOS_UNICOS = [];
+
   renderListaLinhas([]);
   setStatus("Cache limpo.");
 }
@@ -126,13 +177,17 @@ function clearCache() {
    INIT
 ====================== */
 function init() {
-  // define automaticamente SS / SA / DF
+  // seta automaticamente SS/SA/DF no select Sdia
   const tipoHoje = getTipoDia();
   if (sDiaEl) sDiaEl.value = tipoHoje;
 
   const cached = getDb();
   if (cached) {
     currentDb = cached;
+
+    // executa no init: gera origens/destinos sem repetição
+    refreshOrigensDestinos();
+
     renderListaLinhas(currentDb.linhas);
     setStatus("Dados carregados do localStorage.");
   } else {
