@@ -1,4 +1,6 @@
-// index.js (atualizado) - Bootstrap list-group + tipo do dia (SS/SA/DF) + origens/destinos únicos + render de options no init
+// index.js (principal atualizado)
+// Ajuste pontual: coleta de destinos simples (origem + destino + paradas)
+// SEM impactar estruturas já consolidadas
 
 const LS_KEY = "gti_linhas_db_v1";
 
@@ -6,16 +8,14 @@ const listaEl  = document.getElementById("lista");
 const statusEl = document.getElementById("status");
 const btnSync  = document.getElementById("btnSync");
 const btnClear = document.getElementById("btnClear");
-const sDiaEl   = document.getElementById("Sdia");     // select tipo de dia (SS/SA/DF)
+const sDiaEl   = document.getElementById("Sdia");
 
-// selects (criados no HTML)
-const destinoSelectId = "Destino"; // <select id="Destino" class="form-select"></select>
-// se depois quiser também origem: const origemSelectId = "Origem";
+// select destino existente no HTML
+const destinoSelectId = "Destino";
 
 let currentDb = { linhas: [] };
 
-// Arrays globais (sempre atualizados)
-let ORIGENS_UNICAS = [];
+// array final simples para o select
 let DESTINOS_UNICOS = [];
 
 /* ======================
@@ -46,7 +46,7 @@ function getTipoDia(date = new Date(), feriados = []) {
   );
 
   const diaSemana = d.getDay(); // 0=domingo, 6=sábado
-  const dataISO = d.toISOString().slice(0, 10); // YYYY-MM-DD
+  const dataISO = d.toISOString().slice(0, 10);
 
   if (diaSemana === 0 || feriados.includes(dataISO)) return "DF";
   if (diaSemana === 6) return "SA";
@@ -54,27 +54,38 @@ function getTipoDia(date = new Date(), feriados = []) {
 }
 
 /* ======================
-   ORIGENS/DESTINOS ÚNICOS
+   COLETA SIMPLES DE DESTINOS
+   (origem + destino + paradas)
 ====================== */
-function getOrigensDestinosUnicos(linhas) {
-  const origens = new Set();
-  const destinos = new Set();
+function coletarDestinosUnicos(linhas) {
+  const destinos = [];
 
-  (linhas || []).forEach((l) => {
-    if (l?.origem) origens.add(String(l.origem).trim());
-    if (l?.destino) destinos.add(String(l.destino).trim());
+  const addIfNotExists = (value) => {
+    if (!value) return;
+    const v = String(value).trim();
+    if (v && !destinos.includes(v)) {
+      destinos.push(v);
+    }
+  };
+
+  (linhas || []).forEach(linha => {
+    addIfNotExists(linha.origem);
+    addIfNotExists(linha.destino);
+
+    if (Array.isArray(linha.paradas)) {
+      linha.paradas.forEach(p => addIfNotExists(p));
+    }
   });
 
-  return {
-    origens: Array.from(origens),
-    destinos: Array.from(destinos),
-  };
+  return destinos;
 }
 
 /* ======================
-   RENDERIZAÇÃO (LISTA)
+   RENDERIZAÇÃO LISTA
 ====================== */
 function renderListaLinhas(linhas) {
+  if (!listaEl) return;
+
   listaEl.innerHTML = "";
 
   if (!linhas || !linhas.length) {
@@ -106,9 +117,7 @@ function renderListaLinhas(linhas) {
 }
 
 /* ======================
-   RENDERIZAÇÃO (OPTIONS SELECT)
-   - 1º item: vazio
-   - itens simples: value = label = item
+   RENDERIZAÇÃO SELECT
 ====================== */
 function renderSelectOptions(selectId, items) {
   const select = document.getElementById(selectId);
@@ -116,20 +125,15 @@ function renderSelectOptions(selectId, items) {
 
   select.innerHTML = "";
 
-  // primeiro option vazio
   const optEmpty = document.createElement("option");
   optEmpty.value = "";
   optEmpty.textContent = "Selecione...";
   select.appendChild(optEmpty);
 
-  // demais options
-  (items || []).forEach((item) => {
-    const value = String(item ?? "").trim();
-    if (!value) return;
-
+  (items || []).forEach(item => {
     const opt = document.createElement("option");
-    opt.value = value;
-    opt.textContent = value;
+    opt.value = item;
+    opt.textContent = item;
     select.appendChild(opt);
   });
 }
@@ -151,12 +155,10 @@ function saveDb(db) {
 }
 
 /* ======================
-   REFRESH DE LISTAS ÚNICAS
+   REFRESH DESTINOS
 ====================== */
-function refreshOrigensDestinos() {
-  const { origens, destinos } = getOrigensDestinosUnicos(currentDb.linhas);
-  ORIGENS_UNICAS = origens;
-  DESTINOS_UNICOS = destinos;
+function refreshDestinos() {
+  DESTINOS_UNICOS = coletarDestinosUnicos(currentDb.linhas);
 }
 
 /* ======================
@@ -171,24 +173,22 @@ async function syncFromJson() {
     currentDb = await res.json();
     saveDb(currentDb);
 
-    refreshOrigensDestinos();
-
-    // atualiza select de destinos após sync
+    refreshDestinos();
     renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
-
     renderListaLinhas(currentDb.linhas);
+
     setStatus("Dados carregados do db.json.");
-  } catch (err) {
+  } catch {
     setStatus("Erro ao carregar db.json.");
 
     const cached = getDb();
     if (cached) {
       currentDb = cached;
 
-      refreshOrigensDestinos();
+      refreshDestinos();
       renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
-
       renderListaLinhas(currentDb.linhas);
+
       setStatus("Carregado do localStorage.");
     }
   }
@@ -197,7 +197,6 @@ async function syncFromJson() {
 function clearCache() {
   localStorage.removeItem(LS_KEY);
   currentDb = { linhas: [] };
-  ORIGENS_UNICAS = [];
   DESTINOS_UNICOS = [];
 
   renderSelectOptions(destinoSelectId, []);
@@ -209,7 +208,7 @@ function clearCache() {
    INIT
 ====================== */
 function init() {
-  // seta automaticamente SS/SA/DF no select Sdia
+  // define SS / SA / DF automaticamente
   const tipoHoje = getTipoDia();
   if (sDiaEl) sDiaEl.value = tipoHoje;
 
@@ -217,13 +216,10 @@ function init() {
   if (cached) {
     currentDb = cached;
 
-    // executa no init: gera origens/destinos sem repetição
-    refreshOrigensDestinos();
-
-    // executa no init: renderiza options do select Destino
+    refreshDestinos();
     renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
-
     renderListaLinhas(currentDb.linhas);
+
     setStatus("Dados carregados do localStorage.");
   } else {
     syncFromJson();
