@@ -1,6 +1,6 @@
 // index.js (principal atualizado)
-// Ajuste pontual: coleta de destinos simples (origem + destino + paradas)
-// SEM impactar estruturas já consolidadas
+// Inclusão do filtro por Destino (paradas) acionado por change
+// SEM alterar estruturas já consolidadas
 
 const LS_KEY = "gti_linhas_db_v1";
 
@@ -9,13 +9,11 @@ const statusEl = document.getElementById("status");
 const btnSync  = document.getElementById("btnSync");
 const btnClear = document.getElementById("btnClear");
 const sDiaEl   = document.getElementById("Sdia");
-
-// select destino existente no HTML
-const destinoSelectId = "Destino";
+const destinoEl = document.getElementById("Destino");
 
 let currentDb = { linhas: [] };
 
-// array final simples para o select
+// array simples final para o select
 let DESTINOS_UNICOS = [];
 
 /* ======================
@@ -36,16 +34,13 @@ function escapeHtml(str) {
 
 /* ======================
    TIPO DE DIA
-   SS = segunda a sexta
-   SA = sábado
-   DF = domingo e feriados
 ====================== */
 function getTipoDia(date = new Date(), feriados = []) {
   const d = new Date(
     date.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
   );
 
-  const diaSemana = d.getDay(); // 0=domingo, 6=sábado
+  const diaSemana = d.getDay();
   const dataISO = d.toISOString().slice(0, 10);
 
   if (diaSemana === 0 || feriados.includes(dataISO)) return "DF";
@@ -63,9 +58,7 @@ function coletarDestinosUnicos(linhas) {
   const addIfNotExists = (value) => {
     if (!value) return;
     const v = String(value).trim();
-    if (v && !destinos.includes(v)) {
-      destinos.push(v);
-    }
+    if (v && !destinos.includes(v)) destinos.push(v);
   };
 
   (linhas || []).forEach(linha => {
@@ -78,6 +71,20 @@ function coletarDestinosUnicos(linhas) {
   });
 
   return destinos;
+}
+
+/* ======================
+   FILTRO POR PARADA
+====================== */
+function filtrarLinhasPorParada(linhas, destino) {
+  if (!destino) return linhas;
+
+  const v = String(destino).trim();
+
+  return (linhas || []).filter(linha => {
+    if (!Array.isArray(linha.paradas)) return false;
+    return linha.paradas.some(p => String(p).trim() === v);
+  });
 }
 
 /* ======================
@@ -174,7 +181,7 @@ async function syncFromJson() {
     saveDb(currentDb);
 
     refreshDestinos();
-    renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
+    renderSelectOptions("Destino", DESTINOS_UNICOS);
     renderListaLinhas(currentDb.linhas);
 
     setStatus("Dados carregados do db.json.");
@@ -186,7 +193,7 @@ async function syncFromJson() {
       currentDb = cached;
 
       refreshDestinos();
-      renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
+      renderSelectOptions("Destino", DESTINOS_UNICOS);
       renderListaLinhas(currentDb.linhas);
 
       setStatus("Carregado do localStorage.");
@@ -199,7 +206,7 @@ function clearCache() {
   currentDb = { linhas: [] };
   DESTINOS_UNICOS = [];
 
-  renderSelectOptions(destinoSelectId, []);
+  renderSelectOptions("Destino", []);
   renderListaLinhas([]);
   setStatus("Cache limpo.");
 }
@@ -217,13 +224,30 @@ function init() {
     currentDb = cached;
 
     refreshDestinos();
-    renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
+    renderSelectOptions("Destino", DESTINOS_UNICOS);
     renderListaLinhas(currentDb.linhas);
 
     setStatus("Dados carregados do localStorage.");
   } else {
     syncFromJson();
   }
+
+  // EVENTO DE FILTRAGEM POR DESTINO (PARADAS)
+  destinoEl?.addEventListener("change", (e) => {
+    const valor = e.target.value;
+
+    if (!valor) {
+      renderListaLinhas(currentDb.linhas);
+      return;
+    }
+
+    const filtradas = filtrarLinhasPorParada(
+      currentDb.linhas,
+      valor
+    );
+
+    renderListaLinhas(filtradas);
+  });
 
   btnSync?.addEventListener("click", syncFromJson);
   btnClear?.addEventListener("click", clearCache);
