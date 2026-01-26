@@ -4,11 +4,13 @@ const listaEl  = document.getElementById("lista");
 const statusEl = document.getElementById("status");
 const btnSync  = document.getElementById("btnSync");
 const btnClear = document.getElementById("btnClear");
-const searchEl = document.getElementById("search"); // opcional
+const sDiaEl   = document.getElementById("Sdia");
 
 let currentDb = { linhas: [] };
 
-/* util */
+/* ======================
+   UTIL
+====================== */
 function setStatus(msg) {
   if (statusEl) statusEl.textContent = msg || "";
 }
@@ -22,14 +24,25 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-function normalize(str) {
-  return String(str ?? "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
+/* ======================
+   TIPO DE DIA
+====================== */
+function getTipoDia(date = new Date(), feriados = []) {
+  const d = new Date(
+    date.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+  );
+
+  const diaSemana = d.getDay(); // 0=domingo, 6=sábado
+  const dataISO = d.toISOString().slice(0, 10);
+
+  if (diaSemana === 0 || feriados.includes(dataISO)) return "DF";
+  if (diaSemana === 6) return "SA";
+  return "SS";
 }
 
-/* renderização (função específica) */
+/* ======================
+   RENDERIZAÇÃO (ESPECÍFICA)
+====================== */
 function renderListaLinhas(linhas) {
   listaEl.innerHTML = "";
 
@@ -44,7 +57,8 @@ function renderListaLinhas(linhas) {
 
   linhas.forEach((l, i) => {
     const li = document.createElement("li");
-    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    li.className =
+      "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
 
     li.innerHTML = `
       <div>
@@ -60,7 +74,9 @@ function renderListaLinhas(linhas) {
   });
 }
 
-/* dados */
+/* ======================
+   DADOS
+====================== */
 function getDb() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -74,16 +90,9 @@ function saveDb(db) {
   localStorage.setItem(LS_KEY, JSON.stringify(db));
 }
 
-function filterLinhas(linhas, q) {
-  const query = normalize(q).trim();
-  if (!query) return linhas;
-
-  return linhas.filter(l =>
-    normalize(`${l.empresa} ${l.origem} ${l.destino}`).includes(query)
-  );
-}
-
-/* ações */
+/* ======================
+   AÇÕES
+====================== */
 async function syncFromJson() {
   setStatus("Sincronizando do db.json...");
   try {
@@ -92,10 +101,7 @@ async function syncFromJson() {
 
     currentDb = await res.json();
     saveDb(currentDb);
-
-    const filtradas = filterLinhas(currentDb.linhas, searchEl?.value || "");
-    renderListaLinhas(filtradas);
-
+    renderListaLinhas(currentDb.linhas);
     setStatus("Dados carregados do db.json.");
   } catch (err) {
     setStatus("Erro ao carregar db.json.");
@@ -103,7 +109,7 @@ async function syncFromJson() {
     const cached = getDb();
     if (cached) {
       currentDb = cached;
-      renderListaLinhas(filterLinhas(currentDb.linhas, searchEl?.value || ""));
+      renderListaLinhas(currentDb.linhas);
       setStatus("Carregado do localStorage.");
     }
   }
@@ -116,8 +122,14 @@ function clearCache() {
   setStatus("Cache limpo.");
 }
 
-/* init */
+/* ======================
+   INIT
+====================== */
 function init() {
+  // define automaticamente SS / SA / DF
+  const tipoHoje = getTipoDia();
+  if (sDiaEl) sDiaEl.value = tipoHoje;
+
   const cached = getDb();
   if (cached) {
     currentDb = cached;
@@ -129,12 +141,6 @@ function init() {
 
   btnSync?.addEventListener("click", syncFromJson);
   btnClear?.addEventListener("click", clearCache);
-
-  searchEl?.addEventListener("input", e => {
-    renderListaLinhas(
-      filterLinhas(currentDb.linhas, e.target.value)
-    );
-  });
 }
 
 init();
