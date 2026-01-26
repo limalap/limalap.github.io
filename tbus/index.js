@@ -1,4 +1,4 @@
-// index.js (atualizado) - Bootstrap list-group + tipo do dia (SS/SA/DF) + origens/destinos únicos no init
+// index.js (atualizado) - Bootstrap list-group + tipo do dia (SS/SA/DF) + origens/destinos únicos + render de options no init
 
 const LS_KEY = "gti_linhas_db_v1";
 
@@ -6,7 +6,11 @@ const listaEl  = document.getElementById("lista");
 const statusEl = document.getElementById("status");
 const btnSync  = document.getElementById("btnSync");
 const btnClear = document.getElementById("btnClear");
-const sDiaEl   = document.getElementById("Sdia"); // select tipo de dia (SS/SA/DF)
+const sDiaEl   = document.getElementById("Sdia");     // select tipo de dia (SS/SA/DF)
+
+// selects (criados no HTML)
+const destinoSelectId = "Destino"; // <select id="Destino" class="form-select"></select>
+// se depois quiser também origem: const origemSelectId = "Origem";
 
 let currentDb = { linhas: [] };
 
@@ -68,7 +72,7 @@ function getOrigensDestinosUnicos(linhas) {
 }
 
 /* ======================
-   RENDERIZAÇÃO (ESPECÍFICA)
+   RENDERIZAÇÃO (LISTA)
 ====================== */
 function renderListaLinhas(linhas) {
   listaEl.innerHTML = "";
@@ -102,6 +106,35 @@ function renderListaLinhas(linhas) {
 }
 
 /* ======================
+   RENDERIZAÇÃO (OPTIONS SELECT)
+   - 1º item: vazio
+   - itens simples: value = label = item
+====================== */
+function renderSelectOptions(selectId, items) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  select.innerHTML = "";
+
+  // primeiro option vazio
+  const optEmpty = document.createElement("option");
+  optEmpty.value = "";
+  optEmpty.textContent = "Selecione...";
+  select.appendChild(optEmpty);
+
+  // demais options
+  (items || []).forEach((item) => {
+    const value = String(item ?? "").trim();
+    if (!value) return;
+
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = value;
+    select.appendChild(opt);
+  });
+}
+
+/* ======================
    DB (localStorage)
 ====================== */
 function getDb() {
@@ -124,10 +157,6 @@ function refreshOrigensDestinos() {
   const { origens, destinos } = getOrigensDestinosUnicos(currentDb.linhas);
   ORIGENS_UNICAS = origens;
   DESTINOS_UNICOS = destinos;
-
-  // debug opcional
-  console.log("ORIGENS_UNICAS:", ORIGENS_UNICAS);
-  console.log("DESTINOS_UNICOS:", DESTINOS_UNICOS);
 }
 
 /* ======================
@@ -142,8 +171,10 @@ async function syncFromJson() {
     currentDb = await res.json();
     saveDb(currentDb);
 
-    // atualiza arrays únicos sempre que sincronizar
     refreshOrigensDestinos();
+
+    // atualiza select de destinos após sync
+    renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
 
     renderListaLinhas(currentDb.linhas);
     setStatus("Dados carregados do db.json.");
@@ -154,8 +185,8 @@ async function syncFromJson() {
     if (cached) {
       currentDb = cached;
 
-      // atualiza arrays únicos no fallback também
       refreshOrigensDestinos();
+      renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
 
       renderListaLinhas(currentDb.linhas);
       setStatus("Carregado do localStorage.");
@@ -169,6 +200,7 @@ function clearCache() {
   ORIGENS_UNICAS = [];
   DESTINOS_UNICOS = [];
 
+  renderSelectOptions(destinoSelectId, []);
   renderListaLinhas([]);
   setStatus("Cache limpo.");
 }
@@ -187,6 +219,9 @@ function init() {
 
     // executa no init: gera origens/destinos sem repetição
     refreshOrigensDestinos();
+
+    // executa no init: renderiza options do select Destino
+    renderSelectOptions(destinoSelectId, DESTINOS_UNICOS);
 
     renderListaLinhas(currentDb.linhas);
     setStatus("Dados carregados do localStorage.");
