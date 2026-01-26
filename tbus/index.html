@@ -1,1 +1,28 @@
-ola 
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Linhas</title>
+  <style>
+    body { font-family: system-ui, Arial; margin: 24px; }
+    ul { padding-left: 18px; }
+    li { margin: 10px 0; }
+    .meta { color: #555; font-size: 14px; }
+    button { margin-right: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Linhas de Ônibus</h1>
+
+  <div style="margin:12px 0;">
+    <button id="btnSync">Sincronizar do db.json</button>
+    <button id="btnClear">Limpar cache</button>
+    <span id="status" class="meta"></span>
+  </div>
+
+  <ul id="lista"></ul>
+
+  <script src="./index.js"></script>
+</body>
+</html>
