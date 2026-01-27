@@ -1,7 +1,8 @@
 // index.js (principal atualizado)
-// Aplicado: renderização de horários por Sdia (SS/SA/DF)
-// NOVO: exibe apenas horários dentro da janela de 1h30 antes e 1h30 depois do horário atual
-// Impacto mínimo, sem alterar fluxos consolidados
+// Aplicado:
+// - janela de 1h30 antes e depois
+// - diferenciação visual de horários já passados e futuros
+// Impacto mínimo, sem alterar estruturas consolidadas
 
 const LS_KEY = "gti_linhas_db_v1";
 
@@ -13,8 +14,6 @@ const sDiaEl    = document.getElementById("Sdia");
 const destinoEl = document.getElementById("Destino");
 
 let currentDb = { linhas: [] };
-
-// array simples final para o select
 let DESTINOS_UNICOS = [];
 
 /* ======================
@@ -47,7 +46,7 @@ function getTipoDia(date = new Date(), feriados = []) {
 }
 
 /* ======================
-   COLETA DE DESTINOS
+   DESTINOS
 ====================== */
 function coletarDestinosUnicos(linhas) {
   const destinos = [];
@@ -61,7 +60,6 @@ function coletarDestinosUnicos(linhas) {
   (linhas || []).forEach((linha) => {
     addIfNotExists(linha.origem);
     addIfNotExists(linha.destino);
-
     if (Array.isArray(linha.paradas)) {
       linha.paradas.forEach((p) => addIfNotExists(p));
     }
@@ -70,22 +68,18 @@ function coletarDestinosUnicos(linhas) {
   return destinos;
 }
 
-/* ======================
-   FILTRO POR PARADA
-====================== */
 function filtrarLinhasPorParada(linhas, destino) {
   if (!destino) return linhas;
-
   const v = String(destino).trim();
 
-  return (linhas || []).filter((linha) => {
-    if (!Array.isArray(linha.paradas)) return false;
-    return linha.paradas.some((p) => String(p).trim() === v);
-  });
+  return (linhas || []).filter((linha) =>
+    Array.isArray(linha.paradas) &&
+    linha.paradas.some((p) => String(p).trim() === v)
+  );
 }
 
 /* ======================
-   HORÁRIOS (impacto mínimo)
+   HORÁRIOS
 ====================== */
 function horaParaMinutos(horaStr) {
   const [h, m] = horaStr.split(":").map(Number);
@@ -105,25 +99,14 @@ function filtrarHorariosPorJanela(horarios, minutosAntes = 90, minutosDepois = 9
   return (horarios || []).filter((h) => {
     const min = horaParaMinutos(h);
 
-    if (inicio >= 0 && fim <= 1440) {
-      return min >= inicio && min <= fim;
-    }
-
-    if (inicio < 0) {
-      return min >= (1440 + inicio) || min <= fim;
-    }
-
-    if (fim > 1440) {
-      return min >= inicio || min <= (fim - 1440);
-    }
+    if (inicio >= 0 && fim <= 1440) return min >= inicio && min <= fim;
+    if (inicio < 0) return min >= (1440 + inicio) || min <= fim;
+    if (fim > 1440) return min >= inicio || min <= (fim - 1440);
 
     return false;
   });
 }
 
-/* ======================
-   HORÁRIOS POR DIA
-====================== */
 function getHorariosPorDia(campo, tipoDia) {
   if (!campo) return [];
   if (Array.isArray(campo)) return campo;
@@ -131,6 +114,25 @@ function getHorariosPorDia(campo, tipoDia) {
     return Array.isArray(campo[tipoDia]) ? campo[tipoDia] : [];
   }
   return [];
+}
+
+/* ======================
+   TEXTO DOS HORÁRIOS (visual)
+====================== */
+function montarHorariosFormatados(horarios) {
+  const agoraMin = minutosAgora();
+
+  return horarios.map((h) => {
+    const min = horaParaMinutos(h);
+
+    // verde oliva militar (já saiu)
+    if (min < agoraMin) {
+      return `<strong style="color:#556B2F">${escapeHtml(h)}</strong>`;
+    }
+
+    // azul celeste (ainda não saiu)
+    return `<span style="color:#4FA3D1">${escapeHtml(h)}</span>`;
+  }).join(" • ");
 }
 
 function montarTextoHorarios(linha, tipoDia) {
@@ -145,14 +147,19 @@ function montarTextoHorarios(linha, tipoDia) {
   const origemLabel = linha.origem || "Origem";
   const destinoLabel = linha.destino || "Destino";
 
-  const origemTxt = `${origemLabel}: ${hO.length ? hO.join(" • ") : "—"}`;
-  const destinoTxt = `${destinoLabel}: ${hD.length ? hD.join(" • ") : "—"}`;
+  const origemTxt = `${escapeHtml(origemLabel)}: ${
+    hO.length ? montarHorariosFormatados(hO) : "—"
+  }`;
+
+  const destinoTxt = `${escapeHtml(destinoLabel)}: ${
+    hD.length ? montarHorariosFormatados(hD) : "—"
+  }`;
 
   return { origemTxt, destinoTxt };
 }
 
 /* ======================
-   RENDER LISTA
+   RENDER
 ====================== */
 function renderListaLinhas(linhas) {
   if (!listaEl) return;
@@ -180,8 +187,8 @@ function renderListaLinhas(linhas) {
     li.innerHTML = `
       <div class="me-3">
         <div class="fw-semibold">${escapeHtml(l.empresa || "—")}</div>
-        <div class="text-muted small">${escapeHtml(origemTxt)}</div>
-        <div class="text-muted small">${escapeHtml(destinoTxt)}</div>
+        <div class="text-muted small">${origemTxt}</div>
+        <div class="text-muted small">${destinoTxt}</div>
       </div>
       <span class="badge bg-primary rounded-pill">${i + 1}</span>
     `;
@@ -191,14 +198,13 @@ function renderListaLinhas(linhas) {
 }
 
 /* ======================
-   SELECT
+   SELECT / DB / INIT
 ====================== */
 function renderSelectOptions(selectId, items) {
   const select = document.getElementById(selectId);
   if (!select) return;
 
   select.innerHTML = "";
-
   const optEmpty = document.createElement("option");
   optEmpty.value = "";
   optEmpty.textContent = "Selecione...";
@@ -212,9 +218,6 @@ function renderSelectOptions(selectId, items) {
   });
 }
 
-/* ======================
-   DB
-====================== */
 function getDb() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -228,50 +231,35 @@ function saveDb(db) {
   localStorage.setItem(LS_KEY, JSON.stringify(db));
 }
 
-/* ======================
-   REFRESH DESTINOS
-====================== */
 function refreshDestinos() {
   DESTINOS_UNICOS = coletarDestinosUnicos(currentDb.linhas);
 }
 
-/* ======================
-   RENDER CENTRAL
-====================== */
 function renderComFiltrosAtuais() {
   const filtroDestino = destinoEl?.value || "";
-  const linhasBase = currentDb.linhas || [];
-  const linhasVisiveis = filtrarLinhasPorParada(linhasBase, filtroDestino);
+  const linhasVisiveis = filtrarLinhasPorParada(currentDb.linhas || [], filtroDestino);
   renderListaLinhas(linhasVisiveis);
 }
 
-/* ======================
-   AÇÕES
-====================== */
 async function syncFromJson() {
   setStatus("Sincronizando do db.json...");
   try {
     const res = await fetch("./db.json", { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) throw new Error();
 
     currentDb = await res.json();
     saveDb(currentDb);
 
     refreshDestinos();
     renderSelectOptions("Destino", DESTINOS_UNICOS);
-
     renderComFiltrosAtuais();
     setStatus("Dados carregados do db.json.");
   } catch {
-    setStatus("Erro ao carregar db.json.");
-
     const cached = getDb();
     if (cached) {
       currentDb = cached;
-
       refreshDestinos();
       renderSelectOptions("Destino", DESTINOS_UNICOS);
-
       renderComFiltrosAtuais();
       setStatus("Carregado do localStorage.");
     }
@@ -282,26 +270,19 @@ function clearCache() {
   localStorage.removeItem(LS_KEY);
   currentDb = { linhas: [] };
   DESTINOS_UNICOS = [];
-
   renderSelectOptions("Destino", []);
   renderListaLinhas([]);
   setStatus("Cache limpo.");
 }
 
-/* ======================
-   INIT
-====================== */
 function init() {
-  const tipoHoje = getTipoDia();
-  if (sDiaEl) sDiaEl.value = tipoHoje;
+  if (sDiaEl) sDiaEl.value = getTipoDia();
 
   const cached = getDb();
   if (cached) {
     currentDb = cached;
-
     refreshDestinos();
     renderSelectOptions("Destino", DESTINOS_UNICOS);
-
     renderComFiltrosAtuais();
     setStatus("Dados carregados do localStorage.");
   } else {
@@ -310,7 +291,6 @@ function init() {
 
   destinoEl?.addEventListener("change", renderComFiltrosAtuais);
   sDiaEl?.addEventListener("change", renderComFiltrosAtuais);
-
   btnSync?.addEventListener("click", syncFromJson);
   btnClear?.addEventListener("click", clearCache);
 }
