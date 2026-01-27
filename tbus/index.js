@@ -1,6 +1,7 @@
 // index.js (principal atualizado)
-// Aplicado: renderização de horários por Sdia (SS/SA/DF) + atualização automática ao mudar Sdia
-// Sem remover fluxos existentes (sync, cache, filtro Destino/paradas, etc.)
+// Aplicado: renderização de horários por Sdia (SS/SA/DF)
+// NOVO: exibe apenas horários dentro da janela de 1h30 antes e 1h30 depois do horário atual
+// Impacto mínimo, sem alterar fluxos consolidados
 
 const LS_KEY = "gti_linhas_db_v1";
 
@@ -34,13 +35,10 @@ function escapeHtml(str) {
 
 /* ======================
    TIPO DE DIA
-   SS = segunda a sexta
-   SA = sábado
-   DF = domingo e feriados
 ====================== */
 function getTipoDia(date = new Date(), feriados = []) {
   const d = new Date(date.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-  const diaSemana = d.getDay(); // 0=domingo, 6=sábado
+  const diaSemana = d.getDay();
   const dataISO = d.toISOString().slice(0, 10);
 
   if (diaSemana === 0 || feriados.includes(dataISO)) return "DF";
@@ -49,8 +47,7 @@ function getTipoDia(date = new Date(), feriados = []) {
 }
 
 /* ======================
-   COLETA SIMPLES DE DESTINOS
-   (origem + destino + paradas)
+   COLETA DE DESTINOS
 ====================== */
 function coletarDestinosUnicos(linhas) {
   const destinos = [];
@@ -74,7 +71,7 @@ function coletarDestinosUnicos(linhas) {
 }
 
 /* ======================
-   FILTRO POR PARADA (Destino)
+   FILTRO POR PARADA
 ====================== */
 function filtrarLinhasPorParada(linhas, destino) {
   if (!destino) return linhas;
@@ -88,21 +85,62 @@ function filtrarLinhasPorParada(linhas, destino) {
 }
 
 /* ======================
-   NOVO: HELPERS DE HORÁRIOS + TEXTO
-   - compatível com:
-     partida_origem = {SS:[...],SA:[...],DF:[...]}  OU  [...]
-     partida_destino = {SS:[...],SA:[...],DF:[...]} OU  [...]
+   HORÁRIOS (impacto mínimo)
+====================== */
+function horaParaMinutos(horaStr) {
+  const [h, m] = horaStr.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function minutosAgora() {
+  const agora = new Date();
+  return agora.getHours() * 60 + agora.getMinutes();
+}
+
+function filtrarHorariosPorJanela(horarios, minutosAntes = 90, minutosDepois = 90) {
+  const agoraMin = minutosAgora();
+  const inicio = agoraMin - minutosAntes;
+  const fim = agoraMin + minutosDepois;
+
+  return (horarios || []).filter((h) => {
+    const min = horaParaMinutos(h);
+
+    if (inicio >= 0 && fim <= 1440) {
+      return min >= inicio && min <= fim;
+    }
+
+    if (inicio < 0) {
+      return min >= (1440 + inicio) || min <= fim;
+    }
+
+    if (fim > 1440) {
+      return min >= inicio || min <= (fim - 1440);
+    }
+
+    return false;
+  });
+}
+
+/* ======================
+   HORÁRIOS POR DIA
 ====================== */
 function getHorariosPorDia(campo, tipoDia) {
   if (!campo) return [];
   if (Array.isArray(campo)) return campo;
-  if (typeof campo === "object") return Array.isArray(campo[tipoDia]) ? campo[tipoDia] : [];
+  if (typeof campo === "object") {
+    return Array.isArray(campo[tipoDia]) ? campo[tipoDia] : [];
+  }
   return [];
 }
 
 function montarTextoHorarios(linha, tipoDia) {
-  const hO = getHorariosPorDia(linha.partida_origem, tipoDia);
-  const hD = getHorariosPorDia(linha.partida_destino, tipoDia);
+  const hO = filtrarHorariosPorJanela(
+    getHorariosPorDia(linha.partida_origem, tipoDia)
+  );
+
+  const hD = filtrarHorariosPorJanela(
+    getHorariosPorDia(linha.partida_destino, tipoDia)
+  );
 
   const origemLabel = linha.origem || "Origem";
   const destinoLabel = linha.destino || "Destino";
@@ -114,7 +152,7 @@ function montarTextoHorarios(linha, tipoDia) {
 }
 
 /* ======================
-   RENDERIZAÇÃO LISTA (ATUALIZADA)
+   RENDER LISTA
 ====================== */
 function renderListaLinhas(linhas) {
   if (!listaEl) return;
@@ -153,7 +191,7 @@ function renderListaLinhas(linhas) {
 }
 
 /* ======================
-   RENDERIZAÇÃO SELECT
+   SELECT
 ====================== */
 function renderSelectOptions(selectId, items) {
   const select = document.getElementById(selectId);
@@ -175,7 +213,7 @@ function renderSelectOptions(selectId, items) {
 }
 
 /* ======================
-   DB (localStorage)
+   DB
 ====================== */
 function getDb() {
   try {
@@ -198,8 +236,7 @@ function refreshDestinos() {
 }
 
 /* ======================
-   NOVO: render central respeitando filtro Destino atual
-   (não muda estruturas, só evita duplicação de lógica)
+   RENDER CENTRAL
 ====================== */
 function renderComFiltrosAtuais() {
   const filtroDestino = destinoEl?.value || "";
@@ -255,7 +292,6 @@ function clearCache() {
    INIT
 ====================== */
 function init() {
-  // define SS / SA / DF automaticamente
   const tipoHoje = getTipoDia();
   if (sDiaEl) sDiaEl.value = tipoHoje;
 
@@ -272,15 +308,8 @@ function init() {
     syncFromJson();
   }
 
-  // filtro por destino (paradas)
-  destinoEl?.addEventListener("change", () => {
-    renderComFiltrosAtuais();
-  });
-
-  // NOVO: ao mudar Sdia, atualiza horários exibidos (mantendo filtro Destino atual)
-  sDiaEl?.addEventListener("change", () => {
-    renderComFiltrosAtuais();
-  });
+  destinoEl?.addEventListener("change", renderComFiltrosAtuais);
+  sDiaEl?.addEventListener("change", renderComFiltrosAtuais);
 
   btnSync?.addEventListener("click", syncFromJson);
   btnClear?.addEventListener("click", clearCache);
