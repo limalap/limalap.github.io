@@ -1,8 +1,7 @@
 // index.js (principal atualizado)
 // Aplicado:
-// - troca do filtro por janela (±1h30) para:
-//   2 últimos horários que já partiram + 2 próximos a partir
-// - diferenciação visual de horários já passados e futuros
+// - filtro: 2 últimos horários que já partiram + 2 próximos a partir
+// - exibição (Opção A): "Origem → Destino" em uma linha + horários na linha abaixo
 // Impacto mínimo, sem alterar estruturas consolidadas
 
 const LS_KEY = "gti_linhas_db_v1";
@@ -109,7 +108,7 @@ function filtrarHorariosPorJanela(horarios, minutosAntes = 90, minutosDepois = 9
   });
 }
 
-// NOVO: 2 últimos passados + 2 próximos futuros
+// 2 últimos passados + 2 próximos futuros
 function filtrarHorariosPorUltimosEProximos(horarios, qtdPassados = 2, qtdFuturos = 2) {
   const agoraMin = minutosAgora();
 
@@ -178,13 +177,15 @@ function montarTextoHorarios(linha, tipoDia) {
   const origemLabel = linha.origem || "Origem";
   const destinoLabel = linha.destino || "Destino";
 
-  const origemTxt = `${escapeHtml(origemLabel)}: ${
-    hO.length ? montarHorariosFormatados(hO) : "—"
-  }`;
+  // Opção A: "Origem → Destino" + horários na linha abaixo
+  const tituloIda = `${escapeHtml(origemLabel)} → ${escapeHtml(destinoLabel)}`;
+  const tituloVolta = `${escapeHtml(destinoLabel)} → ${escapeHtml(origemLabel)}`;
 
-  const destinoTxt = `${escapeHtml(destinoLabel)}: ${
-    hD.length ? montarHorariosFormatados(hD) : "—"
-  }`;
+  const horariosIda = hO.length ? montarHorariosFormatados(hO) : "—";
+  const horariosVolta = hD.length ? montarHorariosFormatados(hD) : "—";
+
+  const origemTxt = `<span class="fw-semibold">${tituloIda}</span><br>${horariosIda}`;
+  const destinoTxt = `<span class="fw-semibold">${tituloVolta}</span><br>${horariosVolta}`;
 
   return { origemTxt, destinoTxt };
 }
