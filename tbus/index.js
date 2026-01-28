@@ -1,6 +1,7 @@
 // index.js (principal atualizado)
 // Aplicado:
-// - janela de 1h30 antes e depois
+// - troca do filtro por janela (±1h30) para:
+//   2 últimos horários que já partiram + 2 próximos a partir
 // - diferenciação visual de horários já passados e futuros
 // Impacto mínimo, sem alterar estruturas consolidadas
 
@@ -91,6 +92,7 @@ function minutosAgora() {
   return agora.getHours() * 60 + agora.getMinutes();
 }
 
+// (mantida por compatibilidade; não usada no novo cálculo)
 function filtrarHorariosPorJanela(horarios, minutosAntes = 90, minutosDepois = 90) {
   const agoraMin = minutosAgora();
   const inicio = agoraMin - minutosAntes;
@@ -105,6 +107,31 @@ function filtrarHorariosPorJanela(horarios, minutosAntes = 90, minutosDepois = 9
 
     return false;
   });
+}
+
+// NOVO: 2 últimos passados + 2 próximos futuros
+function filtrarHorariosPorUltimosEProximos(horarios, qtdPassados = 2, qtdFuturos = 2) {
+  const agoraMin = minutosAgora();
+
+  const ordenados = (horarios || [])
+    .filter(Boolean)
+    .map(String)
+    .filter((h) => /^\d{2}:\d{2}$/.test(h))
+    .sort((a, b) => horaParaMinutos(a) - horaParaMinutos(b));
+
+  const passados = [];
+  const futuros = [];
+
+  for (const h of ordenados) {
+    const min = horaParaMinutos(h);
+    if (min < agoraMin) passados.push(h);
+    else futuros.push(h);
+  }
+
+  const ultimosPassados = passados.slice(-qtdPassados);
+  const proximosFuturos = futuros.slice(0, qtdFuturos);
+
+  return [...ultimosPassados, ...proximosFuturos];
 }
 
 function getHorariosPorDia(campo, tipoDia) {
@@ -136,12 +163,16 @@ function montarHorariosFormatados(horarios) {
 }
 
 function montarTextoHorarios(linha, tipoDia) {
-  const hO = filtrarHorariosPorJanela(
-    getHorariosPorDia(linha.partida_origem, tipoDia)
+  const hO = filtrarHorariosPorUltimosEProximos(
+    getHorariosPorDia(linha.partida_origem, tipoDia),
+    2,
+    2
   );
 
-  const hD = filtrarHorariosPorJanela(
-    getHorariosPorDia(linha.partida_destino, tipoDia)
+  const hD = filtrarHorariosPorUltimosEProximos(
+    getHorariosPorDia(linha.partida_destino, tipoDia),
+    2,
+    2
   );
 
   const origemLabel = linha.origem || "Origem";
