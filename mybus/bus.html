@@ -21,9 +21,12 @@
   <div class="container py-4" style="max-width: 500px;">
     <div class="d-flex align-items-center mb-3">
       <h4 class="m-0">Linha de ônibus</h4>
-      <div class="ms-auto">
-        <a href="index.html" class="btn btn-secondary btn-sm">Sair</a>
-      </div>
+        <div class="ms-auto d-flex gap-2">
+            <button id="btnNovaLinha" type="button" class="btn btn-success btn-sm">
+              Nova linha
+            </button>
+            <a href="index.html" class="btn btn-secondary btn-sm">Sair</a>
+        </div>
     </div>
 
     <div class="card shadow-sm">
@@ -68,6 +71,15 @@
   </div>
 
   <script>
+
+ function novaLinha() {
+    form.reset();                 // limpa todos os campos
+    indiceEdicao.value = "";      // garante modo "novo"
+    btnSalvar.textContent = "Salvar";
+  }
+
+  document.getElementById('btnNovaLinha').onclick = novaLinha;
+
     function carregar() {
       const banco = JSON.parse(localStorage.getItem('bancoLinha')) || [];
       const lista = document.getElementById('lista');
