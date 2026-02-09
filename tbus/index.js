@@ -298,6 +298,66 @@ async function syncFromJson() {
   }
 }
 
+async function syncFromJsonMulti() {
+  setStatus("Sincronizando múltiplos arquivos...");
+
+  try {
+    // 1) Lê o arquivo principal
+    const resMain = await fetch("./db_main.json", { cache: "no-store" });
+    if (!resMain.ok) throw new Error("Erro ao carregar db_main.json");
+
+    const main = await resMain.json();
+    const arquivos = Array.isArray(main.arquivos) ? main.arquivos : [];
+
+    if (!arquivos.length) throw new Error("Nenhum arquivo listado em db_main.json");
+
+    // 2) Busca todos os arquivos em paralelo
+    const resultados = await Promise.all(
+      arquivos.map(async (path) => {
+        try {
+          const res = await fetch(path, { cache: "no-store" });
+          if (!res.ok) throw new Error();
+          return await res.json();
+        } catch {
+          console.warn("Falha ao carregar:", path);
+          return null;
+        }
+      })
+    );
+
+    // 3) Merge das linhas
+    const linhas = [];
+    resultados.forEach((db) => {
+      if (db && Array.isArray(db.linhas)) {
+        linhas.push(...db.linhas);
+      }
+    });
+
+    // 4) Atualiza DB em memória
+    currentDb = { linhas };
+
+    // 5) Persiste e renderiza
+    saveDb(currentDb);
+    refreshDestinos();
+    renderSelectOptions("Destino", DESTINOS_UNICOS);
+    renderComFiltrosAtuais();
+
+    setStatus(`Dados carregados (${linhas.length} linhas).`);
+  } catch (e) {
+    const cached = getDb();
+    if (cached) {
+      currentDb = cached;
+      refreshDestinos();
+      renderSelectOptions("Destino", DESTINOS_UNICOS);
+      renderComFiltrosAtuais();
+      setStatus("Falha na sincronização. Usando cache local.");
+    } else {
+      setStatus("Erro ao carregar dados.");
+    }
+  }
+}
+
+
 function clearCache() {
   localStorage.removeItem(LS_KEY);
   currentDb = { linhas: [] };
@@ -318,7 +378,8 @@ function init() {
     renderComFiltrosAtuais();
     setStatus("Dados carregados do localStorage.");
   } else {
-    syncFromJson();
+    //syncFromJson();
+    syncFromJsonMulti();
   }
 
   destinoEl?.addEventListener("change", renderComFiltrosAtuais);
