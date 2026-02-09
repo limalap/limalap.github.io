@@ -1,7 +1,6 @@
 {
 “arquivos”: [
-“db.json”,
-“dbo/db2.json”,
-“dbo/db3.json”
+“dbo/db1.json”,
+“dbo/db2.json”
 ]
 }
