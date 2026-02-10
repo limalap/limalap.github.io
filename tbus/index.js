@@ -437,7 +437,7 @@ function init() {
 
   destinoEl?.addEventListener("change", renderComFiltrosAtuais);
   sDiaEl?.addEventListener("change", renderComFiltrosAtuais);
-  btnSync?.addEventListener("click", syncFromJson);
+  btnSync?.addEventListener("click", syncFromJsonMulti);
   btnClear?.addEventListener("click", clearCache);
 }
 
