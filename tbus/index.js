@@ -298,62 +298,115 @@ async function syncFromJson() {
   }
 }
 
+function noCache(url) {
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}_ts=${Date.now()}`;
+}
+
+
 async function syncFromJsonMulti() {
-  setStatus("Sincronizando múltiplos arquivos...");
+  console.group("🔄 syncFromJsonMulti");
+  console.time("⏱ tempo total");
+  setStatus("Sincronizando múltiplos arquivos (sem cache)...");
 
   try {
-    // 1) Lê o arquivo principal
-    const resMain = await fetch("./db_main.json", { cache: "no-store" });
-    if (!resMain.ok) throw new Error("Erro ao carregar db_main.json");
+    /* ======================
+       1) db_main.json
+    ====================== */
+    console.log("1️⃣ Carregando db_main.json");
+
+    const resMain = await fetch(noCache("./db_main.json"), {
+      cache: "no-store"
+    });
+
+    if (!resMain.ok) {
+      console.error("❌ Falha HTTP db_main.json", resMain.status);
+      throw new Error("Erro HTTP db_main.json");
+    }
 
     const main = await resMain.json();
-    const arquivos = Array.isArray(main.arquivos) ? main.arquivos : [];
+    console.log("✅ db_main.json carregado:", main);
 
-    if (!arquivos.length) throw new Error("Nenhum arquivo listado em db_main.json");
+    if (!Array.isArray(main.arquivos) || !main.arquivos.length) {
+      console.error("❌ 'arquivos' inválido em db_main.json", main);
+      throw new Error("Lista de arquivos inválida");
+    }
 
-    // 2) Busca todos os arquivos em paralelo
+    const arquivos = main.arquivos;
+    console.log("📄 Arquivos a carregar:", arquivos);
+
+    /* ======================
+       2) arquivos individuais
+    ====================== */
     const resultados = await Promise.all(
-      arquivos.map(async (path) => {
+      arquivos.map(async (path, index) => {
+        console.group(`📦 Arquivo ${index + 1}: ${path}`);
+
         try {
-          const res = await fetch(path, { cache: "no-store" });
-          if (!res.ok) throw new Error();
-          return await res.json();
-        } catch {
-          console.warn("Falha ao carregar:", path);
-          return null;
+          const res = await fetch(noCache(path), {
+            cache: "no-store"
+          });
+
+          if (!res.ok) {
+            console.error("❌ Falha HTTP", res.status);
+            throw new Error(`Erro HTTP ${res.status}`);
+          }
+
+          const json = await res.json();
+
+          if (!Array.isArray(json.linhas)) {
+            console.error("❌ Campo 'linhas' inválido", json);
+            throw new Error("Formato inválido");
+          }
+
+          console.log(`✅ ${json.linhas.length} linhas carregadas`);
+          console.groupEnd();
+          return json.linhas;
+        } catch (err) {
+          console.error("🔥 Erro ao carregar arquivo:", path, err);
+          console.groupEnd();
+          throw err;
         }
       })
     );
 
-    // 3) Merge das linhas
-    const linhas = [];
-    resultados.forEach((db) => {
-      if (db && Array.isArray(db.linhas)) {
-        linhas.push(...db.linhas);
-      }
-    });
+    /* ======================
+       3) merge
+    ====================== */
+    const linhas = resultados.flat();
+    console.log("🧩 Merge concluído. Total de linhas:", linhas.length);
 
-    // 4) Atualiza DB em memória
+    /* ======================
+       4) persistência
+    ====================== */
     currentDb = { linhas };
-
-    // 5) Persiste e renderiza
     saveDb(currentDb);
+
+    console.log("💾 DB salvo no localStorage");
+
     refreshDestinos();
     renderSelectOptions("Destino", DESTINOS_UNICOS);
     renderComFiltrosAtuais();
 
-    setStatus(`Dados carregados (${linhas.length} linhas).`);
-  } catch (e) {
+    console.log("🖥 Renderização concluída");
+    setStatus(`Dados carregados com sucesso (${linhas.length} linhas).`);
+  } catch (err) {
+    console.error("💥 ERRO GERAL syncFromJsonMulti", err);
+
     const cached = getDb();
     if (cached) {
+      console.warn("⚠️ Usando cache local");
       currentDb = cached;
       refreshDestinos();
       renderSelectOptions("Destino", DESTINOS_UNICOS);
       renderComFiltrosAtuais();
       setStatus("Falha na sincronização. Usando cache local.");
     } else {
-      setStatus("Erro ao carregar dados.");
+      setStatus("Erro crítico ao carregar dados.");
     }
+  } finally {
+    console.timeEnd("⏱ tempo total");
+    console.groupEnd();
   }
 }
 
