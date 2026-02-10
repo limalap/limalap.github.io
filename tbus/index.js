@@ -16,6 +16,20 @@ const destinoEl = document.getElementById("Destino");
 let currentDb = { linhas: [] };
 let DESTINOS_UNICOS = [];
 
+function renderSelectOptions(selectId, options) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  select.innerHTML = `<option value="">Todos</option>`;
+
+  (options || []).forEach((opt) => {
+    const o = document.createElement("option");
+    o.value = opt;
+    o.textContent = opt;
+    select.appendChild(o);
+  });
+}
+
 /* ======================
    UTIL
 ====================== */
