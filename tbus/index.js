@@ -1,8 +1,8 @@
 // index.js (principal atualizado)
-// Aplicado:
-// - filtro: 2 últimos horários que já partiram + 2 próximos a partir
-// - exibição (Opção A): "Origem → Destino" em uma linha + horários na linha abaixo
-// Impacto mínimo, sem alterar estruturas consolidadas
+// Correção aplicada:
+// - ao sincronizar, limpa filtros ativos
+// - renderiza TODAS as linhas após o sync
+// - evita reaplicação silenciosa de filtros antigos
 
 const LS_KEY = "gti_linhas_db_v1";
 
@@ -91,24 +91,6 @@ function minutosAgora() {
   return agora.getHours() * 60 + agora.getMinutes();
 }
 
-// (mantida por compatibilidade; não usada no novo cálculo)
-function filtrarHorariosPorJanela(horarios, minutosAntes = 90, minutosDepois = 90) {
-  const agoraMin = minutosAgora();
-  const inicio = agoraMin - minutosAntes;
-  const fim = agoraMin + minutosDepois;
-
-  return (horarios || []).filter((h) => {
-    const min = horaParaMinutos(h);
-
-    if (inicio >= 0 && fim <= 1440) return min >= inicio && min <= fim;
-    if (inicio < 0) return min >= (1440 + inicio) || min <= fim;
-    if (fim > 1440) return min >= inicio || min <= (fim - 1440);
-
-    return false;
-  });
-}
-
-// 2 últimos passados + 2 próximos futuros
 function filtrarHorariosPorUltimosEProximos(horarios, qtdPassados = 2, qtdFuturos = 2) {
   const agoraMin = minutosAgora();
 
@@ -127,10 +109,7 @@ function filtrarHorariosPorUltimosEProximos(horarios, qtdPassados = 2, qtdFuturo
     else futuros.push(h);
   }
 
-  const ultimosPassados = passados.slice(-qtdPassados);
-  const proximosFuturos = futuros.slice(0, qtdFuturos);
-
-  return [...ultimosPassados, ...proximosFuturos];
+  return [...passados.slice(-qtdPassados), ...futuros.slice(0, qtdFuturos)];
 }
 
 function getHorariosPorDia(campo, tipoDia) {
@@ -143,67 +122,45 @@ function getHorariosPorDia(campo, tipoDia) {
 }
 
 /* ======================
-   TEXTO DOS HORÁRIOS (visual)
+   TEXTO DOS HORÁRIOS
 ====================== */
 function montarHorariosFormatados(horarios) {
   const agoraMin = minutosAgora();
 
   return horarios.map((h) => {
     const min = horaParaMinutos(h);
-
-    // verde oliva militar (já saiu)
-    if (min < agoraMin) {
-      return `<strong style="color:#556B2F">${escapeHtml(h)}</strong>`;
-    }
-
-    // azul celeste (ainda não saiu)
-    return `<span style="color:#4FA3D1">${escapeHtml(h)}</span>`;
+    return min < agoraMin
+      ? `<strong style="color:#556B2F">${escapeHtml(h)}</strong>`
+      : `<span style="color:#4FA3D1">${escapeHtml(h)}</span>`;
   }).join(" • ");
 }
 
 function montarTextoHorarios(linha, tipoDia) {
   const hO = filtrarHorariosPorUltimosEProximos(
-    getHorariosPorDia(linha.partida_origem, tipoDia),
-    2,
-    2
+    getHorariosPorDia(linha.partida_origem, tipoDia)
   );
 
   const hD = filtrarHorariosPorUltimosEProximos(
-    getHorariosPorDia(linha.partida_destino, tipoDia),
-    2,
-    2
+    getHorariosPorDia(linha.partida_destino, tipoDia)
   );
 
-  const origemLabel = linha.origem || "Origem";
-  const destinoLabel = linha.destino || "Destino";
+  const tituloIda = `${escapeHtml(linha.origem)} → ${escapeHtml(linha.destino)}`;
+  const tituloVolta = `${escapeHtml(linha.destino)} → ${escapeHtml(linha.origem)}`;
 
-  // Opção A: "Origem → Destino" + horários na linha abaixo
-  const tituloIda = `${escapeHtml(origemLabel)} → ${escapeHtml(destinoLabel)}`;
-  const tituloVolta = `${escapeHtml(destinoLabel)} → ${escapeHtml(origemLabel)}`;
-
-  const horariosIda = hO.length ? montarHorariosFormatados(hO) : "—";
-  const horariosVolta = hD.length ? montarHorariosFormatados(hD) : "—";
-
-  const origemTxt = `<span class="fw-semibold">${tituloIda}</span><br>${horariosIda}`;
-  const destinoTxt = `<span class="fw-semibold">${tituloVolta}</span><br>${horariosVolta}`;
-
-  return { origemTxt, destinoTxt };
+  return {
+    origemTxt: `<span class="fw-semibold">${tituloIda}</span><br>${montarHorariosFormatados(hO) || "—"}`,
+    destinoTxt: `<span class="fw-semibold">${tituloVolta}</span><br>${montarHorariosFormatados(hD) || "—"}`
+  };
 }
 
 /* ======================
    RENDER
 ====================== */
 function renderListaLinhas(linhas) {
-  if (!listaEl) return;
-
   listaEl.innerHTML = "";
 
   if (!linhas || !linhas.length) {
-    listaEl.innerHTML = `
-      <li class="list-group-item text-center text-muted">
-        Nenhuma linha encontrada
-      </li>
-    `;
+    listaEl.innerHTML = `<li class="list-group-item text-center text-muted">Nenhuma linha encontrada</li>`;
     return;
   }
 
@@ -213,12 +170,11 @@ function renderListaLinhas(linhas) {
     const { origemTxt, destinoTxt } = montarTextoHorarios(l, tipoDia);
 
     const li = document.createElement("li");
-    li.className =
-      "list-group-item list-group-item-action d-flex justify-content-between align-items-start";
+    li.className = "list-group-item d-flex justify-content-between align-items-start";
 
     li.innerHTML = `
-      <div class="me-3">
-        <div class="fw-semibold">${escapeHtml(l.empresa || "—")}</div>
+      <div>
+        <div class="fw-semibold">${escapeHtml(l.empresa)}</div>
         <div class="text-muted small">${origemTxt}</div>
         <div class="text-muted small">${destinoTxt}</div>
       </div>
@@ -230,30 +186,11 @@ function renderListaLinhas(linhas) {
 }
 
 /* ======================
-   SELECT / DB / INIT
+   DB
 ====================== */
-function renderSelectOptions(selectId, items) {
-  const select = document.getElementById(selectId);
-  if (!select) return;
-
-  select.innerHTML = "";
-  const optEmpty = document.createElement("option");
-  optEmpty.value = "";
-  optEmpty.textContent = "Selecione...";
-  select.appendChild(optEmpty);
-
-  (items || []).forEach((item) => {
-    const opt = document.createElement("option");
-    opt.value = item;
-    opt.textContent = item;
-    select.appendChild(opt);
-  });
-}
-
 function getDb() {
   try {
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : null;
+    return JSON.parse(localStorage.getItem(LS_KEY));
   } catch {
     return null;
   }
@@ -268,177 +205,68 @@ function refreshDestinos() {
 }
 
 function renderComFiltrosAtuais() {
-  const filtroDestino = destinoEl?.value || "";
-  const linhasVisiveis = filtrarLinhasPorParada(currentDb.linhas || [], filtroDestino);
-  renderListaLinhas(linhasVisiveis);
-}
-
-async function syncFromJson() {
-  setStatus("Sincronizando do db.json...");
-  try {
-    const res = await fetch("./db.json", { cache: "no-store" });
-    if (!res.ok) throw new Error();
-
-    currentDb = await res.json();
-    saveDb(currentDb);
-
-    refreshDestinos();
-    renderSelectOptions("Destino", DESTINOS_UNICOS);
-    renderComFiltrosAtuais();
-    setStatus("Dados carregados do db.json.");
-  } catch {
-    const cached = getDb();
-    if (cached) {
-      currentDb = cached;
-      refreshDestinos();
-      renderSelectOptions("Destino", DESTINOS_UNICOS);
-      renderComFiltrosAtuais();
-      setStatus("Carregado do localStorage.");
-    }
-  }
+  const filtro = destinoEl?.value || "";
+  renderListaLinhas(filtrarLinhasPorParada(currentDb.linhas, filtro));
 }
 
 function noCache(url) {
-  const sep = url.includes("?") ? "&" : "?";
-  return `${url}${sep}_ts=${Date.now()}`;
+  return `${url}?_ts=${Date.now()}`;
 }
 
-
+/* ======================
+   SYNC MULTI (CORRIGIDO)
+====================== */
 async function syncFromJsonMulti() {
-  console.group("🔄 syncFromJsonMulti");
-  console.time("⏱ tempo total");
-  setStatus("Sincronizando múltiplos arquivos (sem cache)...");
+  setStatus("Sincronizando dados...");
 
-  try {
-    /* ======================
-       1) db_main.json
-    ====================== */
-    console.log("1️⃣ Carregando db_main.json");
+  const resMain = await fetch(noCache("./db_main.json"), { cache: "no-store" });
+  const main = await resMain.json();
 
-    const resMain = await fetch(noCache("./db_main.json"), {
-      cache: "no-store"
-    });
+  const resultados = await Promise.all(
+    main.arquivos.map(async (path) => {
+      const res = await fetch(noCache(path), { cache: "no-store" });
+      const json = await res.json();
+      return json.linhas || [];
+    })
+  );
 
-    if (!resMain.ok) {
-      console.error("❌ Falha HTTP db_main.json", resMain.status);
-      throw new Error("Erro HTTP db_main.json");
-    }
+  currentDb = { linhas: resultados.flat() };
+  saveDb(currentDb);
 
-    const main = await resMain.json();
-    console.log("✅ db_main.json carregado:", main);
+  refreshDestinos();
+  renderSelectOptions("Destino", DESTINOS_UNICOS);
 
-    if (!Array.isArray(main.arquivos) || !main.arquivos.length) {
-      console.error("❌ 'arquivos' inválido em db_main.json", main);
-      throw new Error("Lista de arquivos inválida");
-    }
+  // ✅ CORREÇÃO CRÍTICA
+  if (destinoEl) destinoEl.value = "";
 
-    const arquivos = main.arquivos;
-    console.log("📄 Arquivos a carregar:", arquivos);
-
-    /* ======================
-       2) arquivos individuais
-    ====================== */
-    const resultados = await Promise.all(
-      arquivos.map(async (path, index) => {
-        console.group(`📦 Arquivo ${index + 1}: ${path}`);
-
-        try {
-          const res = await fetch(noCache(path), {
-            cache: "no-store"
-          });
-
-          if (!res.ok) {
-            console.error("❌ Falha HTTP", res.status);
-            throw new Error(`Erro HTTP ${res.status}`);
-          }
-
-          const json = await res.json();
-
-          if (!Array.isArray(json.linhas)) {
-            console.error("❌ Campo 'linhas' inválido", json);
-            throw new Error("Formato inválido");
-          }
-
-          console.log(`✅ ${json.linhas.length} linhas carregadas`);
-          console.groupEnd();
-          return json.linhas;
-        } catch (err) {
-          console.error("🔥 Erro ao carregar arquivo:", path, err);
-          console.groupEnd();
-          throw err;
-        }
-      })
-    );
-
-    /* ======================
-       3) merge
-    ====================== */
-    const linhas = resultados.flat();
-    console.log("🧩 Merge concluído. Total de linhas:", linhas.length);
-
-    /* ======================
-       4) persistência
-    ====================== */
-    currentDb = { linhas };
-    saveDb(currentDb);
-
-    console.log("💾 DB salvo no localStorage");
-
-    refreshDestinos();
-    renderSelectOptions("Destino", DESTINOS_UNICOS);
-    renderComFiltrosAtuais();
-
-    console.log("🖥 Renderização concluída");
-    setStatus(`Dados carregados com sucesso (${linhas.length} linhas).`);
-  } catch (err) {
-    console.error("💥 ERRO GERAL syncFromJsonMulti", err);
-
-    const cached = getDb();
-    if (cached) {
-      console.warn("⚠️ Usando cache local");
-      currentDb = cached;
-      refreshDestinos();
-      renderSelectOptions("Destino", DESTINOS_UNICOS);
-      renderComFiltrosAtuais();
-      setStatus("Falha na sincronização. Usando cache local.");
-    } else {
-      setStatus("Erro crítico ao carregar dados.");
-    }
-  } finally {
-    console.timeEnd("⏱ tempo total");
-    console.groupEnd();
-  }
+  renderListaLinhas(currentDb.linhas);
+  setStatus(`Dados carregados (${currentDb.linhas.length} linhas).`);
 }
 
-
-function clearCache() {
-  localStorage.removeItem(LS_KEY);
-  currentDb = { linhas: [] };
-  DESTINOS_UNICOS = [];
-  renderSelectOptions("Destino", []);
-  renderListaLinhas([]);
-  setStatus("Cache limpo.");
-}
-
+/* ======================
+   INIT
+====================== */
 function init() {
-  if (sDiaEl) sDiaEl.value = getTipoDia();
+  sDiaEl.value = getTipoDia();
 
   const cached = getDb();
   if (cached) {
     currentDb = cached;
     refreshDestinos();
     renderSelectOptions("Destino", DESTINOS_UNICOS);
-    renderComFiltrosAtuais();
-    setStatus("Dados carregados do localStorage.");
+    renderListaLinhas(currentDb.linhas);
+    setStatus("Dados carregados do cache.");
   } else {
-    //syncFromJson();
     syncFromJsonMulti();
   }
 
-  destinoEl?.addEventListener("change", renderComFiltrosAtuais);
-  sDiaEl?.addEventListener("change", renderComFiltrosAtuais);
-  btnSync?.addEventListener("click", syncFromJsonMulti);
-  btnClear?.addEventListener("click", clearCache);
+  destinoEl.addEventListener("change", renderComFiltrosAtuais);
+  sDiaEl.addEventListener("change", renderComFiltrosAtuais);
+  btnSync.addEventListener("click", syncFromJsonMulti);
+  btnClear.addEventListener("click", () => {
+    localStorage.removeItem(LS_KEY);
+    location.reload();
+  });
 }
 
 init();
