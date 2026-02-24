@@ -1,4 +1,4 @@
-{
+ {
   "linhas": [
     {
       "empresa": "Viação Progresso",
@@ -20,7 +20,7 @@
       "paradas": [
         "Vassouras-RJ",
         "Mendes-RJ",
-        "Engenheiro Paulo de Frontin-RJ",
+        "Eng. Paulo de Frontin-RJ",
         "Paracambi-RJ"
       ]
     },
@@ -41,14 +41,14 @@
       },
       "paradas": [
         "Mendes-RJ",
-        "Engenheiro Paulo de Frontin-RJ",
+        "Eng. Paulo de Frontin-RJ",
         "Paracambi-RJ"
       ]
     },
     {
       "empresa": "Viação Progresso",
-      "nome_linha": "Engenheiro Paulo de Frontin – Paracambi (via RJ-127)",
-      "origem": "Engenheiro Paulo de Frontin-RJ",
+      "nome_linha": "Eng. Paulo de Frontin – Paracambi (via RJ-127)",
+      "origem": "Eng. Paulo de Frontin-RJ",
       "destino": "Paracambi-RJ",
       "partida_origem": {
         "SS": ["04:20","05:20","06:05","06:50","07:50","08:50","09:50","11:05","12:20","13:05","14:05","14:50","16:20","17:20","17:50","18:20","20:20","21:35"],
@@ -61,7 +61,7 @@
         "DF": ["07:00","08:45","12:30","14:45","17:30","19:00","21:00","22:15"]
       },
       "paradas": [
-        "Engenheiro Paulo de Frontin-RJ",
+        "Eng. Paulo de Frontin-RJ",
         "Paracambi-RJ"
       ]
     }
