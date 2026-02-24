@@ -17,7 +17,12 @@
         "SA": ["05:25","06:20","07:00","08:45","09:59","11:00","14:30","17:00","18:00","19:00","20:30","22:40"],
         "DF": ["05:20","06:00","07:00","09:00","10:20","11:00","14:00","17:00","18:00","19:00","20:30","22:40"]
       },
-      "paradas": ["Barra do Piraí-RJ","Mendes-RJ","Engenheiro Paulo de Frontin-RJ","Paracambi-RJ"]
+      "paradas": [
+        "Barra do Piraí-RJ",
+        "Mendes-RJ",
+        "Eng. Paulo de Frontin-RJ",
+        "Paracambi-RJ"
+      ]
     },
     {
       "empresa": "Viação Barra do Piraí",
@@ -36,7 +41,12 @@
         "SA": ["04:25","08:00","09:10","13:00","15:55","17:42","20:05","21:00"],
         "DF": ["08:00","09:30","13:00","15:40","17:00","19:40","21:00"]
       },
-      "paradas": ["Barra do Piraí-RJ","Mendes-RJ","Engenheiro Paulo de Frontin-RJ","Paracambi-RJ"]
+      "paradas": [
+        "Barra do Piraí-RJ",
+        "Mendes-RJ",
+        "Eng. Paulo de Frontin-RJ",
+        "Paracambi-RJ"
+      ]
     }
   ]
 }
