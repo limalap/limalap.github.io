@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Gravador Respiratório</title>
+<title>Recorder Safari</title>
 </head>
 <body>
 
@@ -14,68 +14,74 @@
 
 <script>
 
-let mediaRecorder;
-let audioChunks = [];
-let audioUrl = "";
+let recorder;
+let chunks = [];
 
 const status = document.getElementById("status");
 
-async function setupRecorder() {
+async function iniciar() {
 
     const stream = await navigator.mediaDevices.getUserMedia({
         audio: true
     });
 
-    mediaRecorder = new MediaRecorder(stream);
+    recorder = new MediaRecorder(stream);
 
-    mediaRecorder.ondataavailable = e => {
-        audioChunks.push(e.data);
+    recorder.ondataavailable = e => {
+        chunks.push(e.data);
     };
 
-    mediaRecorder.onstop = () => {
+    recorder.onstop = async () => {
 
-        const audioBlob = new Blob(audioChunks, {
-            type: 'audio/mp4'
-        });
+        const blob = new Blob(chunks);
 
-        audioChunks = [];
+        chunks = [];
 
-        audioUrl = URL.createObjectURL(audioBlob);
+        const reader = new FileReader();
 
-        localStorage.setItem("ultimoAudio", audioUrl);
+        reader.onloadend = () => {
 
-        status.innerText = "Áudio gravado!";
+            const base64data = reader.result;
+
+            localStorage.setItem("audio", base64data);
+
+            status.innerText = "Áudio salvo!";
+        };
+
+        reader.readAsDataURL(blob);
     };
 }
 
 document.getElementById("start").onclick = async () => {
 
-    if (!mediaRecorder) {
-        await setupRecorder();
+    if (!recorder) {
+        await iniciar();
     }
 
-    audioChunks = [];
+    chunks = [];
 
-    mediaRecorder.start();
+    recorder.start();
 
     status.innerText = "Gravando...";
 };
 
 document.getElementById("stop").onclick = () => {
 
-    mediaRecorder.stop();
+    recorder.stop();
 
-    status.innerText = "Finalizando...";
+    status.innerText = "Processando...";
 };
 
 document.getElementById("play").onclick = () => {
 
-    if (!audioUrl) {
-        alert("Nenhum áudio disponível");
+    const audioData = localStorage.getItem("audio");
+
+    if (!audioData) {
+        alert("Nenhum áudio salvo");
         return;
     }
 
-    const audio = new Audio(audioUrl);
+    const audio = new Audio(audioData);
 
     audio.play();
 };
