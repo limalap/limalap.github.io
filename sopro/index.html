@@ -12,13 +12,19 @@
 <style>
 
 body{
-    background:#f4f6f9;
+    background:#0f1115;
+    color:#f1f1f1;
 }
 
 .card-app{
+    background:#1a1d24;
     border:none;
     border-radius:24px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    box-shadow:0 4px 25px rgba(0,0,0,0.45);
+}
+
+.text-muted{
+    color:#9aa4b2 !important;
 }
 
 .btn-app{
@@ -28,18 +34,21 @@ body{
     font-weight:600;
 }
 
+.status-box{
+    background:#11141a;
+    border:1px solid #262b36;
+    border-radius:14px;
+    padding:14px 16px;
+    font-size:15px;
+    color:#d7dde7;
+}
+
 canvas{
     width:100%;
     height:140px;
-    background:#000;
+    background:#050608;
     border-radius:18px;
-}
-
-.status-box{
-    background:#fff;
-    border-radius:18px;
-    min-height:80px;
-    padding:16px;
+    border:1px solid #1f2430;
 }
 
 </style>
@@ -67,11 +76,9 @@ canvas{
 
                 <div class="status-box mt-4 mb-4">
 
-                    <strong>Status</strong>
-
-                    <div id="status" class="mt-2 text-muted">
-                        Pronto
-                    </div>
+                    <span id="statusText">
+                        Status: Pronto
+                    </span>
 
                 </div>
 
@@ -79,18 +86,22 @@ canvas{
                 <div class="row g-3 mb-3">
 
                     <div class="col-6">
+
                         <button id="btnStart"
                                 class="btn btn-success btn-app w-100">
                             Gravar
                         </button>
+
                     </div>
 
                     <div class="col-6">
+
                         <button id="btnStop"
                                 class="btn btn-danger btn-app w-100"
                                 disabled>
                             Parar
                         </button>
+
                     </div>
 
                 </div>
@@ -99,19 +110,23 @@ canvas{
                 <div class="row g-3">
 
                     <div class="col-6">
+
                         <button id="btnPlay"
                                 class="btn btn-primary btn-app w-100"
                                 disabled>
                             Reproduzir
                         </button>
+
                     </div>
 
                     <div class="col-6">
+
                         <button id="btnAnalyze"
                                 class="btn btn-dark btn-app w-100"
                                 disabled>
                             Analisar
                         </button>
+
                     </div>
 
                 </div>
@@ -144,27 +159,79 @@ let isRecording = false;
 let isPlaying = false;
 let isAnalyzing = false;
 
+let timerInterval = null;
+let elapsedSeconds = 0;
+
 const canvas = document.getElementById("visualizer");
 const ctx = canvas.getContext("2d");
 
 canvas.width = canvas.offsetWidth;
 canvas.height = 140;
 
-const statusEl = document.getElementById("status");
-
 const btnStart = document.getElementById("btnStart");
 const btnStop = document.getElementById("btnStop");
 const btnPlay = document.getElementById("btnPlay");
 const btnAnalyze = document.getElementById("btnAnalyze");
 
-function setStatus(text){
-    statusEl.innerText = text;
+function formatTime(seconds){
+
+    const mins = String(
+        Math.floor(seconds / 60)
+    ).padStart(2,"0");
+
+    const secs = String(
+        seconds % 60
+    ).padStart(2,"0");
+
+    return `[${mins}:${secs}]`;
+}
+
+function updateStatus(message){
+
+    const text =
+        elapsedSeconds > 0
+        ? `Status: ${formatTime(elapsedSeconds)} ${message}`
+        : `Status: ${message}`;
+
+    document.getElementById(
+        "statusText"
+    ).innerText = text;
+}
+
+function startTimer(message){
+
+    clearInterval(timerInterval);
+
+    elapsedSeconds = 0;
+
+    updateStatus(message);
+
+    timerInterval = setInterval(() => {
+
+        elapsedSeconds++;
+
+        updateStatus(message);
+
+    },1000);
+}
+
+function stopTimer(){
+
+    clearInterval(timerInterval);
+
+    timerInterval = null;
 }
 
 function clearCanvas(){
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "#050608";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 }
 
 clearCanvas();
@@ -174,7 +241,9 @@ function stopCurrentAudio(){
     if(currentAudio){
 
         currentAudio.pause();
+
         currentAudio.currentTime = 0;
+
         currentAudio = null;
     }
 
@@ -196,30 +265,40 @@ function drawVisualizer(){
 
         analyser.getByteTimeDomainData(dataArray);
 
-        ctx.fillStyle = "black";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "#050608";
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
 
         ctx.lineWidth = 2;
 
         if(isRecording){
-            ctx.strokeStyle = "lime";
+            ctx.strokeStyle = "#00ff88";
         }
         else if(isAnalyzing){
-            ctx.strokeStyle = "orange";
+            ctx.strokeStyle = "#ff9900";
         }
         else{
-            ctx.strokeStyle = "cyan";
+            ctx.strokeStyle = "#00d4ff";
         }
 
         ctx.beginPath();
 
-        let sliceWidth = canvas.width / bufferLength;
+        let sliceWidth =
+            canvas.width / bufferLength;
+
         let x = 0;
 
         for(let i=0; i<bufferLength; i++){
 
             const v = dataArray[i] / 128.0;
-            const y = v * canvas.height / 2;
+
+            const y =
+                v * canvas.height / 2;
 
             if(i === 0){
                 ctx.moveTo(x,y);
@@ -230,7 +309,10 @@ function drawVisualizer(){
             x += sliceWidth;
         }
 
-        ctx.lineTo(canvas.width, canvas.height/2);
+        ctx.lineTo(
+            canvas.width,
+            canvas.height / 2
+        );
 
         ctx.stroke();
     }
@@ -242,6 +324,8 @@ async function startRecording(){
 
     stopCurrentAudio();
 
+    cancelAnimationFrame(animationId);
+
     audioBase64 = null;
 
     btnPlay.disabled = true;
@@ -249,19 +333,33 @@ async function startRecording(){
 
     audioData = [];
 
-    mediaStream = await navigator.mediaDevices.getUserMedia({
-        audio:true
-    });
+    mediaStream =
+        await navigator.mediaDevices.getUserMedia({
+            audio:true
+        });
 
-    audioContext = new(window.AudioContext || window.webkitAudioContext)();
+    audioContext =
+        new(
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
 
-    analyser = audioContext.createAnalyser();
+    analyser =
+        audioContext.createAnalyser();
 
     analyser.fftSize = 2048;
 
-    source = audioContext.createMediaStreamSource(mediaStream);
+    source =
+        audioContext.createMediaStreamSource(
+            mediaStream
+        );
 
-    processor = audioContext.createScriptProcessor(4096,1,1);
+    processor =
+        audioContext.createScriptProcessor(
+            4096,
+            1,
+            1
+        );
 
     source.connect(analyser);
 
@@ -271,9 +369,12 @@ async function startRecording(){
 
     processor.onaudioprocess = e => {
 
-        const channel = e.inputBuffer.getChannelData(0);
+        const channel =
+            e.inputBuffer.getChannelData(0);
 
-        audioData.push(new Float32Array(channel));
+        audioData.push(
+            new Float32Array(channel)
+        );
     };
 
     isRecording = true;
@@ -281,7 +382,7 @@ async function startRecording(){
     btnStart.disabled = true;
     btnStop.disabled = false;
 
-    setStatus("Gravando...");
+    startTimer("Gravando...");
 
     drawVisualizer();
 }
@@ -294,11 +395,15 @@ function stopRecording(){
 
     source.disconnect();
 
-    mediaStream.getTracks().forEach(track => track.stop());
+    mediaStream
+        .getTracks()
+        .forEach(track => track.stop());
 
-    cancelAnimationFrame(animationId);
-
-    const wavBlob = exportWAV(audioData, audioContext.sampleRate);
+    const wavBlob =
+        exportWAV(
+            audioData,
+            audioContext.sampleRate
+        );
 
     const reader = new FileReader();
 
@@ -306,12 +411,19 @@ function stopRecording(){
 
         audioBase64 = reader.result;
 
-        localStorage.setItem("audioResp", audioBase64);
+        localStorage.setItem(
+            "audioResp",
+            audioBase64
+        );
 
         btnPlay.disabled = false;
         btnAnalyze.disabled = false;
 
-        setStatus("Gravação concluída");
+        stopTimer();
+
+        updateStatus(
+            "Gravação concluída"
+        );
     };
 
     reader.readAsDataURL(wavBlob);
@@ -324,17 +436,27 @@ function stopRecording(){
 
 function connectAudioToAnalyzer(audio){
 
-    const playContext = new(window.AudioContext || window.webkitAudioContext)();
+    const playContext =
+        new(
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
 
-    analyser = playContext.createAnalyser();
+    analyser =
+        playContext.createAnalyser();
 
     analyser.fftSize = 2048;
 
-    const track = playContext.createMediaElementSource(audio);
+    const track =
+        playContext.createMediaElementSource(
+            audio
+        );
 
     track.connect(analyser);
 
-    analyser.connect(playContext.destination);
+    analyser.connect(
+        playContext.destination
+    );
 
     drawVisualizer();
 }
@@ -345,7 +467,10 @@ function playAudio(analyze=false){
 
     stopCurrentAudio();
 
-    currentAudio = new Audio(audioBase64);
+    cancelAnimationFrame(animationId);
+
+    currentAudio =
+        new Audio(audioBase64);
 
     connectAudioToAnalyzer(currentAudio);
 
@@ -354,14 +479,14 @@ function playAudio(analyze=false){
         isAnalyzing = true;
         isPlaying = false;
 
-        setStatus("Analisando áudio...");
+        startTimer("Analisando...");
     }
     else{
 
         isPlaying = true;
         isAnalyzing = false;
 
-        setStatus("Reproduzindo...");
+        startTimer("Reproduzindo...");
     }
 
     currentAudio.play();
@@ -373,9 +498,11 @@ function playAudio(analyze=false){
 
         cancelAnimationFrame(animationId);
 
+        stopTimer();
+
         clearCanvas();
 
-        setStatus("Pronto");
+        updateStatus("Pronto");
     };
 }
 
@@ -407,9 +534,12 @@ function exportWAV(buffers, sampleRate){
 
     let length = 0;
 
-    buffers.forEach(b => length += b.length);
+    buffers.forEach(
+        b => length += b.length
+    );
 
-    const merged = new Float32Array(length);
+    const merged =
+        new Float32Array(length);
 
     let offset = 0;
 
@@ -420,22 +550,37 @@ function exportWAV(buffers, sampleRate){
         offset += b.length;
     });
 
-    const wavBuffer = encodeWAV(merged, sampleRate);
+    const wavBuffer =
+        encodeWAV(
+            merged,
+            sampleRate
+        );
 
-    return new Blob([wavBuffer], {
-        type:'audio/wav'
-    });
+    return new Blob(
+        [wavBuffer],
+        {
+            type:'audio/wav'
+        }
+    );
 }
 
 function encodeWAV(samples, sampleRate){
 
-    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const buffer =
+        new ArrayBuffer(
+            44 + samples.length * 2
+        );
 
-    const view = new DataView(buffer);
+    const view =
+        new DataView(buffer);
 
     writeString(view,0,'RIFF');
 
-    view.setUint32(4,36 + samples.length * 2,true);
+    view.setUint32(
+        4,
+        36 + samples.length * 2,
+        true
+    );
 
     writeString(view,8,'WAVE');
 
@@ -447,9 +592,17 @@ function encodeWAV(samples, sampleRate){
 
     view.setUint16(22,1,true);
 
-    view.setUint32(24,sampleRate,true);
+    view.setUint32(
+        24,
+        sampleRate,
+        true
+    );
 
-    view.setUint32(28,sampleRate * 2,true);
+    view.setUint32(
+        28,
+        sampleRate * 2,
+        true
+    );
 
     view.setUint16(32,2,true);
 
@@ -457,32 +610,66 @@ function encodeWAV(samples, sampleRate){
 
     writeString(view,36,'data');
 
-    view.setUint32(40,samples.length * 2,true);
+    view.setUint32(
+        40,
+        samples.length * 2,
+        true
+    );
 
-    floatTo16BitPCM(view,44,samples);
+    floatTo16BitPCM(
+        view,
+        44,
+        samples
+    );
 
     return view;
 }
 
-function floatTo16BitPCM(output, offset, input){
+function floatTo16BitPCM(
+    output,
+    offset,
+    input
+){
 
-    for(let i=0; i<input.length; i++, offset +=2){
+    for(
+        let i=0;
+        i<input.length;
+        i++,
+        offset +=2
+    ){
 
-        let s = Math.max(-1, Math.min(1, input[i]));
+        let s =
+            Math.max(
+                -1,
+                Math.min(1, input[i])
+            );
 
         output.setInt16(
             offset,
-            s < 0 ? s * 0x8000 : s * 0x7FFF,
+            s < 0
+            ? s * 0x8000
+            : s * 0x7FFF,
             true
         );
     }
 }
 
-function writeString(view, offset, string){
+function writeString(
+    view,
+    offset,
+    string
+){
 
-    for(let i=0; i<string.length; i++){
+    for(
+        let i=0;
+        i<string.length;
+        i++
+    ){
 
-        view.setUint8(offset + i, string.charCodeAt(i));
+        view.setUint8(
+            offset + i,
+            string.charCodeAt(i)
+        );
     }
 }
 
