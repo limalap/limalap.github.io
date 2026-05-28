@@ -1,90 +1,309 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
-<title>Recorder Safari</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Teste Respiratório</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#f4f6f9;
+}
+
+.card-app{
+    border:none;
+    border-radius:24px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.btn-app{
+    border-radius:16px;
+    height:60px;
+    font-size:18px;
+    font-weight:600;
+}
+
+.status-box{
+    background:white;
+    border-radius:16px;
+    padding:15px;
+    min-height:80px;
+}
+
+canvas{
+    width:100%;
+    height:120px;
+    background:#000;
+    border-radius:16px;
+}
+
+</style>
+
 </head>
 <body>
 
-<button id="start">Gravar</button>
-<button id="stop">Parar</button>
-<button id="play">Reproduzir</button>
+<div class="container py-4">
 
-<p id="status"></p>
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-md-6">
+
+            <div class="card card-app p-4">
+
+                <h2 class="text-center mb-1">
+                    Teste Respiratório
+                </h2>
+
+                <p class="text-center text-muted mb-4">
+                    Sopre no apito durante a gravação
+                </p>
+
+                <canvas id="visualizer"></canvas>
+
+                <div class="status-box mt-4 mb-4">
+
+                    <strong>Status:</strong>
+
+                    <div id="status" class="mt-2 text-muted">
+                        Pronto para iniciar
+                    </div>
+
+                </div>
+
+                <div class="d-grid gap-3">
+
+                    <button id="start" class="btn btn-success btn-app">
+                        Iniciar Gravação
+                    </button>
+
+                    <button id="stop" class="btn btn-danger btn-app">
+                        Parar Gravação
+                    </button>
+
+                    <button id="play" class="btn btn-primary btn-app">
+                        Reproduzir Áudio
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script>
 
-let recorder;
-let chunks = [];
+let audioContext;
+let mediaStream;
+let source;
+let processor;
+let analyser;
 
-const status = document.getElementById("status");
+let audioData = [];
 
-async function iniciar() {
+const statusEl = document.getElementById("status");
 
-    const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true
-    });
+const canvas = document.getElementById("visualizer");
+const canvasCtx = canvas.getContext("2d");
 
-    recorder = new MediaRecorder(stream);
+canvas.width = canvas.offsetWidth;
+canvas.height = 120;
 
-    recorder.ondataavailable = e => {
-        chunks.push(e.data);
-    };
+function drawVisualizer() {
 
-    recorder.onstop = async () => {
+    if (!analyser) return;
 
-        const blob = new Blob(chunks);
+    requestAnimationFrame(drawVisualizer);
 
-        chunks = [];
+    const bufferLength = analyser.fftSize;
+    const dataArray = new Uint8Array(bufferLength);
 
-        const reader = new FileReader();
+    analyser.getByteTimeDomainData(dataArray);
 
-        reader.onloadend = () => {
+    canvasCtx.fillStyle = "black";
+    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const base64data = reader.result;
+    canvasCtx.lineWidth = 2;
+    canvasCtx.strokeStyle = "lime";
 
-            localStorage.setItem("audio", base64data);
+    canvasCtx.beginPath();
 
-            status.innerText = "Áudio salvo!";
-        };
+    const sliceWidth = canvas.width / bufferLength;
 
-        reader.readAsDataURL(blob);
-    };
+    let x = 0;
+
+    for(let i = 0; i < bufferLength; i++) {
+
+        const v = dataArray[i] / 128.0;
+        const y = v * canvas.height / 2;
+
+        if(i === 0){
+            canvasCtx.moveTo(x, y);
+        } else {
+            canvasCtx.lineTo(x, y);
+        }
+
+        x += sliceWidth;
+    }
+
+    canvasCtx.lineTo(canvas.width, canvas.height / 2);
+    canvasCtx.stroke();
 }
 
 document.getElementById("start").onclick = async () => {
 
-    if (!recorder) {
-        await iniciar();
-    }
+    audioData = [];
 
-    chunks = [];
+    mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: true
+    });
 
-    recorder.start();
+    audioContext = new(window.AudioContext || window.webkitAudioContext)();
 
-    status.innerText = "Gravando...";
+    source = audioContext.createMediaStreamSource(mediaStream);
+
+    analyser = audioContext.createAnalyser();
+
+    analyser.fftSize = 2048;
+
+    processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+    source.connect(analyser);
+    analyser.connect(processor);
+
+    processor.connect(audioContext.destination);
+
+    processor.onaudioprocess = e => {
+
+        const channel = e.inputBuffer.getChannelData(0);
+
+        audioData.push(new Float32Array(channel));
+    };
+
+    drawVisualizer();
+
+    statusEl.innerHTML = "Gravando áudio respiratório...";
 };
 
 document.getElementById("stop").onclick = () => {
 
-    recorder.stop();
+    if(!processor) return;
 
-    status.innerText = "Processando...";
+    processor.disconnect();
+    source.disconnect();
+
+    mediaStream.getTracks().forEach(track => track.stop());
+
+    const wavBlob = exportWAV(audioData, audioContext.sampleRate);
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+
+        localStorage.setItem("audioRespiratorio", reader.result);
+
+        statusEl.innerHTML = "Áudio salvo com sucesso!";
+    };
+
+    reader.readAsDataURL(wavBlob);
 };
 
 document.getElementById("play").onclick = () => {
 
-    const audioData = localStorage.getItem("audio");
+    const audioBase64 = localStorage.getItem("audioRespiratorio");
 
-    if (!audioData) {
-        alert("Nenhum áudio salvo");
+    if (!audioBase64) {
+
+        alert("Nenhum áudio encontrado");
+
         return;
     }
 
-    const audio = new Audio(audioData);
+    const audio = new Audio(audioBase64);
 
     audio.play();
+
+    statusEl.innerHTML = "Reproduzindo áudio...";
 };
+
+function exportWAV(buffers, sampleRate) {
+
+    let length = 0;
+
+    buffers.forEach(b => length += b.length);
+
+    const merged = new Float32Array(length);
+
+    let offset = 0;
+
+    buffers.forEach(b => {
+
+        merged.set(b, offset);
+
+        offset += b.length;
+    });
+
+    const wavBuffer = encodeWAV(merged, sampleRate);
+
+    return new Blob([wavBuffer], {
+        type: 'audio/wav'
+    });
+}
+
+function encodeWAV(samples, sampleRate) {
+
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+
+    const view = new DataView(buffer);
+
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + samples.length * 2, true);
+    writeString(view, 8, 'WAVE');
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeString(view, 36, 'data');
+    view.setUint32(40, samples.length * 2, true);
+
+    floatTo16BitPCM(view, 44, samples);
+
+    return view;
+}
+
+function floatTo16BitPCM(output, offset, input) {
+
+    for (let i = 0; i < input.length; i++, offset += 2) {
+
+        let s = Math.max(-1, Math.min(1, input[i]));
+
+        output.setInt16(
+            offset,
+            s < 0 ? s * 0x8000 : s * 0x7FFF,
+            true
+        );
+    }
+}
+
+function writeString(view, offset, string) {
+
+    for (let i = 0; i < string.length; i++) {
+
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
+}
 
 </script>
 
