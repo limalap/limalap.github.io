@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Teste Respiratório</title>
+<meta charset="UTF-8">
+<title>Gravador Respiratório</title>
 </head>
 <body>
 
@@ -13,83 +13,71 @@
 <p id="status"></p>
 
 <script>
+
 let mediaRecorder;
 let audioChunks = [];
-let audioBlob;
+let audioUrl = "";
 
 const status = document.getElementById("status");
 
-async function iniciarMicrofone() {
+async function setupRecorder() {
 
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: true
-  });
-
-  mediaRecorder = new MediaRecorder(stream);
-
-  mediaRecorder.ondataavailable = event => {
-    audioChunks.push(event.data);
-  };
-
-  mediaRecorder.onstop = () => {
-
-    audioBlob = new Blob(audioChunks, {
-      type: 'audio/webm'
+    const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
     });
 
-    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
 
-    salvarAudio(audioBlob);
+    mediaRecorder.ondataavailable = e => {
+        audioChunks.push(e.data);
+    };
 
-    status.innerText = "Áudio salvo!";
-  };
-}
+    mediaRecorder.onstop = () => {
 
-function salvarAudio(blob) {
+        const audioBlob = new Blob(audioChunks, {
+            type: 'audio/mp4'
+        });
 
-  const reader = new FileReader();
+        audioChunks = [];
 
-  reader.onloadend = () => {
-    localStorage.setItem("audioRespiratorio", reader.result);
-  };
+        audioUrl = URL.createObjectURL(audioBlob);
 
-  reader.readAsDataURL(blob);
-}
+        localStorage.setItem("ultimoAudio", audioUrl);
 
-function reproduzirAudio() {
-
-  const audioBase64 = localStorage.getItem("audioRespiratorio");
-
-  if (!audioBase64) {
-    alert("Nenhum áudio salvo");
-    return;
-  }
-
-  const audio = new Audio(audioBase64);
-
-  audio.play();
+        status.innerText = "Áudio gravado!";
+    };
 }
 
 document.getElementById("start").onclick = async () => {
 
-  if (!mediaRecorder) {
-    await iniciarMicrofone();
-  }
+    if (!mediaRecorder) {
+        await setupRecorder();
+    }
 
-  mediaRecorder.start();
+    audioChunks = [];
 
-  status.innerText = "Gravando...";
+    mediaRecorder.start();
+
+    status.innerText = "Gravando...";
 };
 
 document.getElementById("stop").onclick = () => {
 
-  mediaRecorder.stop();
+    mediaRecorder.stop();
 
-  status.innerText = "Parando...";
+    status.innerText = "Finalizando...";
 };
 
 document.getElementById("play").onclick = () => {
-  reproduzirAudio();
+
+    if (!audioUrl) {
+        alert("Nenhum áudio disponível");
+        return;
+    }
+
+    const audio = new Audio(audioUrl);
+
+    audio.play();
 };
 
 </script>
