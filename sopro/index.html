@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Teste Respiratório</title>
+</head>
+<body>
+
+<button id="start">Gravar</button>
+<button id="stop">Parar</button>
+<button id="play">Reproduzir</button>
+
+<p id="status"></p>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+let audioBlob;
+
+const status = document.getElementById("status");
+
+async function iniciarMicrofone() {
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true
+  });
+
+  mediaRecorder = new MediaRecorder(stream);
+
+  mediaRecorder.ondataavailable = event => {
+    audioChunks.push(event.data);
+  };
+
+  mediaRecorder.onstop = () => {
+
+    audioBlob = new Blob(audioChunks, {
+      type: 'audio/webm'
+    });
+
+    audioChunks = [];
+
+    salvarAudio(audioBlob);
+
+    status.innerText = "Áudio salvo!";
+  };
+}
+
+function salvarAudio(blob) {
+
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    localStorage.setItem("audioRespiratorio", reader.result);
+  };
+
+  reader.readAsDataURL(blob);
+}
+
+function reproduzirAudio() {
+
+  const audioBase64 = localStorage.getItem("audioRespiratorio");
+
+  if (!audioBase64) {
+    alert("Nenhum áudio salvo");
+    return;
+  }
+
+  const audio = new Audio(audioBase64);
+
+  audio.play();
+}
+
+document.getElementById("start").onclick = async () => {
+
+  if (!mediaRecorder) {
+    await iniciarMicrofone();
+  }
+
+  mediaRecorder.start();
+
+  status.innerText = "Gravando...";
+};
+
+document.getElementById("stop").onclick = () => {
+
+  mediaRecorder.stop();
+
+  status.innerText = "Parando...";
+};
+
+document.getElementById("play").onclick = () => {
+  reproduzirAudio();
+};
+
+</script>
+
+</body>
+</html>
