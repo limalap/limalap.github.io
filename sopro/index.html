@@ -1,17 +1,23 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
 <title>Respirômetro</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet"
+      href="style.css">
 
 </head>
+
 <body>
 
 <div class="container py-4">
@@ -76,7 +82,9 @@ Aguardando análise...
                         <button id="btnRec"
                                 class="btn btn-rec btn-app">
 
-                            <div class="icon" id="iconRec"></div>
+                            <div class="icon"
+                                 id="iconRec">
+                            </div>
 
                             <div class="btn-label">
                                 REC
@@ -92,7 +100,9 @@ Aguardando análise...
                                 class="btn btn-play btn-app"
                                 disabled>
 
-                            <div class="icon" id="iconPlay"></div>
+                            <div class="icon"
+                                 id="iconPlay">
+                            </div>
 
                             <div class="btn-label">
                                 PLAY
@@ -108,7 +118,9 @@ Aguardando análise...
                                 class="btn btn-analyze btn-app"
                                 disabled>
 
-                            <div class="icon" id="iconAnalyze"></div>
+                            <div class="icon"
+                                 id="iconAnalyze">
+                            </div>
 
                             <div class="btn-label">
                                 ANÁLISE
@@ -153,8 +165,6 @@ Aguardando análise...
 
             <div class="modal-body">
 
-                <!-- MICROFONE -->
-
                 <div class="mb-4">
 
                     <label class="form-label">
@@ -166,8 +176,6 @@ Aguardando análise...
                     </select>
 
                 </div>
-
-                <!-- MÉTODO -->
 
                 <div>
 
@@ -224,8 +232,12 @@ Aguardando análise...
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script src="storage.js"></script>
+<script src="icons.js"></script>
+<script src="status.js"></script>
+<script src="canvas.js"></script>
+<script src="buttons.js"></script>
 <script src="libSom.js"></script>
-
 <script src="app.js"></script>
 
 </body>
