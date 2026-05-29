@@ -38,54 +38,126 @@ canvas{
     border:1px solid #1f2430;
 }
 
+/* BOTÕES */
+
 .btn-app{
-    border:none;
-    border-radius:16px;
-    height:60px;
-    font-size:15px;
-    font-weight:700;
+
+    border:none !important;
+
+    border-radius:22px;
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    min-height:110px;
 
     display:flex;
+
+    flex-direction:column;
+
     align-items:center;
+
     justify-content:center;
-    gap:10px;
 
-    transition:0.2s;
+    gap:12px;
+
+    transition:all 0.2s ease;
+
+    color:white !important;
+
+    user-select:none;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 6px 18px rgba(0,0,0,0.25);
 }
 
-.btn-app:disabled{
-    opacity:0.45;
+.btn-app:hover{
+
+    transform:scale(1.03);
 }
+
+.btn-app:active{
+
+    transform:scale(0.98);
+}
+
+/* CORES */
 
 .btn-rec{
-    background:#dc3545;
-    color:white;
+    background:#dc3545 !important;
 }
 
 .btn-play{
-    background:#0d6efd;
-    color:white;
+    background:#0d6efd !important;
 }
 
 .btn-analyze{
-    background:#198754;
-    color:white;
+    background:#198754 !important;
 }
 
-.btn-rec:hover{
-    background:#bb2d3b;
+/* INATIVOS */
+
+.btn-app:disabled{
+
+    opacity:0.35;
+
+    filter:saturate(0.8);
+
+    color:white !important;
 }
 
-.btn-play:hover{
-    background:#0b5ed7;
-}
+/* ÍCONES */
 
-.btn-analyze:hover{
-    background:#157347;
+.icon{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    height:44px;
 }
 
 .icon svg{
-    width:18px;
-    height:18px;
+
+    width:34px;
+
+    height:34px;
+
     fill:white;
+
+    stroke:white;
+
+    stroke-width:1.8;
+
+    transition:all 0.2s ease;
+}
+
+/* ÍCONE MAIOR ANÁLISE */
+
+.btn-analyze .icon svg{
+
+    width:42px;
+
+    height:42px;
+}
+
+/* TEXTO */
+
+.btn-label{
+
+    font-size:14px;
+
+    font-weight:700;
+
+    line-height:1;
+
+    letter-spacing:0.8px;
+
+    text-align:center;
+
+    color:white !important;
 }
