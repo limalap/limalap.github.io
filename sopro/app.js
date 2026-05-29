@@ -31,19 +31,17 @@ const btnRec = document.getElementById("btnRec");
 const btnPlay = document.getElementById("btnPlay");
 const btnAnalyze = document.getElementById("btnAnalyze");
 
-const textRec = document.getElementById("textRec");
-const textPlay = document.getElementById("textPlay");
-const textAnalyze = document.getElementById("textAnalyze");
-
 const iconRec = document.getElementById("iconRec");
 const iconPlay = document.getElementById("iconPlay");
 const iconAnalyze = document.getElementById("iconAnalyze");
+
+/* SVGs */
 
 function svgRec(){
 
     return `
     <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="8"></circle>
+        <circle cx="12" cy="12" r="7"></circle>
     </svg>
     `;
 }
@@ -70,7 +68,41 @@ function svgAnalyze(){
 
     return `
     <svg viewBox="0 0 24 24">
-        <path d="M3 12h3l2-4 4 8 2-4h7"></path>
+
+        <path d="
+            M12 2
+            L14 2.8
+            L16 2
+            L17 4
+            L19 5
+            L18.5 7
+            L20 9
+            L18.5 11
+            L20 13
+            L18.5 15
+            L19 17
+            L17 18
+            L16 20
+            L14 19.2
+            L12 20
+            L10 19.2
+            L8 20
+            L7 18
+            L5 17
+            L5.5 15
+            L4 13
+            L5.5 11
+            L4 9
+            L5.5 7
+            L5 5
+            L7 4
+            L8 2
+            L10 2.8
+            Z
+        "></path>
+
+        <circle cx="12" cy="11" r="3"></circle>
+
     </svg>
     `;
 }
@@ -78,6 +110,8 @@ function svgAnalyze(){
 iconRec.innerHTML = svgRec();
 iconPlay.innerHTML = svgPlay();
 iconAnalyze.innerHTML = svgAnalyze();
+
+/* STATUS */
 
 function formatTime(seconds){
 
@@ -125,6 +159,8 @@ function stopTimer(){
 
     clearInterval(timerInterval);
 }
+
+/* CANVAS */
 
 function clearCanvas(){
 
@@ -201,6 +237,8 @@ function drawVisualizer(color){
     draw();
 }
 
+/* RESET */
+
 function stopAll(){
 
     stopTimer();
@@ -218,12 +256,16 @@ function stopAll(){
 
     if(processor){
 
-        processor.disconnect();
+        try{
+            processor.disconnect();
+        }catch(e){}
     }
 
     if(source){
 
-        source.disconnect();
+        try{
+            source.disconnect();
+        }catch(e){}
     }
 
     if(mediaStream){
@@ -234,10 +276,6 @@ function stopAll(){
     }
 
     currentMode = null;
-
-    textRec.innerText = "REC";
-    textPlay.innerText = "PLAY";
-    textAnalyze.innerText = "ANÁLISE";
 
     iconRec.innerHTML = svgRec();
     iconPlay.innerHTML = svgPlay();
@@ -250,6 +288,8 @@ function stopAll(){
 
     updateStatus("Pronto");
 }
+
+/* GRAVAÇÃO */
 
 async function startRecording(){
 
@@ -308,8 +348,6 @@ async function startRecording(){
 
     currentMode = MODE_REC;
 
-    textRec.innerText = "STOP";
-
     iconRec.innerHTML = svgStop();
 
     startTimer("Gravando...");
@@ -359,6 +397,8 @@ function stopRecording(){
     reader.readAsDataURL(wavBlob);
 }
 
+/* PLAY / ANALISE */
+
 function connectAudio(audio){
 
     const playContext =
@@ -399,8 +439,6 @@ function playAudio(mode){
 
     if(mode === MODE_PLAY){
 
-        textPlay.innerText = "STOP";
-
         iconPlay.innerHTML = svgStop();
 
         startTimer("Reproduzindo...");
@@ -409,8 +447,6 @@ function playAudio(mode){
     }
 
     if(mode === MODE_ANALYZE){
-
-        textAnalyze.innerText = "STOP";
 
         iconAnalyze.innerHTML = svgStop();
 
@@ -426,6 +462,8 @@ function playAudio(mode){
         stopAll();
     };
 }
+
+/* EVENTOS */
 
 btnRec.onclick = async () => {
 
@@ -466,6 +504,8 @@ btnAnalyze.onclick = () => {
 
     playAudio(MODE_ANALYZE);
 };
+
+/* WAV */
 
 function exportWAV(buffers, sampleRate){
 
