@@ -12,12 +12,14 @@ let audioBase64 = null;
 
 let currentAudio = null;
 
-let isRecording = false;
-let isPlaying = false;
-let isAnalyzing = false;
-
 let timerInterval = null;
 let elapsedSeconds = 0;
+
+let currentMode = null;
+
+const MODE_REC = "rec";
+const MODE_PLAY = "play";
+const MODE_ANALYZE = "analyze";
 
 const canvas = document.getElementById("visualizer");
 const ctx = canvas.getContext("2d");
@@ -25,10 +27,57 @@ const ctx = canvas.getContext("2d");
 canvas.width = canvas.offsetWidth;
 canvas.height = 140;
 
-const btnStart = document.getElementById("btnStart");
-const btnStop = document.getElementById("btnStop");
+const btnRec = document.getElementById("btnRec");
 const btnPlay = document.getElementById("btnPlay");
 const btnAnalyze = document.getElementById("btnAnalyze");
+
+const textRec = document.getElementById("textRec");
+const textPlay = document.getElementById("textPlay");
+const textAnalyze = document.getElementById("textAnalyze");
+
+const iconRec = document.getElementById("iconRec");
+const iconPlay = document.getElementById("iconPlay");
+const iconAnalyze = document.getElementById("iconAnalyze");
+
+function svgRec(){
+
+    return `
+    <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8"></circle>
+    </svg>
+    `;
+}
+
+function svgPlay(){
+
+    return `
+    <svg viewBox="0 0 24 24">
+        <polygon points="8,5 19,12 8,19"></polygon>
+    </svg>
+    `;
+}
+
+function svgStop(){
+
+    return `
+    <svg viewBox="0 0 24 24">
+        <rect x="6" y="6" width="12" height="12"></rect>
+    </svg>
+    `;
+}
+
+function svgAnalyze(){
+
+    return `
+    <svg viewBox="0 0 24 24">
+        <path d="M3 12h3l2-4 4 8 2-4h7"></path>
+    </svg>
+    `;
+}
+
+iconRec.innerHTML = svgRec();
+iconPlay.innerHTML = svgPlay();
+iconAnalyze.innerHTML = svgAnalyze();
 
 function formatTime(seconds){
 
@@ -75,8 +124,6 @@ function startTimer(message){
 function stopTimer(){
 
     clearInterval(timerInterval);
-
-    timerInterval = null;
 }
 
 function clearCanvas(){
@@ -93,22 +140,7 @@ function clearCanvas(){
 
 clearCanvas();
 
-function stopCurrentAudio(){
-
-    if(currentAudio){
-
-        currentAudio.pause();
-
-        currentAudio.currentTime = 0;
-
-        currentAudio = null;
-    }
-
-    isPlaying = false;
-    isAnalyzing = false;
-}
-
-function drawVisualizer(){
+function drawVisualizer(color){
 
     if(!analyser) return;
 
@@ -133,15 +165,7 @@ function drawVisualizer(){
 
         ctx.lineWidth = 2;
 
-        if(isRecording){
-            ctx.strokeStyle = "#00ff88";
-        }
-        else if(isAnalyzing){
-            ctx.strokeStyle = "#ff9900";
-        }
-        else{
-            ctx.strokeStyle = "#00d4ff";
-        }
+        ctx.strokeStyle = color;
 
         ctx.beginPath();
 
@@ -177,11 +201,59 @@ function drawVisualizer(){
     draw();
 }
 
-async function startRecording(){
+function stopAll(){
 
-    stopCurrentAudio();
+    stopTimer();
 
     cancelAnimationFrame(animationId);
+
+    if(currentAudio){
+
+        currentAudio.pause();
+
+        currentAudio.currentTime = 0;
+
+        currentAudio = null;
+    }
+
+    if(processor){
+
+        processor.disconnect();
+    }
+
+    if(source){
+
+        source.disconnect();
+    }
+
+    if(mediaStream){
+
+        mediaStream
+            .getTracks()
+            .forEach(track => track.stop());
+    }
+
+    currentMode = null;
+
+    textRec.innerText = "REC";
+    textPlay.innerText = "PLAY";
+    textAnalyze.innerText = "ANÁLISE";
+
+    iconRec.innerHTML = svgRec();
+    iconPlay.innerHTML = svgPlay();
+    iconAnalyze.innerHTML = svgAnalyze();
+
+    btnPlay.disabled = !audioBase64;
+    btnAnalyze.disabled = !audioBase64;
+
+    clearCanvas();
+
+    updateStatus("Pronto");
+}
+
+async function startRecording(){
+
+    stopAll();
 
     audioBase64 = null;
 
@@ -234,19 +306,20 @@ async function startRecording(){
         );
     };
 
-    isRecording = true;
+    currentMode = MODE_REC;
 
-    btnStart.disabled = true;
-    btnStop.disabled = false;
+    textRec.innerText = "STOP";
+
+    iconRec.innerHTML = svgStop();
 
     startTimer("Gravando...");
 
-    drawVisualizer();
+    drawVisualizer("#ff3b30");
 }
 
 function stopRecording(){
 
-    if(!isRecording) return;
+    if(currentMode !== MODE_REC) return;
 
     processor.disconnect();
 
@@ -273,10 +346,10 @@ function stopRecording(){
             audioBase64
         );
 
+        stopAll();
+
         btnPlay.disabled = false;
         btnAnalyze.disabled = false;
-
-        stopTimer();
 
         updateStatus(
             "Gravação concluída"
@@ -284,14 +357,9 @@ function stopRecording(){
     };
 
     reader.readAsDataURL(wavBlob);
-
-    isRecording = false;
-
-    btnStart.disabled = false;
-    btnStop.disabled = true;
 }
 
-function connectAudioToAnalyzer(audio){
+function connectAudio(audio){
 
     const playContext =
         new(
@@ -314,77 +382,89 @@ function connectAudioToAnalyzer(audio){
     analyser.connect(
         playContext.destination
     );
-
-    drawVisualizer();
 }
 
-function playAudio(analyze=false){
+function playAudio(mode){
+
+    stopAll();
 
     if(!audioBase64) return;
-
-    stopCurrentAudio();
-
-    cancelAnimationFrame(animationId);
 
     currentAudio =
         new Audio(audioBase64);
 
-    connectAudioToAnalyzer(currentAudio);
+    connectAudio(currentAudio);
 
-    if(analyze){
+    currentMode = mode;
 
-        isAnalyzing = true;
-        isPlaying = false;
+    if(mode === MODE_PLAY){
 
-        startTimer("Analisando...");
-    }
-    else{
+        textPlay.innerText = "STOP";
 
-        isPlaying = true;
-        isAnalyzing = false;
+        iconPlay.innerHTML = svgStop();
 
         startTimer("Reproduzindo...");
+
+        drawVisualizer("#0d6efd");
+    }
+
+    if(mode === MODE_ANALYZE){
+
+        textAnalyze.innerText = "STOP";
+
+        iconAnalyze.innerHTML = svgStop();
+
+        startTimer("Analisando...");
+
+        drawVisualizer("#20c997");
     }
 
     currentAudio.play();
 
     currentAudio.onended = () => {
 
-        isPlaying = false;
-        isAnalyzing = false;
-
-        cancelAnimationFrame(animationId);
-
-        stopTimer();
-
-        clearCanvas();
-
-        updateStatus("Pronto");
+        stopAll();
     };
 }
 
-btnStart.onclick = async () => {
+btnRec.onclick = async () => {
+
+    if(currentMode === MODE_REC){
+
+        stopRecording();
+
+        return;
+    }
 
     await startRecording();
 };
 
-btnStop.onclick = () => {
-
-    stopRecording();
-};
-
 btnPlay.onclick = () => {
 
-    if(isPlaying) return;
+    if(btnPlay.disabled) return;
 
-    playAudio(false);
+    if(currentMode === MODE_PLAY){
+
+        stopAll();
+
+        return;
+    }
+
+    playAudio(MODE_PLAY);
 };
 
 btnAnalyze.onclick = () => {
 
-    if(isAnalyzing) return;
+    if(btnAnalyze.disabled) return;
 
-    playAudio(true);
+    if(currentMode === MODE_ANALYZE){
+
+        stopAll();
+
+        return;
+    }
+
+    playAudio(MODE_ANALYZE);
 };
 
 function exportWAV(buffers, sampleRate){
