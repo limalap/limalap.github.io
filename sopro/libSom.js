@@ -96,4 +96,4 @@ function detectarSopro(
         soproDetectado:
             duracao > 0.5
     };
-} 
+}
