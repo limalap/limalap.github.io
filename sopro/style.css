@@ -21,13 +21,6 @@ h2{
     color:#9aa4b2 !important;
 }
 
-.btn-app{
-    border-radius:16px;
-    height:58px;
-    font-size:17px;
-    font-weight:600;
-}
-
 .status-box{
     background:#11141a;
     border:1px solid #262b36;
@@ -43,4 +36,56 @@ canvas{
     background:#050608;
     border-radius:18px;
     border:1px solid #1f2430;
+}
+
+.btn-app{
+    border:none;
+    border-radius:16px;
+    height:60px;
+    font-size:15px;
+    font-weight:700;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    transition:0.2s;
+}
+
+.btn-app:disabled{
+    opacity:0.45;
+}
+
+.btn-rec{
+    background:#dc3545;
+    color:white;
+}
+
+.btn-play{
+    background:#0d6efd;
+    color:white;
+}
+
+.btn-analyze{
+    background:#198754;
+    color:white;
+}
+
+.btn-rec:hover{
+    background:#bb2d3b;
+}
+
+.btn-play:hover{
+    background:#0b5ed7;
+}
+
+.btn-analyze:hover{
+    background:#157347;
+}
+
+.icon svg{
+    width:18px;
+    height:18px;
+    fill:white;
 }
