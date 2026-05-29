@@ -19,6 +19,11 @@ let currentMode = null;
 
 let selectedDeviceId = null;
 
+let captureMethod =
+    localStorage.getItem(
+        "captureMethod"
+    ) || "finger";
+
 const MODE_REC = "rec";
 const MODE_PLAY = "play";
 const MODE_ANALYZE = "analyze";
@@ -38,8 +43,14 @@ const btnConfig = document.getElementById("btnConfig");
 const microphoneSelect =
     document.getElementById("microphoneSelect");
 
+const captureMethodSelect =
+    document.getElementById("captureMethodSelect");
+
 const btnApplyConfig =
     document.getElementById("btnApplyConfig");
+
+const debugOutput =
+    document.getElementById("debugOutput");
 
 const configModal =
     new bootstrap.Modal(
@@ -140,51 +151,155 @@ iconAnalyze.innerHTML = svgAnalyze();
 
 /* STATUS */
 
-function formatTime(seconds){
-
-    const mins = String(
-        Math.floor(seconds / 60)
-    ).padStart(2,"0");
-
-    const secs = String(
-        seconds % 60
-    ).padStart(2,"0");
-
-    return `[${mins}:${secs}]`;
-}
-
 function updateStatus(message){
-
-    const text =
-        elapsedSeconds > 0
-        ? `Status: ${formatTime(elapsedSeconds)} ${message}`
-        : `Status: ${message}`;
 
     document.getElementById(
         "statusText"
-    ).innerText = text;
+    ).innerText =
+        `Status: ${message}`;
 }
 
-function startTimer(message){
+/* DEBUG */
 
-    clearInterval(timerInterval);
+function showDebug(data){
 
-    elapsedSeconds = 0;
+    debugOutput.textContent =
+`Método: ${data.method}
 
-    updateStatus(message);
+Sopro detectado:
+${data.soproDetectado ? "SIM" : "NÃO"}
 
-    timerInterval = setInterval(() => {
+Threshold:
+${data.threshold}
 
-        elapsedSeconds++;
+RMS máximo:
+${data.rmsMax}
 
-        updateStatus(message);
+Início:
+${data.inicio}s
 
-    },1000);
+Fim:
+${data.fim}s
+
+Duração:
+${data.duracao}s`;
 }
 
-function stopTimer(){
+/* MICROFONES */
 
-    clearInterval(timerInterval);
+async function requestMicrophonePermission(){
+
+    try{
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                audio:true
+            });
+
+        stream
+            .getTracks()
+            .forEach(track => track.stop());
+
+        updateStatus("Microfone pronto");
+
+        await loadMicrophones();
+
+    }catch(err){
+
+        updateStatus("Permissão negada");
+    }
+}
+
+async function loadMicrophones(){
+
+    const devices =
+        await navigator.mediaDevices.enumerateDevices();
+
+    const microphones =
+        devices.filter(
+            d => d.kind === "audioinput"
+        );
+
+    microphoneSelect.innerHTML = "";
+
+    microphones.forEach((mic,index) => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = mic.deviceId;
+
+        option.text =
+            mic.label ||
+            `Microfone ${index+1}`;
+
+        microphoneSelect.appendChild(option);
+    });
+
+    const savedMic =
+        localStorage.getItem(
+            "selectedMicrophone"
+        );
+
+    if(savedMic){
+
+        selectedDeviceId = savedMic;
+
+        microphoneSelect.value = savedMic;
+    }
+
+    captureMethodSelect.value =
+        captureMethod;
+}
+
+/* RESET */
+
+function stopAll(){
+
+    cancelAnimationFrame(animationId);
+
+    if(currentAudio){
+
+        currentAudio.pause();
+
+        currentAudio.currentTime = 0;
+
+        currentAudio = null;
+    }
+
+    if(processor){
+
+        try{
+            processor.disconnect();
+        }catch(e){}
+    }
+
+    if(source){
+
+        try{
+            source.disconnect();
+        }catch(e){}
+    }
+
+    if(mediaStream){
+
+        mediaStream
+            .getTracks()
+            .forEach(track => track.stop());
+    }
+
+    currentMode = null;
+
+    iconRec.innerHTML = svgRec();
+    iconPlay.innerHTML = svgPlay();
+    iconAnalyze.innerHTML = svgAnalyze();
+
+    btnPlay.disabled = !audioBase64;
+    btnAnalyze.disabled = !audioBase64;
+
+    clearCanvas();
+
+    updateStatus("Pronto");
 }
 
 /* CANVAS */
@@ -264,123 +379,7 @@ function drawVisualizer(color){
     draw();
 }
 
-/* MICROFONES */
-
-async function requestMicrophonePermission(){
-
-    try{
-
-        const stream =
-            await navigator.mediaDevices.getUserMedia({
-                audio:true
-            });
-
-        stream
-            .getTracks()
-            .forEach(track => track.stop());
-
-        updateStatus("Microfone pronto");
-
-        await loadMicrophones();
-
-    }catch(err){
-
-        updateStatus("Permissão negada");
-    }
-}
-
-async function loadMicrophones(){
-
-    const devices =
-        await navigator.mediaDevices.enumerateDevices();
-
-    const microphones =
-        devices.filter(
-            d => d.kind === "audioinput"
-        );
-
-    microphoneSelect.innerHTML = "";
-
-    microphones.forEach((mic,index) => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = mic.deviceId;
-
-        option.text =
-            mic.label ||
-            `Microfone ${index+1}`;
-
-        microphoneSelect.appendChild(option);
-    });
-
-    const saved =
-        localStorage.getItem(
-            "selectedMicrophone"
-        );
-
-    if(saved){
-
-        selectedDeviceId = saved;
-
-        microphoneSelect.value = saved;
-    }
-}
-
-/* RESET */
-
-function stopAll(){
-
-    stopTimer();
-
-    cancelAnimationFrame(animationId);
-
-    if(currentAudio){
-
-        currentAudio.pause();
-
-        currentAudio.currentTime = 0;
-
-        currentAudio = null;
-    }
-
-    if(processor){
-
-        try{
-            processor.disconnect();
-        }catch(e){}
-    }
-
-    if(source){
-
-        try{
-            source.disconnect();
-        }catch(e){}
-    }
-
-    if(mediaStream){
-
-        mediaStream
-            .getTracks()
-            .forEach(track => track.stop());
-    }
-
-    currentMode = null;
-
-    iconRec.innerHTML = svgRec();
-    iconPlay.innerHTML = svgPlay();
-    iconAnalyze.innerHTML = svgAnalyze();
-
-    btnPlay.disabled = !audioBase64;
-    btnAnalyze.disabled = !audioBase64;
-
-    clearCanvas();
-
-    updateStatus("Pronto");
-}
-
-/* GRAVAÇÃO */
+/* REC */
 
 async function startRecording(){
 
@@ -444,7 +443,7 @@ async function startRecording(){
             e.inputBuffer.getChannelData(0);
 
         audioData.push(
-            new Float32Array(channel)
+            ...channel
         );
     };
 
@@ -452,7 +451,7 @@ async function startRecording(){
 
     iconRec.innerHTML = svgStop();
 
-    startTimer("Gravando...");
+    updateStatus("Gravando...");
 
     drawVisualizer("#ff3b30");
 }
@@ -461,108 +460,37 @@ function stopRecording(){
 
     if(currentMode !== MODE_REC) return;
 
-    processor.disconnect();
+    stopAll();
 
-    source.disconnect();
+    updateStatus("Gravação concluída");
 
-    mediaStream
-        .getTracks()
-        .forEach(track => track.stop());
-
-    const wavBlob =
-        exportWAV(
-            audioData,
-            audioContext.sampleRate
-        );
-
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-
-        audioBase64 = reader.result;
-
-        localStorage.setItem(
-            "audioResp",
-            audioBase64
-        );
-
-        stopAll();
-
-        btnPlay.disabled = false;
-        btnAnalyze.disabled = false;
-
-        updateStatus(
-            "Gravação concluída"
-        );
-    };
-
-    reader.readAsDataURL(wavBlob);
+    btnPlay.disabled = false;
+    btnAnalyze.disabled = false;
 }
 
 /* PLAY */
 
-function connectAudio(audio){
+function playAudio(){
 
-    const playContext =
-        new(
-            window.AudioContext ||
-            window.webkitAudioContext
-        )();
-
-    analyser =
-        playContext.createAnalyser();
-
-    analyser.fftSize = 2048;
-
-    const track =
-        playContext.createMediaElementSource(
-            audio
-        );
-
-    track.connect(analyser);
-
-    analyser.connect(
-        playContext.destination
-    );
+    updateStatus("Reproduzindo...");
 }
 
-function playAudio(mode){
+/* ANALISE */
 
-    stopAll();
+function runAnalysis(){
 
-    if(!audioBase64) return;
+    updateStatus("Analisando...");
 
-    currentAudio =
-        new Audio(audioBase64);
+    const resultado =
+        detectarSopro(
+            audioData,
+            audioContext.sampleRate,
+            captureMethod
+        );
 
-    connectAudio(currentAudio);
+    showDebug(resultado);
 
-    currentMode = mode;
-
-    if(mode === MODE_PLAY){
-
-        iconPlay.innerHTML = svgStop();
-
-        startTimer("Reproduzindo...");
-
-        drawVisualizer("#0d6efd");
-    }
-
-    if(mode === MODE_ANALYZE){
-
-        iconAnalyze.innerHTML = svgStop();
-
-        startTimer("Analisando...");
-
-        drawVisualizer("#20c997");
-    }
-
-    currentAudio.play();
-
-    currentAudio.onended = () => {
-
-        stopAll();
-    };
+    updateStatus("Análise concluída");
 }
 
 /* EVENTOS */
@@ -581,30 +509,12 @@ btnRec.onclick = async () => {
 
 btnPlay.onclick = () => {
 
-    if(btnPlay.disabled) return;
-
-    if(currentMode === MODE_PLAY){
-
-        stopAll();
-
-        return;
-    }
-
-    playAudio(MODE_PLAY);
+    playAudio();
 };
 
 btnAnalyze.onclick = () => {
 
-    if(btnAnalyze.disabled) return;
-
-    if(currentMode === MODE_ANALYZE){
-
-        stopAll();
-
-        return;
-    }
-
-    playAudio(MODE_ANALYZE);
+    runAnalysis();
 };
 
 btnConfig.onclick = () => {
@@ -617,9 +527,17 @@ btnApplyConfig.onclick = () => {
     selectedDeviceId =
         microphoneSelect.value;
 
+    captureMethod =
+        captureMethodSelect.value;
+
     localStorage.setItem(
         "selectedMicrophone",
         selectedDeviceId
+    );
+
+    localStorage.setItem(
+        "captureMethod",
+        captureMethod
     );
 
     configModal.hide();
@@ -630,148 +548,3 @@ btnApplyConfig.onclick = () => {
 /* INIT */
 
 requestMicrophonePermission();
-
-/* WAV */
-
-function exportWAV(buffers, sampleRate){
-
-    let length = 0;
-
-    buffers.forEach(
-        b => length += b.length
-    );
-
-    const merged =
-        new Float32Array(length);
-
-    let offset = 0;
-
-    buffers.forEach(b => {
-
-        merged.set(b, offset);
-
-        offset += b.length;
-    });
-
-    const wavBuffer =
-        encodeWAV(
-            merged,
-            sampleRate
-        );
-
-    return new Blob(
-        [wavBuffer],
-        {
-            type:'audio/wav'
-        }
-    );
-}
-
-function encodeWAV(samples, sampleRate){
-
-    const buffer =
-        new ArrayBuffer(
-            44 + samples.length * 2
-        );
-
-    const view =
-        new DataView(buffer);
-
-    writeString(view,0,'RIFF');
-
-    view.setUint32(
-        4,
-        36 + samples.length * 2,
-        true
-    );
-
-    writeString(view,8,'WAVE');
-
-    writeString(view,12,'fmt ');
-
-    view.setUint32(16,16,true);
-
-    view.setUint16(20,1,true);
-
-    view.setUint16(22,1,true);
-
-    view.setUint32(
-        24,
-        sampleRate,
-        true
-    );
-
-    view.setUint32(
-        28,
-        sampleRate * 2,
-        true
-    );
-
-    view.setUint16(32,2,true);
-
-    view.setUint16(34,16,true);
-
-    writeString(view,36,'data');
-
-    view.setUint32(
-        40,
-        samples.length * 2,
-        true
-    );
-
-    floatTo16BitPCM(
-        view,
-        44,
-        samples
-    );
-
-    return view;
-}
-
-function floatTo16BitPCM(
-    output,
-    offset,
-    input
-){
-
-    for(
-        let i=0;
-        i<input.length;
-        i++,
-        offset +=2
-    ){
-
-        let s =
-            Math.max(
-                -1,
-                Math.min(1, input[i])
-            );
-
-        output.setInt16(
-            offset,
-            s < 0
-            ? s * 0x8000
-            : s * 0x7FFF,
-            true
-        );
-    }
-}
-
-function writeString(
-    view,
-    offset,
-    string
-){
-
-    for(
-        let i=0;
-        i<string.length;
-        i++
-    ){
-
-        view.setUint8(
-            offset + i,
-            string.charCodeAt(i)
-        );
-    }
-}
