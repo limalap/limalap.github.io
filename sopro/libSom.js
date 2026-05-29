@@ -4,7 +4,8 @@ function calcularRMS(samples){
 
     for(let i=0; i<samples.length; i++){
 
-        soma += samples[i] * samples[i];
+        soma +=
+            samples[i] * samples[i];
     }
 
     return Math.sqrt(
@@ -35,6 +36,7 @@ function detectarSopro(
     let iniciou = false;
 
     let inicio = 0;
+
     let fim = 0;
 
     let maiorRMS = 0;
@@ -46,7 +48,10 @@ function detectarSopro(
     ){
 
         const slice =
-            audioData.slice(i, i + bloco);
+            audioData.slice(
+                i,
+                i + bloco
+            );
 
         const rms =
             calcularRMS(slice);
@@ -72,9 +77,6 @@ function detectarSopro(
         }
     }
 
-    const duracao =
-        Math.max(0, fim - inicio);
-
     return {
 
         method,
@@ -91,9 +93,7 @@ function detectarSopro(
             fim.toFixed(2),
 
         duracao:
-            duracao.toFixed(2),
-
-        soproDetectado:
-            duracao > 0.5
+            (fim - inicio)
+            .toFixed(2)
     };
 }
