@@ -17,6 +17,8 @@ let elapsedSeconds = 0;
 
 let currentMode = null;
 
+let selectedDeviceId = null;
+
 const MODE_REC = "rec";
 const MODE_PLAY = "play";
 const MODE_ANALYZE = "analyze";
@@ -31,11 +33,24 @@ const btnRec = document.getElementById("btnRec");
 const btnPlay = document.getElementById("btnPlay");
 const btnAnalyze = document.getElementById("btnAnalyze");
 
+const btnConfig = document.getElementById("btnConfig");
+
+const microphoneSelect =
+    document.getElementById("microphoneSelect");
+
+const btnApplyConfig =
+    document.getElementById("btnApplyConfig");
+
+const configModal =
+    new bootstrap.Modal(
+        document.getElementById("configModal")
+    );
+
 const iconRec = document.getElementById("iconRec");
 const iconPlay = document.getElementById("iconPlay");
 const iconAnalyze = document.getElementById("iconAnalyze");
 
-/* SVGs */
+/* SVG */
 
 function svgRec(){
 
@@ -69,11 +84,8 @@ function svgAnalyze(){
     return `
     <svg viewBox="0 0 24 24">
 
-        <!-- ENGRENAGEM -->
-
         <path d="
             M12 2.8
-
             L13.6 3.2
             L14.4 5
             L16.2 5.6
@@ -82,9 +94,7 @@ function svgAnalyze(){
             L18.4 7.8
             L19 9.6
             L20.8 10.4
-
             L20.8 13.6
-
             L19 14.4
             L18.4 16.2
             L19.2 17.8
@@ -92,9 +102,7 @@ function svgAnalyze(){
             L16.2 18.4
             L14.4 19
             L13.6 20.8
-
             L10.4 20.8
-
             L9.6 19
             L7.8 18.4
             L6.2 19.2
@@ -102,9 +110,7 @@ function svgAnalyze(){
             L5.6 16.2
             L5 14.4
             L3.2 13.6
-
             L3.2 10.4
-
             L5 9.6
             L5.6 7.8
             L4.8 6.2
@@ -112,11 +118,8 @@ function svgAnalyze(){
             L7.8 5.6
             L9.6 5
             L10.4 3.2
-
             Z
         "></path>
-
-        <!-- CÍRCULO CENTRAL -->
 
         <circle
             cx="12"
@@ -261,6 +264,70 @@ function drawVisualizer(color){
     draw();
 }
 
+/* MICROFONES */
+
+async function requestMicrophonePermission(){
+
+    try{
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                audio:true
+            });
+
+        stream
+            .getTracks()
+            .forEach(track => track.stop());
+
+        updateStatus("Microfone pronto");
+
+        await loadMicrophones();
+
+    }catch(err){
+
+        updateStatus("Permissão negada");
+    }
+}
+
+async function loadMicrophones(){
+
+    const devices =
+        await navigator.mediaDevices.enumerateDevices();
+
+    const microphones =
+        devices.filter(
+            d => d.kind === "audioinput"
+        );
+
+    microphoneSelect.innerHTML = "";
+
+    microphones.forEach((mic,index) => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = mic.deviceId;
+
+        option.text =
+            mic.label ||
+            `Microfone ${index+1}`;
+
+        microphoneSelect.appendChild(option);
+    });
+
+    const saved =
+        localStorage.getItem(
+            "selectedMicrophone"
+        );
+
+    if(saved){
+
+        selectedDeviceId = saved;
+
+        microphoneSelect.value = saved;
+    }
+}
+
 /* RESET */
 
 function stopAll(){
@@ -326,10 +393,21 @@ async function startRecording(){
 
     audioData = [];
 
+    const constraints = {
+
+        audio: selectedDeviceId
+            ? {
+                deviceId:{
+                    exact:selectedDeviceId
+                }
+            }
+            : true
+    };
+
     mediaStream =
-        await navigator.mediaDevices.getUserMedia({
-            audio:true
-        });
+        await navigator.mediaDevices.getUserMedia(
+            constraints
+        );
 
     audioContext =
         new(
@@ -421,7 +499,7 @@ function stopRecording(){
     reader.readAsDataURL(wavBlob);
 }
 
-/* PLAY / ANALISE */
+/* PLAY */
 
 function connectAudio(audio){
 
@@ -528,6 +606,30 @@ btnAnalyze.onclick = () => {
 
     playAudio(MODE_ANALYZE);
 };
+
+btnConfig.onclick = () => {
+
+    configModal.show();
+};
+
+btnApplyConfig.onclick = () => {
+
+    selectedDeviceId =
+        microphoneSelect.value;
+
+    localStorage.setItem(
+        "selectedMicrophone",
+        selectedDeviceId
+    );
+
+    configModal.hide();
+
+    updateStatus("Configuração aplicada");
+};
+
+/* INIT */
+
+requestMicrophonePermission();
 
 /* WAV */
 
