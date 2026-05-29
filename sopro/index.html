@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 
@@ -27,14 +27,14 @@
                 </h2>
 
                 <p class="text-center text-muted mb-4">
-                    Sopre no apito durante a gravação
+                    Sopre durante a gravação
                 </p>
 
                 <canvas id="visualizer"></canvas>
 
                 <!-- STATUS -->
 
-                <div class="status-row mt-4 mb-4">
+                <div class="status-row mt-4 mb-3">
 
                     <div class="status-box">
 
@@ -50,6 +50,20 @@
                         ⚙
 
                     </button>
+
+                </div>
+
+                <!-- DEBUG -->
+
+                <div class="debug-box mb-4">
+
+                    <div class="debug-title">
+                        DEPURAÇÃO
+                    </div>
+
+                    <pre id="debugOutput">
+Aguardando análise...
+                    </pre>
 
                 </div>
 
@@ -139,13 +153,46 @@
 
             <div class="modal-body">
 
-                <label class="form-label">
-                    Microfone
-                </label>
+                <!-- MICROFONE -->
 
-                <select id="microphoneSelect"
-                        class="form-select form-select-dark">
-                </select>
+                <div class="mb-4">
+
+                    <label class="form-label">
+                        Microfone
+                    </label>
+
+                    <select id="microphoneSelect"
+                            class="form-select form-select-dark">
+                    </select>
+
+                </div>
+
+                <!-- MÉTODO -->
+
+                <div>
+
+                    <label class="form-label">
+                        Método de captura
+                    </label>
+
+                    <select id="captureMethodSelect"
+                            class="form-select form-select-dark">
+
+                        <option value="finger">
+                            Dedo
+                        </option>
+
+                        <option value="whistle1">
+                            Apito 1
+                        </option>
+
+                        <option value="whistle2">
+                            Apito 2
+                        </option>
+
+                    </select>
+
+                </div>
 
             </div>
 
@@ -176,6 +223,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="libSom.js"></script>
 
 <script src="app.js"></script>
 
