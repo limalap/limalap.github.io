@@ -1,1 +1,112 @@
-[]
+[
+    {
+        "active": true,
+        "address": {
+            "city": "TESTE_CIDADE",
+            "neighborhood": "TESTE BAIRRO",
+            "state": "TESTE ESTADO",
+            "street": "TESTE LOGRADOURO",
+            "zipcode": 1320030
+        },
+        "client": {
+            "attendance_opening_script": null,
+            "dispatch_script": "SEMPRE DAR PREFERENCIA PARA O PRESTADOR QUE VAI CHEGAR MAIS RAPIDO NO CLIENTE",
+            "document": "39168331000170",
+            "name": "SEGPLUS"
+        },
+        "client_document": "39168331000170",
+        "company_name": null,
+        "contacts": [],
+        "contract_date": "2018-01-20",
+        "created_at": "2026-09-18T20:25:44-03:00",
+        "document": "00000000000",
+        "gender": "M",
+        "id": 683734,
+        "name": "TESTE HOMOLOG API",
+        "observations": "TESTE OBSERVACAO",
+        "pets": [],
+        "plans": [],
+        "vehicles": [
+            {
+                "active": true,
+                "brand": "TESTE",
+                "chassi": "TSETSET2",
+                "color": "",
+                "created_at": "2026-09-18T20:27:40-03:00",
+                "external_code": null,
+                "fuel": "",
+                "id": 546715,
+                "license_plate": "ABC1234",
+                "manufacturing_year": null,
+                "model": "TESET",
+                "model_year": null,
+                "observation": null,
+                "plans": [
+                    {
+                        "active": true,
+                        "code": "111",
+                        "contract_number": "1",
+                        "created_at": "2026-09-18T20:30:01-03:00",
+                        "end_effective_date": "2021-07-27T01:09:15-03:00",
+                        "id": 10049,
+                        "initial_effective_date": "2021-07-27T00:09:07-03:00",
+                        "item_number": null,
+                        "name": "PLANO TESTE HOMOLOG GERAL",
+                        "policy": null
+                    }
+                ],
+                "renavam": "",
+                "type": "AUTOMOVEL"
+            },
+            {
+                "active": true,
+                "brand": "TESTE",
+                "chassi": "ABC1212312312",
+                "color": "",
+                "created_at": "2026-10-16T18:14:51-03:00",
+                "external_code": null,
+                "fuel": "",
+                "id": 546992,
+                "license_plate": "",
+                "manufacturing_year": null,
+                "model": "TESET",
+                "model_year": null,
+                "observation": null,
+                "plans": [],
+                "renavam": "",
+                "type": "AUTOMOVEL"
+            },
+            {
+                "active": true,
+                "brand": "FIAT",
+                "chassi": "9BWZZZ377VT004251",
+                "color": "BRANCO",
+                "created_at": "2026-10-16T18:16:01-03:00",
+                "external_code": null,
+                "fuel": "",
+                "id": 546993,
+                "license_plate": "TST0A01",
+                "manufacturing_year": 2026,
+                "model": "STRADA",
+                "model_year": 2027,
+                "observation": null,
+                "plans": [
+                    {
+                        "active": true,
+                        "code": "111",
+                        "contract_number": "1",
+                        "created_at": "2026-10-16T18:17:08-03:00",
+                        "end_effective_date": null,
+                        "id": 10049,
+                        "initial_effective_date": null,
+                        "item_number": null,
+                        "name": "PLANO TESTE HOMOLOG GERAL",
+                        "policy": null
+                    }
+                ],
+                "renavam": "",
+                "type": "AUTOMOVEL"
+            }
+        ]
+    }
+]
